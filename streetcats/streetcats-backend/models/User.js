@@ -13,7 +13,7 @@ export function createModel(database) {
       allowNull: false,
       primaryKey: true,
       validate: {
-        len: [3, 50] // Username tra 3 e 50 caratteri
+        len: [3, 50]
       }
     },
     password: {

@@ -16,7 +16,7 @@ export function createModel(database) {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
-        len: [1, 2000] // Commento tra 1 e 2000 caratteri
+        len: [1, 2000]
       }
     }
     // createdAt e updatedAt sono aggiunti automaticamente da Sequelize

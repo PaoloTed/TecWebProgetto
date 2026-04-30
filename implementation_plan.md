@@ -67,9 +67,9 @@ erDiagram
     USER ||--o{ CAT : "registers"
     USER ||--o{ COMMENT : "writes"
     USER {
-        string userName PK
+        string email PK
+        string userName
         string password
-        string email
         string role
         datetime createdAt
     }
@@ -86,7 +86,7 @@ erDiagram
         string address
         float latitude
         float longitude
-        string UserUserName FK
+        string UserEmail FK
         datetime createdAt
     }
     
@@ -94,7 +94,7 @@ erDiagram
         int id PK
         string text
         datetime createdAt
-        string UserUserName FK
+        string UserEmail FK
         int CatId FK
     }
 ```
@@ -247,6 +247,35 @@ export function requireAdmin(req, res, next) {
 ---
 
 ## 📝 Piano di Implementazione in 10 Fasi
+
+### **Fase 0: Refactoring Chiave Primaria (Modifica in corso)**
+> [!WARNING]
+> È necessario modificare il modello del database per usare `email` come chiave primaria invece di `userName`. Questo comporta il drop del DB attuale e la modifica di tutti i controller che usavano lo username come foreign key.
+
+**Modifiche richieste:**
+#### [MODIFY] `models/User.js`
+- `email`: `primaryKey: true`
+- `userName`: rimozione `primaryKey: true`, aggiunta `unique: true`
+
+#### [MODIFY] `controllers/AuthController.js`
+- Modifica `checkCredentials` per cercare per `email` invece che per `userName`.
+- Modifica `issueToken` per includere l'email nel payload JWT anziché lo username.
+
+#### [MODIFY] `middleware/authorization.js`
+- Sostituire `req.username` con `req.email` estratto dal token.
+
+#### [MODIFY] `controllers/CatController.js` e `controllers/CommentController.js`
+- Modificare tutte le assegnazioni `UserUserName` in `UserEmail`.
+- Aggiornare i metodi `isOwner` per verificare l'email.
+
+#### [MODIFY] `routes/authRouter.js`, `routes/catRouter.js`, `routes/commentRouter.js`
+- Sostituire l'uso di `req.username` con `req.email`.
+- Modificare l'endpoint di login per accettare `email` e `password`.
+
+#### [DELETE] `database.sqlite`
+- Rimuovere il DB per forzare la ricreazione delle tabelle con il nuovo schema.
+
+---
 
 ### **Fase 1: Setup Ambiente di Sviluppo**
 

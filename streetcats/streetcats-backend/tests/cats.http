@@ -32,7 +32,7 @@ Authorization: Bearer {{$dotenv TEST_TOKEN}}
 ###
 
 ### Modifica gatto (richiede autenticazione + owner/admin)
-PUT http://localhost:3000/cats/1
+PUT http://localhost:3000/cats/2
 Content-Type: application/json
 Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
@@ -44,18 +44,18 @@ Authorization: Bearer {{$dotenv TEST_TOKEN}}
 ###
 
 ### Elimina gatto (richiede autenticazione + owner/admin)
-DELETE http://localhost:3000/cats/1
+DELETE http://localhost:3000/cats/2
 Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 ###
 
 ### Lista commenti di un gatto (pubblico)
-GET http://localhost:3000/cats/1/comments
+GET http://localhost:3000/cats/2/comments
 
 ###
 
 ### Aggiungi commento a un gatto (richiede autenticazione)
-POST http://localhost:3000/cats/1/comments
+POST http://localhost:3000/cats/2/comments
 Content-Type: application/json
 Authorization: Bearer {{$dotenv TEST_TOKEN}}
 

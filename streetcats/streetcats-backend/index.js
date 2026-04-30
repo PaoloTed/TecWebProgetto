@@ -69,5 +69,5 @@ app.use((err, req, res, next) => {
 
 // Avvia il server
 app.listen(PORT, () => {
-  console.log(`🚀 Server avviato su http://localhost:${PORT}`);
+  console.log(`Server avviato su http://localhost:${PORT}`);
 });
