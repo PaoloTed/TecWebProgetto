@@ -1,88 +1,191 @@
-<!-- ═══════ Header ═══════ -->
-<div class="mb-8">
-  <div class="section-label mb-2">Account</div>
-  <h1 class="text-2xl font-bold text-white">Il mio profilo</h1>
+<!-- Page header -->
+<div style="margin-bottom: 2rem;">
+  <div class="section-label" style="margin-bottom: 4px;">Il mio account</div>
+  <h1 style="font-size: 1.5rem; font-weight: 700; color: white; margin: 0;">Profilo</h1>
 </div>
 
 @if (isLoading) {
-  <div class="flex items-center justify-center py-20">
+  <div style="display: flex; align-items: center; justify-content: center; padding: 6rem 0;">
     <div class="spinner"></div>
   </div>
 
 } @else if (error) {
-  <div class="alert alert-error max-w-xl">{{ error }}</div>
+  <div class="alert alert-error" style="max-width: 36rem;">{{ error }}</div>
 
 } @else if (user) {
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+    <!-- On md+: 1/3 left, 2/3 right — faked via max-width on left card -->
+    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start;">
 
-    <!-- ─── Card Identità ─── -->
-    <div class="md:col-span-1 flex flex-col gap-4">
-      <div class="card p-7 flex flex-col items-center text-center">
+      <!-- ─── Colonna sinistra: identità ─── -->
+      <div class="card" style="padding: 1.75rem; display: flex; flex-direction: column; align-items: center; text-align: center; flex: 0 0 260px; min-width: 220px;">
+
         <!-- Avatar -->
-        <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold text-white mb-5 shadow-lg"
-             style="background: linear-gradient(135deg, #7c5cf6 0%, #f97316 100%);">
-          {{ user.email ? user.email.charAt(0).toUpperCase() : 'U' }}
+        <div style="width: 72px; height: 72px; border-radius: 16px; background: linear-gradient(135deg, #7c5cf6, #f97316); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: white; margin-bottom: 1rem; flex-shrink: 0; box-shadow: 0 8px 24px rgba(124,92,246,.35);">
+          {{ user.email.charAt(0).toUpperCase() }}
         </div>
 
-        <!-- Email e ruolo -->
-        <p class="text-base font-semibold text-white mb-2 break-all">{{ user.email }}</p>
-        <span class="badge" [class]="user.role === 'admin' ? 'badge-purple' : 'badge-slate'">
-          {{ user.role === 'admin' ? '🛡️ Amministratore' : '👤 Utente' }}
+        <!-- Dati utente -->
+        @if (user.userName) {
+          <p style="font-size: 1rem; font-weight: 700; color: white; margin: 0 0 4px;">{{ user.userName }}</p>
+        }
+        <p style="font-size: 0.8125rem; color: var(--c-muted); word-break: break-all; margin: 0 0 0.75rem;">{{ user.email }}</p>
+
+        <span class="badge" [style.background]="user.role === 'admin' ? 'rgba(124,92,246,.15)' : 'rgba(148,163,184,.1)'"
+              [style.color]="user.role === 'admin' ? '#a78bfa' : '#94a3b8'"
+              [style.border]="user.role === 'admin' ? '1px solid rgba(124,92,246,.25)' : '1px solid rgba(148,163,184,.2)'"
+              style="margin-bottom: 1.25rem;">
+          {{ user.role === 'admin' ? '🛡️ Admin' : '👤 Utente' }}
         </span>
 
-        <!-- Divider -->
-        <hr class="divider w-full my-6">
+        <hr class="divider" style="width: 100%; margin-bottom: 1.25rem;">
 
-        <!-- Logout -->
-        <button (click)="logout()" class="btn-danger-ghost w-full">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <div style="width: 100%; text-align: left; margin-bottom: 1.25rem;">
+          <div class="section-label" style="margin-bottom: 4px;">Membro dal</div>
+          <p style="font-size: 0.875rem; font-weight: 600; color: white; margin: 0;">{{ getMemberSince() }}</p>
+        </div>
+
+        <button (click)="logout()" class="btn-danger-ghost" style="width: 100%;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Disconnetti account
         </button>
       </div>
-    </div>
 
-    <!-- ─── Statistiche + Info ─── -->
-    <div class="md:col-span-2 flex flex-col gap-4">
+      <!-- ─── Colonna destra: statistiche + segnalazioni ─── -->
+      <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 1.5rem;">
 
-      <!-- Statistiche -->
-      <div class="card p-6">
-        <div class="flex items-center gap-2 mb-5">
-          <span class="text-lg">📊</span>
-          <h2 class="font-semibold text-white text-base">Le tue attività</h2>
-        </div>
-        <hr class="divider mb-5">
-        <div class="grid grid-cols-2 gap-3">
-          <div class="rounded-xl p-5 text-center" style="background: rgba(124,92,246,0.08); border: 1px solid rgba(124,92,246,0.18);">
-            <p class="text-3xl font-extrabold text-white mb-1">0</p>
-            <p class="section-label">Segnalazioni</p>
+        <!-- Statistiche -->
+        <div class="card" style="padding: 1.5rem;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--c-primary);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Riepilogo attività</h2>
           </div>
-          <div class="rounded-xl p-5 text-center" style="background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.18);">
-            <p class="text-3xl font-extrabold text-white mb-1">0</p>
-            <p class="section-label">Commenti</p>
+          <hr class="divider" style="margin-bottom: 1.25rem;">
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+            <div style="border-radius: 12px; padding: 1.25rem; text-align: center; background: rgba(124,92,246,.08); border: 1px solid rgba(124,92,246,.2);">
+              <div style="font-size: 2rem; font-weight: 900; color: white; margin-bottom: 4px;">{{ user.stats?.cats ?? 0 }}</div>
+              <div class="section-label">Segnalazioni</div>
+            </div>
+            <div style="border-radius: 12px; padding: 1.25rem; text-align: center; background: rgba(249,115,22,.08); border: 1px solid rgba(249,115,22,.2);">
+              <div style="font-size: 2rem; font-weight: 900; color: white; margin-bottom: 4px;">{{ user.stats?.comments ?? 0 }}</div>
+              <div class="section-label">Commenti</div>
+            </div>
+            <div style="border-radius: 12px; padding: 1.25rem; text-align: center; background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.2);">
+              <div style="font-size: 1.5rem; margin-bottom: 4px;">✅</div>
+              <div class="section-label">Account attivo</div>
+            </div>
           </div>
         </div>
-        <p class="text-xs mt-4 text-center" style="color: var(--c-subtle);">Le statistiche dettagliate saranno disponibili nella prossima versione.</p>
+
+        <!-- Segnalazioni recenti -->
+        <div class="card" style="padding: 1.5rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--c-accent);"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+              <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Le mie segnalazioni</h2>
+            </div>
+            <a routerLink="/cats/new" class="btn-accent btn-sm" style="text-decoration: none;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nuova
+            </a>
+          </div>
+          <hr class="divider" style="margin-bottom: 1.25rem;">
+
+          @if (!user.recentCats || user.recentCats.length === 0) {
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1rem; text-align: center; color: var(--c-subtle);">
+              <span style="font-size: 3rem; opacity: .25; margin-bottom: 1rem;">🐈</span>
+              <p style="font-size: 0.875rem; font-weight: 600; color: white; margin: 0 0 6px;">Ancora nessuna segnalazione</p>
+              <p style="font-size: 0.8125rem; color: var(--c-muted); margin: 0 0 1.5rem;">Condividi il tuo avvistamento con la comunità.</p>
+              <a routerLink="/cats/new" class="btn-primary btn-sm" style="text-decoration: none;">Fai la prima segnalazione</a>
+            </div>
+
+          } @else {
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              @for (cat of user.recentCats; track cat.id) {
+                <a [routerLink]="['/cats', cat.id]" class="cat-row-link" style="display: flex; align-items: center; gap: 1rem; padding: 10px; border-radius: 10px; border: 1px solid var(--c-border); text-decoration: none; transition: background .15s, border-color .15s;">
+
+                  <!-- Thumb -->
+                  <div style="width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: #0d1322;">
+                    @if (cat.photoUrl) {
+                      <img [src]="cat.photoUrl" [alt]="cat.name" style="width: 100%; height: 100%; object-fit: cover;">
+                    } @else {
+                      🐾
+                    }
+                  </div>
+
+                  <!-- Info -->
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap;">
+                      <span style="font-size: 0.875rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ cat.name }}</span>
+                      @if (cat.neutered) { <span class="badge badge-green">Sterilizzato</span> }
+                      @if (cat.color)   { <span class="badge badge-slate">{{ cat.color }}</span> }
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; font-size: 0.75rem; color: var(--c-muted);">
+                      @if (cat.address) {
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;">📍 {{ cat.address }}</span>
+                      }
+                      <span style="flex-shrink: 0;">{{ cat.createdAt | date:'d MMM yyyy' }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Arrow -->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; color: var(--c-subtle);"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              }
+            </div>
+
+            @if (user.recentCats.length >= 10) {
+              <div style="margin-top: 1rem; text-align: center;">
+                <a routerLink="/cats" style="font-size: 0.875rem; color: var(--c-primary); text-decoration: none;">Vedi tutte le segnalazioni →</a>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Commenti recenti -->
+        <div class="card" style="padding: 1.5rem;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--c-primary);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">I miei commenti recenti</h2>
+          </div>
+          <hr class="divider" style="margin-bottom: 1.25rem;">
+
+          @if (!user.recentComments || user.recentComments.length === 0) {
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1rem; text-align: center;">
+              <span style="font-size: 3rem; opacity: .2; margin-bottom: 1rem;">💬</span>
+              <p style="font-size: 0.875rem; font-weight: 600; color: white; margin: 0 0 4px;">Ancora nessun commento</p>
+              <p style="font-size: 0.8125rem; color: var(--c-muted); margin: 0;">Esplora i gatti e lascia il tuo primo avvistamento.</p>
+            </div>
+          } @else {
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              @for (comment of user.recentComments; track comment.id) {
+                <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']"
+                   class="cat-row-link"
+                   style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 10px; border: 1px solid var(--c-border); text-decoration: none; transition: background .15s, border-color .15s;">
+                  <!-- Icona commento -->
+                  <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(124,92,246,.15); border: 1px solid rgba(124,92,246,.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.875rem;">
+                    💬
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <!-- Nome del gatto -->
+                    @if (comment.cat) {
+                      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-primary);">{{ comment.cat.name }}</span>
+                      </div>
+                    }
+                    <!-- Testo commento troncato -->
+                    <p style="font-size: 0.875rem; color: var(--c-muted); margin: 0 0 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.5;">{{ comment.text }}</p>
+                    <span style="font-size: 0.72rem; color: var(--c-subtle);">{{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; color: var(--c-subtle); margin-top: 2px;"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+              }
+            </div>
+          }
+        </div>
+
       </div>
-
-      <!-- Le mie segnalazioni -->
-      <div class="card p-6 flex-grow">
-        <div class="flex items-center justify-between mb-5">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">🐱</span>
-            <h2 class="font-semibold text-white text-base">Le mie segnalazioni</h2>
-          </div>
-          <button routerLink="/cats/new" class="btn-accent btn-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nuova
-          </button>
-        </div>
-        <hr class="divider mb-5">
-        <div class="flex flex-col items-center justify-center py-10 text-center" style="color: var(--c-subtle);">
-          <span class="text-4xl mb-3 opacity-30">📭</span>
-          <p class="text-sm">Non hai ancora pubblicato segnalazioni.</p>
-        </div>
-      </div>
-
     </div>
   </div>
 }

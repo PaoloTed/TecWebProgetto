@@ -7,12 +7,12 @@ import 'dotenv/config.js'; // Legge il file .env e rende disponibili le variabil
 
 /**
  * Configurazione del database
- * Utilizza SQLite per lo sviluppo (configurabile via .env)
+ * Utilizza SQLite 
  */
 export const database = new Sequelize({
   dialect: 'sqlite',
   storage: process.env.DB_CONNECTION_URI || './database.sqlite',
-  logging: false // Disabilita i log SQL in console (impostare su console.log per debug)
+  logging: false 
 });
 
 // Crea i modelli
@@ -46,8 +46,6 @@ Comment.Cat = Comment.belongsTo(Cat);
 /**
  * Sincronizza lo schema del database
  * Crea le tabelle mancanti
- * 
- * NOTA: In produzione, usare le migrations invece di sync()
  */
 database.sync().then(() => {
   console.log("Database sincronizzato correttamente");

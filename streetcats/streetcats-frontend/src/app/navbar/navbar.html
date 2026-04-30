@@ -1,31 +1,30 @@
-<nav class="sticky top-0 z-50" style="background: rgba(8,12,20,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.07);">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<nav style="position: sticky; top: 0; z-index: 50; background: rgba(8,12,20,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08);">
+  <div style="max-width: 80rem; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between;">
 
     <!-- Logo -->
-    <a routerLink="/" class="flex items-center gap-2 group no-underline">
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: linear-gradient(135deg, #f97316, #7c5cf6);">🐱</div>
-      <span class="font-bold text-lg text-white tracking-tight">StreetCats</span>
+    <a routerLink="/" style="display: flex; align-items: center; gap: 9px; text-decoration: none;">
+      <span style="width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, #f97316, #7c5cf6); display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">🐱</span>
+      <span style="font-weight: 800; font-size: 1.0625rem; color: white; letter-spacing: -0.01em;">StreetCats</span>
     </a>
 
     <!-- Nav links + Actions -->
-    <div class="flex items-center gap-1">
-      <a routerLink="/cats" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all no-underline">
+    <div style="display: flex; align-items: center; gap: 4px;">
+
+      <a routerLink="/cats" class="nav-link"
+         style="padding: 7px 14px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: var(--c-muted); text-decoration: none; transition: background .15s, color .15s;">
         Esplora gatti
       </a>
 
       @if (authService.isAuthenticated()) {
-        <a routerLink="/profile" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all no-underline">
+        <a routerLink="/profile" class="nav-link"
+           style="padding: 7px 14px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: var(--c-muted); text-decoration: none; transition: background .15s, color .15s;">
           Il mio profilo
         </a>
-        <div class="w-px h-5 mx-2" style="background: var(--c-border);"></div>
-        <button (click)="logout()" class="btn-ghost btn-sm">
-          Esci
-        </button>
+        <span style="width: 1px; height: 20px; background: var(--c-border); margin: 0 6px; display: inline-block;"></span>
+        <button (click)="logout()" class="btn-ghost btn-sm">Esci</button>
       } @else {
-        <div class="w-px h-5 mx-2" style="background: var(--c-border);"></div>
-        <a routerLink="/login" class="btn-primary btn-sm no-underline">
-          Accedi
-        </a>
+        <span style="width: 1px; height: 20px; background: var(--c-border); margin: 0 6px; display: inline-block;"></span>
+        <a routerLink="/login" class="btn-primary btn-sm" style="text-decoration: none;">Accedi</a>
       }
     </div>
 

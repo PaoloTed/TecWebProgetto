@@ -1,50 +1,51 @@
-<!-- ═══════ Breadcrumb ═══════ -->
-<div class="flex items-center gap-2 text-sm mb-8" style="color: var(--c-muted);">
-  <a routerLink="/cats" class="hover:text-white transition-colors no-underline" style="color: var(--c-muted);">Gatti</a>
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-  <span class="text-white">Nuova segnalazione</span>
+<!-- Breadcrumb -->
+<div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--c-muted); margin-bottom: 2rem;">
+  <a routerLink="/cats" style="color: var(--c-muted); text-decoration: none; transition: color .15s;">Gatti</a>
+  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  <span style="color: white;">Nuova segnalazione</span>
 </div>
 
-<div class="max-w-2xl">
+<div style="max-width: 42rem;">
 
   <!-- Header -->
-  <div class="mb-8">
-    <div class="section-label mb-2">Segnalazione gatto randagio</div>
-    <h1 class="text-2xl font-bold text-white mb-2">Hai visto un micio?</h1>
-    <p class="text-sm" style="color: var(--c-muted);">Compila il modulo con le informazioni che conosci — anche parziali vanno bene. Aiuterai la comunità a identificarlo e a prendersene cura.</p>
+  <div style="margin-bottom: 2rem;">
+    <div class="section-label" style="margin-bottom: 6px;">Segnalazione gatto randagio</div>
+    <h1 style="font-size: 1.5rem; font-weight: 700; color: white; margin: 0 0 8px;">Hai visto un micio?</h1>
+    <p style="font-size: 0.875rem; color: var(--c-muted); margin: 0; line-height: 1.6;">Compila il modulo con le informazioni che conosci — anche parziali vanno bene.</p>
   </div>
 
-  <!-- Error alert -->
   @if (errorMessage) {
-    <div class="alert alert-error mb-6">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span>{{ errorMessage }}</span>
     </div>
   }
 
-  <form [formGroup]="catForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-8">
+  <form [formGroup]="catForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-    <!-- ─── Sezione 1: Identificazione ─── -->
-    <div class="card p-6 flex flex-col gap-5">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-lg">🏷️</span>
-        <h2 class="font-semibold text-white text-base">Identificazione</h2>
+    <!-- Sezione 1: Identificazione -->
+    <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 1.125rem;">🏷️</span>
+        <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Identificazione</h2>
       </div>
       <hr class="divider">
 
       <div>
-        <label for="name" class="section-label block mb-1.5">Nome o soprannome <span style="color: var(--c-danger);">*</span></label>
-        <input id="name" formControlName="name" type="text" class="input" placeholder="Es. Zorro, Pallino, Romeo…">
-        <p class="text-xs mt-1.5" style="color: var(--c-subtle);">Se non sai il nome, inventane uno temporaneo che lo descriva.</p>
+        <label for="name" class="section-label" style="display: block; margin-bottom: 6px;">
+          Nome o soprannome <span style="color: var(--c-danger);">*</span>
+        </label>
+        <input id="name" formControlName="name" type="text" class="input" placeholder="Es. Zorro, Pallino…">
+        <p style="font-size: 0.75rem; color: var(--c-subtle); margin: 6px 0 0;">Se non sai il nome, inventane uno temporaneo.</p>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div>
-          <label for="color" class="section-label block mb-1.5">Colore del mantello</label>
+          <label for="color" class="section-label" style="display: block; margin-bottom: 6px;">Colore mantello</label>
           <input id="color" formControlName="color" type="text" class="input" placeholder="Es. Grigio tigrato">
         </div>
         <div>
-          <label for="size" class="section-label block mb-1.5">Taglia stimata</label>
+          <label for="size" class="section-label" style="display: block; margin-bottom: 6px;">Taglia stimata</label>
           <select id="size" formControlName="size" class="input">
             <option value="">Seleziona…</option>
             <option value="Piccolo">Piccolo (cucciolo)</option>
@@ -55,61 +56,63 @@
       </div>
     </div>
 
-    <!-- ─── Sezione 2: Luogo ─── -->
-    <div class="card p-6 flex flex-col gap-5">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-lg">📍</span>
-        <h2 class="font-semibold text-white text-base">Luogo dell'avvistamento</h2>
+    <!-- Sezione 2: Luogo -->
+    <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 1.125rem;">📍</span>
+        <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Luogo dell'avvistamento</h2>
       </div>
       <hr class="divider">
-
       <div>
-        <label for="address" class="section-label block mb-1.5">Indirizzo o descrizione della zona <span style="color: var(--c-danger);">*</span></label>
-        <input id="address" formControlName="address" type="text" class="input" placeholder="Es. Piazza Navona, Roma — o: vicino al parco di Via Garibaldi">
+        <label for="address" class="section-label" style="display: block; margin-bottom: 6px;">
+          Indirizzo o zona <span style="color: var(--c-danger);">*</span>
+        </label>
+        <input id="address" formControlName="address" type="text" class="input"
+               placeholder="Es. Piazza Navona, Roma — o: vicino al parco di Via Garibaldi">
       </div>
     </div>
 
-    <!-- ─── Sezione 3: Note aggiuntive ─── -->
-    <div class="card p-6 flex flex-col gap-5">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-lg">📝</span>
-        <h2 class="font-semibold text-white text-base">Note e condizioni</h2>
+    <!-- Sezione 3: Note -->
+    <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 1.125rem;">📝</span>
+        <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Note e condizioni</h2>
       </div>
       <hr class="divider">
-
       <div>
-        <label for="description" class="section-label block mb-1.5">Descrizione dettagliata</label>
-        <textarea id="description" formControlName="description" rows="4" class="input" placeholder="Es. Zoppica dalla zampa destra. Si lascia avvicinare. Sembra spaventato…"></textarea>
+        <label for="description" class="section-label" style="display: block; margin-bottom: 6px;">Descrizione dettagliata</label>
+        <textarea id="description" formControlName="description" rows="4" class="input"
+                  placeholder="Segni particolari, comportamento, condizioni di salute…"></textarea>
       </div>
 
       <!-- Toggle sterilizzato -->
-      <label class="flex items-start gap-4 cursor-pointer">
-        <div class="relative mt-0.5">
+      <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;">
+        <div style="position: relative; flex-shrink: 0; margin-top: 2px;">
           <input id="neutered" formControlName="neutered" type="checkbox"
-                 class="sr-only peer">
-          <div class="w-10 h-6 rounded-full transition-colors peer-checked:bg-violet-600"
-               style="background: rgba(255,255,255,0.1);"></div>
-          <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                 style="width: 40px; height: 22px; opacity: 0; position: absolute; cursor: pointer; z-index: 1;">
+          <div style="width: 40px; height: 22px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid var(--c-border); position: relative; transition: background .2s;">
+            <div style="position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s;"></div>
+          </div>
         </div>
         <div>
-          <p class="text-sm font-medium text-white">Sembra sterilizzato</p>
-          <p class="text-xs mt-0.5" style="color: var(--c-muted);">Indizio: orecchio tagliato a V o assenza di comportamenti riproduttivi.</p>
+          <p style="font-size: 0.875rem; font-weight: 600; color: white; margin: 0 0 2px;">Sembra sterilizzato</p>
+          <p style="font-size: 0.75rem; color: var(--c-muted); margin: 0;">Indizio: orecchio tagliato a V o assenza di comportamenti riproduttivi.</p>
         </div>
       </label>
     </div>
 
-    <!-- ─── Actions ─── -->
-    <div class="flex items-center justify-between gap-4 pt-2">
-      <a routerLink="/cats" class="btn-ghost no-underline">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    <!-- Actions -->
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 0.5rem;">
+      <a routerLink="/cats" class="btn-ghost" style="text-decoration: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         Annulla
       </a>
       <button type="submit" [disabled]="catForm.invalid || isLoading" class="btn-accent">
         @if (isLoading) {
-          <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          <div style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: white; border-radius: 50%; animation: sc-spin .75s linear infinite;"></div>
           Pubblicazione in corso…
         } @else {
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           Pubblica segnalazione
         }
       </button>

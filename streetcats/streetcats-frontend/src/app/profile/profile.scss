@@ -1,0 +1,5 @@
+/* Hover sulle righe segnalazioni — gestito qui invece che inline */
+.cat-row-link:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}

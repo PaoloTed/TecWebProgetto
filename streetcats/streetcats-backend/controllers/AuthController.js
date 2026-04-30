@@ -7,7 +7,7 @@ import 'dotenv/config.js';
  * Gestisce login, registrazione e token JWT
  */
 export class AuthController {
-  
+
   /**
    * Verifica le credenziali dell'utente
    * @param {string} email - Email dell'utente

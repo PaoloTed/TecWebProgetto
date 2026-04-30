@@ -18,6 +18,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/signup`, userData);
   }
 
+  getProfile(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/profile`);
+  }
+
   // Cats endpoints
   getCats(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/cats`);
@@ -34,5 +38,17 @@ export class ApiService {
   // Comments endpoints
   getCatComments(catId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/cats/${catId}/comments`);
+  }
+
+  addComment(catId: number, text: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/cats/${catId}/comments`, { text });
+  }
+
+  deleteComment(catId: number, commentId: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/cats/${catId}/comments/${commentId}`);
+  }
+
+  deleteCat(catId: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/cats/${catId}`);
   }
 }

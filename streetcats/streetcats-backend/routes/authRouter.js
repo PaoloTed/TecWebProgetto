@@ -1,5 +1,6 @@
 import express from "express";
 import { AuthController } from "../controllers/AuthController.js";
+import { Cat, Comment } from "../models/Database.js";
 import { enforceAuthentication } from "../middleware/authorization.js";
 
 export const authRouter = express.Router();
@@ -169,34 +170,62 @@ authRouter.post("/signup", async (req, res, next) => {
  * @swagger
  * /profile:
  *   get:
- *     summary: Profilo utente corrente
- *     description: Restituisce i dati dell'utente autenticato
+ *     summary: Profilo utente corrente con statistiche
+ *     description: Restituisce i dati dell'utente autenticato, il conteggio di gatti e commenti, e la lista delle segnalazioni
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Dati del profilo utente
+ *         description: Dati del profilo utente con statistiche
  *       401:
  *         description: Non autenticato
  */
 authRouter.get("/profile", enforceAuthentication, async (req, res, next) => {
   try {
-    // req.email viene impostato dal middleware enforceAuthentication
-    if (!req.email) {
-      return res.status(401).json({ error: "Non autenticato" });
-    }
+    if (!req.email) return res.status(401).json({ error: "Non autenticato" });
 
     const user = await AuthController.findUserByEmail(req.email);
+    if (!user) return res.status(404).json({ error: "Utente non trovato" });
 
-    if (!user) {
-      return res.status(404).json({ error: "Utente non trovato" });
-    }
+    // Ultime 10 segnalazioni
+    const cats = await Cat.findAll({
+      where: { UserEmail: req.email },
+      order: [['createdAt', 'DESC']],
+      limit: 10
+    });
+
+    // Ultimi 10 commenti con informazioni sul gatto associato
+    const comments = await Comment.findAll({
+      where: { UserEmail: req.email },
+      include: [{ model: Cat, attributes: ['id', 'name'] }],
+      order: [['createdAt', 'DESC']],
+      limit: 10
+    });
 
     res.json({
       userName: user.userName,
       email: user.email,
       role: user.role,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      stats: {
+        cats: cats.length,
+        comments: comments.length
+      },
+      recentCats: cats.map(c => ({
+        id: c.id,
+        name: c.name,
+        address: c.address,
+        color: c.color,
+        photoUrl: c.photoUrl,
+        neutered: c.neutered,
+        createdAt: c.createdAt
+      })),
+      recentComments: comments.map(c => ({
+        id: c.id,
+        text: c.text,
+        createdAt: c.createdAt,
+        cat: c.Cat ? { id: c.Cat.id, name: c.Cat.name } : null
+      }))
     });
   } catch (err) {
     next(err);

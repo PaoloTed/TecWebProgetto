@@ -45,7 +45,6 @@ app.get("/health", async (req, res) => {
   }
 });
 
-// ========== ROUTES ==========
 
 // Rotte autenticazione (auth, signup, profile)
 app.use(authRouter);
@@ -55,8 +54,6 @@ app.use(catRouter);
 
 // Rotte commenti (update, delete, list by user)
 app.use(commentRouter);
-
-// ========== ERROR HANDLER ==========
 
 // Gestione errori globale
 app.use((err, req, res, next) => {
