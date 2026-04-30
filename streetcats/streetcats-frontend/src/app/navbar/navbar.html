@@ -1,0 +1,33 @@
+<nav class="sticky top-0 z-50" style="background: rgba(8,12,20,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.07);">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a routerLink="/" class="flex items-center gap-2 group no-underline">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: linear-gradient(135deg, #f97316, #7c5cf6);">🐱</div>
+      <span class="font-bold text-lg text-white tracking-tight">StreetCats</span>
+    </a>
+
+    <!-- Nav links + Actions -->
+    <div class="flex items-center gap-1">
+      <a routerLink="/cats" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all no-underline">
+        Esplora gatti
+      </a>
+
+      @if (authService.isAuthenticated()) {
+        <a routerLink="/profile" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition-all no-underline">
+          Il mio profilo
+        </a>
+        <div class="w-px h-5 mx-2" style="background: var(--c-border);"></div>
+        <button (click)="logout()" class="btn-ghost btn-sm">
+          Esci
+        </button>
+      } @else {
+        <div class="w-px h-5 mx-2" style="background: var(--c-border);"></div>
+        <a routerLink="/login" class="btn-primary btn-sm no-underline">
+          Accedi
+        </a>
+      }
+    </div>
+
+  </div>
+</nav>

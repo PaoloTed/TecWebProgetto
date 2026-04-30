@@ -1,0 +1,88 @@
+<!-- ═══════ Header ═══════ -->
+<div class="mb-8">
+  <div class="section-label mb-2">Account</div>
+  <h1 class="text-2xl font-bold text-white">Il mio profilo</h1>
+</div>
+
+@if (isLoading) {
+  <div class="flex items-center justify-center py-20">
+    <div class="spinner"></div>
+  </div>
+
+} @else if (error) {
+  <div class="alert alert-error max-w-xl">{{ error }}</div>
+
+} @else if (user) {
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- ─── Card Identità ─── -->
+    <div class="md:col-span-1 flex flex-col gap-4">
+      <div class="card p-7 flex flex-col items-center text-center">
+        <!-- Avatar -->
+        <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold text-white mb-5 shadow-lg"
+             style="background: linear-gradient(135deg, #7c5cf6 0%, #f97316 100%);">
+          {{ user.email ? user.email.charAt(0).toUpperCase() : 'U' }}
+        </div>
+
+        <!-- Email e ruolo -->
+        <p class="text-base font-semibold text-white mb-2 break-all">{{ user.email }}</p>
+        <span class="badge" [class]="user.role === 'admin' ? 'badge-purple' : 'badge-slate'">
+          {{ user.role === 'admin' ? '🛡️ Amministratore' : '👤 Utente' }}
+        </span>
+
+        <!-- Divider -->
+        <hr class="divider w-full my-6">
+
+        <!-- Logout -->
+        <button (click)="logout()" class="btn-danger-ghost w-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Disconnetti account
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── Statistiche + Info ─── -->
+    <div class="md:col-span-2 flex flex-col gap-4">
+
+      <!-- Statistiche -->
+      <div class="card p-6">
+        <div class="flex items-center gap-2 mb-5">
+          <span class="text-lg">📊</span>
+          <h2 class="font-semibold text-white text-base">Le tue attività</h2>
+        </div>
+        <hr class="divider mb-5">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl p-5 text-center" style="background: rgba(124,92,246,0.08); border: 1px solid rgba(124,92,246,0.18);">
+            <p class="text-3xl font-extrabold text-white mb-1">0</p>
+            <p class="section-label">Segnalazioni</p>
+          </div>
+          <div class="rounded-xl p-5 text-center" style="background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.18);">
+            <p class="text-3xl font-extrabold text-white mb-1">0</p>
+            <p class="section-label">Commenti</p>
+          </div>
+        </div>
+        <p class="text-xs mt-4 text-center" style="color: var(--c-subtle);">Le statistiche dettagliate saranno disponibili nella prossima versione.</p>
+      </div>
+
+      <!-- Le mie segnalazioni -->
+      <div class="card p-6 flex-grow">
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🐱</span>
+            <h2 class="font-semibold text-white text-base">Le mie segnalazioni</h2>
+          </div>
+          <button routerLink="/cats/new" class="btn-accent btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuova
+          </button>
+        </div>
+        <hr class="divider mb-5">
+        <div class="flex flex-col items-center justify-center py-10 text-center" style="color: var(--c-subtle);">
+          <span class="text-4xl mb-3 opacity-30">📭</span>
+          <p class="text-sm">Non hai ancora pubblicato segnalazioni.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

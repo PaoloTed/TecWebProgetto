@@ -1,4 +1,222 @@
-/* TailwindCSS v4 */
 @import "tailwindcss";
 
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ─── Global Theme ─────────────────────────────────────── */
+:root {
+  --c-bg: #080c14;
+  --c-surface: rgba(255,255,255,0.04);
+  --c-surface-hover: rgba(255,255,255,0.07);
+  --c-border: rgba(255,255,255,0.08);
+  --c-border-hover: rgba(255,255,255,0.18);
+  --c-primary: #7c5cf6;
+  --c-primary-glow: rgba(124,92,246,0.4);
+  --c-accent: #f97316;
+  --c-accent-glow: rgba(249,115,22,0.35);
+  --c-success: #10b981;
+  --c-danger: #f43f5e;
+  --c-text: #f1f5f9;
+  --c-muted: #94a3b8;
+  --c-subtle: #475569;
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--c-bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(124,92,246,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at -10% 50%, rgba(249,115,22,0.08) 0%, transparent 60%);
+  background-attachment: fixed;
+  color: var(--c-text);
+  margin: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Glass / Surface ───────────────────────────────────── */
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.card:hover {
+  border-color: var(--c-border-hover);
+}
+.card-interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px var(--c-primary-glow);
+}
+
+/* ─── Buttons ───────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 10px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-primary {
+  @apply btn;
+  background: linear-gradient(135deg, #7c5cf6 0%, #6d48f5 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(124,92,246,0.35);
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #8b6ff7 0%, #7c5cf6 100%);
+  box-shadow: 0 8px 24px rgba(124,92,246,0.5);
+  transform: translateY(-1px);
+}
+
+.btn-accent {
+  @apply btn;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(249,115,22,0.3);
+}
+.btn-accent:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fb8d3a 0%, #f97316 100%);
+  box-shadow: 0 8px 24px rgba(249,115,22,0.45);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  @apply btn;
+  background: var(--c-surface);
+  color: var(--c-muted);
+  border: 1px solid var(--c-border);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--c-surface-hover);
+  border-color: var(--c-border-hover);
+  color: var(--c-text);
+}
+
+.btn-danger-ghost {
+  @apply btn;
+  background: transparent;
+  color: var(--c-danger);
+  border: 1px solid rgba(244,63,94,0.35);
+}
+.btn-danger-ghost:hover:not(:disabled) {
+  background: rgba(244,63,94,0.08);
+  border-color: rgba(244,63,94,0.6);
+}
+
+.btn-sm {
+  font-size: 0.8rem;
+  padding: 7px 14px;
+  border-radius: 8px;
+}
+.btn-lg {
+  font-size: 1rem;
+  padding: 14px 28px;
+  border-radius: 12px;
+}
+
+/* ─── Inputs ────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--c-text);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input::placeholder { color: var(--c-subtle); }
+.input:focus {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px var(--c-primary-glow);
+}
+select.input option { background: #1e293b; color: var(--c-text); }
+
+/* ─── Badges ────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.badge-purple  { background: rgba(124,92,246,0.15); color: #a78bfa; border: 1px solid rgba(124,92,246,0.25); }
+.badge-orange  { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.25); }
+.badge-green   { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+.badge-red     { background: rgba(244,63,94,0.15);  color: #fb7185; border: 1px solid rgba(244,63,94,0.25); }
+.badge-slate   { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.2); }
+
+/* ─── Dividers ──────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--c-border);
+  margin: 0;
+}
+
+/* ─── Gradient Text ─────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #f97316 0%, #c084fc 60%, #7c5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Section Label ─────────────────────────────────────── */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--c-subtle);
+}
+
+/* ─── Alerts ────────────────────────────────────────────── */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+}
+.alert-error  { background: rgba(244,63,94,0.10); border: 1px solid rgba(244,63,94,0.25); color: #fda4af; }
+.alert-success{ background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+
+/* ─── Spinner ───────────────────────────────────────────── */
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(124,92,246,0.2);
+  border-top-color: var(--c-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(124,92,246,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(124,92,246,0.5); }

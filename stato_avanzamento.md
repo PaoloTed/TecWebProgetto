@@ -38,26 +38,26 @@ Questa checklist riassume lo stato di completamento del progetto per l'esame di 
 
 - [x] **Setup Ambiente**
   - [x] Generazione del progetto Angular (versione 19.x)
-  - [ ] Configurazione del framework CSS (es. TailwindCSS o setup SCSS base)
+  - [/] Configurazione del framework CSS (es. TailwindCSS o setup SCSS base)
 
-- [ ] **Servizi Angular e Core**
-  - [ ] `AuthService` per la gestione dello stato di login/logout e salvataggio token
-  - [ ] `ApiService` per le chiamate HTTP al backend (Cats e Comments)
-  - [ ] `AuthInterceptor` per iniettare il token JWT nelle richieste HTTP
-  - [ ] `AuthGuard` per proteggere le pagine (es. impedire creazione gatti se non loggati)
+- [/] **Servizi Angular e Core**
+  - [/] `AuthService` per la gestione dello stato di login/logout e salvataggio token
+  - [/] `ApiService` per le chiamate HTTP al backend (Cats e Comments)
+  - [/] `AuthInterceptor` per iniettare il token JWT nelle richieste HTTP
+  - [/] `AuthGuard` per proteggere le pagine (es. impedire creazione gatti se non loggati)
 
-- [ ] **Componenti di Base (Scheletro UI)**
-  - [ ] `NavbarComponent` (Gestione menu e link login/logout)
-  - [ ] `FooterComponent`
-  - [ ] Layout principale responsive (mobile e desktop)
+- [/] **Componenti di Base (Scheletro UI)**
+  - [/] `NavbarComponent` (Gestione menu e link login/logout)
+  - [/] `FooterComponent`
+  - [/] Layout principale responsive (mobile e desktop)
 
-- [ ] **Autenticazione e Profilo**
-  - [ ] `LoginComponent` (Form di accesso)
+- [/] **Autenticazione e Profilo**
+  - [/] `LoginComponent` (Form di accesso)
   - [ ] `SignupComponent` (Form di registrazione)
   - [ ] `ProfileComponent` (Visualizzazione dati utente e proprie segnalazioni)
 
-- [ ] **Gestione Gatti e Commenti (Core App)**
-  - [ ] `CatListComponent` (Vista a griglia/lista di tutti i gatti segnalati)
+- [/] **Gestione Gatti e Commenti (Core App)**
+  - [/] `CatListComponent` (Vista a griglia/lista di tutti i gatti segnalati)
   - [ ] `CatDetailComponent` (Dettaglio singolo gatto con la lista dei commenti)
   - [ ] `CatFormComponent` (Form per creare una nuova segnalazione o modificare una esistente)
   - [ ] Integrazione lista commenti e input per l'invio di un nuovo commento
