@@ -71,7 +71,7 @@ async function runTests() {
   // Test 2: Login
   log('test', 'Test 2: Login utente...');
   res = await request('POST', '/auth', {
-    userName: 'test_api_user',
+    email: 'testapi@example.com',
     password: 'testpass123'
   });
   
@@ -88,8 +88,8 @@ async function runTests() {
   log('test', 'Test 3: Profilo utente autenticato...');
   res = await request('GET', '/profile', null, token);
   
-  if (res.status === 200 && res.data.userName === 'test_api_user') {
-    log('success', `Profilo OK - userName: ${res.data.userName}`);
+  if (res.status === 200 && res.data.email === 'testapi@example.com') {
+    log('success', `Profilo OK - email: ${res.data.email}`);
     testsPassed++;
   } else {
     log('error', `Profilo fallito: ${JSON.stringify(res.data)}`);

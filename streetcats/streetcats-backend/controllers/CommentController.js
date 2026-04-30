@@ -24,12 +24,12 @@ export class CommentController {
 
   /**
    * Ottiene tutti i commenti di un utente
-   * @param {string} username - Username dell'utente
+   * @param {string} email - Email dell'utente
    * @returns {Promise<Comment[]>}
    */
-  static async getCommentsByUser(username) {
+  static async getCommentsByUser(email) {
     return Comment.findAll({
-      where: { UserUserName: username },
+      where: { UserEmail: email },
       include: [{
         model: Cat,
         attributes: ['id', 'name']
@@ -51,10 +51,10 @@ export class CommentController {
    * Crea un nuovo commento
    * @param {Object} commentData - Dati del commento
    * @param {number} catId - ID del gatto
-   * @param {string} username - Username dell'autore
+   * @param {string} email - Email dell'autore
    * @returns {Promise<Comment>}
    */
-  static async createComment(commentData, catId, username) {
+  static async createComment(commentData, catId, email) {
     // Verifica che il gatto esista
     const cat = await Cat.findByPk(catId);
     if (!cat) {
@@ -64,7 +64,7 @@ export class CommentController {
     const comment = Comment.build({
       text: commentData.text,
       CatId: catId,
-      UserUserName: username
+      UserEmail: email
     });
     return comment.save();
   }
@@ -98,12 +98,12 @@ export class CommentController {
 
   /**
    * Verifica se l'utente è il proprietario del commento
-   * @param {string} username - Username dell'utente
+   * @param {string} email - Email dell'utente
    * @param {number} commentId - ID del commento
    * @returns {Promise<boolean>}
    */
-  static async isOwner(username, commentId) {
+  static async isOwner(email, commentId) {
     const comment = await Comment.findByPk(commentId);
-    return comment && comment.UserUserName === username;
+    return comment && comment.UserEmail === email;
   }
 }

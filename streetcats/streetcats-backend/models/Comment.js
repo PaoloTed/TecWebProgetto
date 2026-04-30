@@ -20,7 +20,7 @@ export function createModel(database) {
       }
     }
     // createdAt e updatedAt sono aggiunti automaticamente da Sequelize
-    // UserUserName (FK) verrà aggiunto dall'associazione
+    // UserEmail (FK) verrà aggiunto dall'associazione
     // CatId (FK) verrà aggiunto dall'associazione
   }, {
     // Opzioni del modello

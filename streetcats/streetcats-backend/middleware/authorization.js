@@ -3,7 +3,7 @@ import { AuthController } from "../controllers/AuthController.js";
 /**
  * Middleware per verificare l'autenticazione JWT
  * Estrae il token dall'header Authorization e verifica che sia valido
- * Se valido, aggiunge username e role alla request
+ * Se valido, aggiunge email e role alla request
  */
 export function enforceAuthentication(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -25,7 +25,7 @@ export function enforceAuthentication(req, res, next) {
     }
     
     // Aggiunge i dati dell'utente alla request per uso nei controller
-    req.username = decodedToken.user;
+    req.email = decodedToken.email;
     req.role = decodedToken.role;
     next();
   });
@@ -46,7 +46,7 @@ export function optionalAuthentication(req, res, next) {
 
   AuthController.isTokenValid(token, (err, decodedToken) => {
     if (!err && decodedToken) {
-      req.username = decodedToken.user;
+      req.email = decodedToken.email;
       req.role = decodedToken.role;
     }
     next();
@@ -69,14 +69,14 @@ export function requireAdmin(req, res, next) {
 
 /**
  * Middleware per verificare che l'utente sia il proprietario della risorsa o admin
- * @param {Function} getOwnerId - Funzione async che restituisce l'username del proprietario
+ * @param {Function} getOwnerId - Funzione async che restituisce l'email del proprietario
  */
 export function requireOwnerOrAdmin(getOwnerId) {
   return async (req, res, next) => {
     try {
       const ownerId = await getOwnerId(req);
       
-      if (req.username === ownerId || req.role === 'admin') {
+      if (req.email === ownerId || req.role === 'admin') {
         next();
       } else {
         next({

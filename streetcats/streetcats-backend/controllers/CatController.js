@@ -18,12 +18,12 @@ export class CatController {
 
   /**
    * Ottiene i gatti dell'utente corrente
-   * @param {string} username - Username dell'utente
+   * @param {string} email - Email dell'utente
    * @returns {Promise<Cat[]>}
    */
-  static async getCatsByUser(username) {
+  static async getCatsByUser(email) {
     return Cat.findAll({
-      where: { UserUserName: username },
+      where: { UserEmail: email },
       order: [['createdAt', 'DESC']]
     });
   }
@@ -40,10 +40,10 @@ export class CatController {
   /**
    * Crea un nuovo gatto
    * @param {Object} catData - Dati del gatto
-   * @param {string} username - Username del creatore
+   * @param {string} email - Email del creatore
    * @returns {Promise<Cat>}
    */
-  static async createCat(catData, username) {
+  static async createCat(catData, email) {
     const cat = Cat.build({
       name: catData.name,
       description: catData.description,
@@ -54,7 +54,7 @@ export class CatController {
       address: catData.address,
       latitude: catData.latitude,
       longitude: catData.longitude,
-      UserUserName: username
+      UserEmail: email
     });
     return cat.save();
   }
@@ -112,12 +112,12 @@ export class CatController {
 
   /**
    * Verifica se l'utente è il proprietario del gatto
-   * @param {string} username - Username dell'utente
+   * @param {string} email - Email dell'utente
    * @param {number} catId - ID del gatto
    * @returns {Promise<boolean>}
    */
-  static async isOwner(username, catId) {
+  static async isOwner(email, catId) {
     const cat = await Cat.findByPk(catId);
-    return cat && cat.UserUserName === username;
+    return cat && cat.UserEmail === email;
   }
 }

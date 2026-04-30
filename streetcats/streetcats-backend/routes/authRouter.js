@@ -17,12 +17,12 @@ export const authRouter = express.Router();
  *           schema:
  *             type: object
  *             required:
- *               - userName
+ *               - email
  *               - password
  *             properties:
- *               userName:
+ *               email:
  *                 type: string
- *                 example: mario_rossi
+ *                 example: mario@example.com
  *               password:
  *                 type: string
  *                 example: password123
@@ -34,21 +34,21 @@ export const authRouter = express.Router();
  */
 authRouter.post("/auth", async (req, res, next) => {
   try {
-    const { userName, password } = req.body;
+    const { email, password } = req.body;
 
     // Validazione input
-    if (!userName || !password) {
+    if (!email || !password) {
       return res.status(400).json({
-        error: "Username e password sono obbligatori"
+        error: "Email e password sono obbligatori"
       });
     }
 
     // Verifica credenziali
-    const user = await AuthController.checkCredentials(userName, password);
+    const user = await AuthController.checkCredentials(email, password);
 
     if (user) {
       // Genera e restituisce il token
-      const token = AuthController.issueToken(user.userName, user.role);
+      const token = AuthController.issueToken(user.email, user.role);
       res.json({
         message: "Login effettuato con successo",
         token: token,
@@ -143,7 +143,7 @@ authRouter.post("/signup", async (req, res, next) => {
     const newUser = await AuthController.saveUser({ userName, password, email });
 
     // Genera token per login automatico dopo la registrazione
-    const token = AuthController.issueToken(newUser.userName, newUser.role);
+    const token = AuthController.issueToken(newUser.email, newUser.role);
 
     res.status(201).json({
       message: "Registrazione completata con successo",
@@ -181,12 +181,12 @@ authRouter.post("/signup", async (req, res, next) => {
  */
 authRouter.get("/profile", enforceAuthentication, async (req, res, next) => {
   try {
-    // req.username viene impostato dal middleware enforceAuthentication
-    if (!req.username) {
+    // req.email viene impostato dal middleware enforceAuthentication
+    if (!req.email) {
       return res.status(401).json({ error: "Non autenticato" });
     }
 
-    const user = await AuthController.findUserByUsername(req.username);
+    const user = await AuthController.findUserByEmail(req.email);
 
     if (!user) {
       return res.status(404).json({ error: "Utente non trovato" });

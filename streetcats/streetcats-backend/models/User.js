@@ -11,7 +11,7 @@ export function createModel(database) {
     userName: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true,
+      unique: true,
       validate: {
         len: [3, 50]
       }
@@ -28,7 +28,7 @@ export function createModel(database) {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      primaryKey: true,
       validate: {
         isEmail: true
       }

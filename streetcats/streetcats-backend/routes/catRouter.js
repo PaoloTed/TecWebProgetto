@@ -68,7 +68,7 @@ catRouter.post("/cats", enforceAuthentication, async (req, res, next) => {
 
     const newCat = await CatController.createCat(
       { name, description, color, size, neutered, photoUrl, address, latitude, longitude },
-      req.username
+      req.email
     );
 
     res.status(201).json(newCat);
@@ -90,7 +90,7 @@ catRouter.put("/cats/:id", enforceAuthentication, async (req, res, next) => {
     }
 
     // Verifica permessi: solo owner o admin
-    if (cat.UserUserName !== req.username && req.role !== 'admin') {
+    if (cat.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per modificare questo gatto" });
     }
 
@@ -114,7 +114,7 @@ catRouter.delete("/cats/:id", enforceAuthentication, async (req, res, next) => {
     }
 
     // Verifica permessi: solo owner o admin
-    if (cat.UserUserName !== req.username && req.role !== 'admin') {
+    if (cat.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per eliminare questo gatto" });
     }
 
@@ -147,7 +147,7 @@ catRouter.post("/cats/:id/comments", enforceAuthentication, async (req, res, nex
     const newComment = await CommentController.createComment(
       { text },
       catId,
-      req.username
+      req.email
     );
 
     res.status(201).json(newComment);

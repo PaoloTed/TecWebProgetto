@@ -33,7 +33,7 @@ commentRouter.put("/comments/:id", enforceAuthentication, async (req, res, next)
     }
 
     // Verifica permessi: solo owner o admin
-    if (comment.UserUserName !== req.username && req.role !== 'admin') {
+    if (comment.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per modificare questo commento" });
     }
 
@@ -63,7 +63,7 @@ commentRouter.delete("/comments/:id", enforceAuthentication, async (req, res, ne
     }
 
     // Verifica permessi: solo owner o admin
-    if (comment.UserUserName !== req.username && req.role !== 'admin') {
+    if (comment.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per eliminare questo commento" });
     }
 
@@ -75,11 +75,11 @@ commentRouter.delete("/comments/:id", enforceAuthentication, async (req, res, ne
 });
 
 /**
- * GET /users/:username/comments - Commenti di un utente
+ * GET /users/:email/comments - Commenti di un utente
  */
-commentRouter.get("/users/:username/comments", async (req, res, next) => {
+commentRouter.get("/users/:email/comments", async (req, res, next) => {
   try {
-    const comments = await CommentController.getCommentsByUser(req.params.username);
+    const comments = await CommentController.getCommentsByUser(req.params.email);
     res.json(comments);
   } catch (err) {
     next(err);

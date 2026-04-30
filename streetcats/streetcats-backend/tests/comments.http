@@ -25,4 +25,4 @@ Authorization: Bearer {{$dotenv TEST_TOKEN}}
 ###
 
 ### Lista commenti di un utente
-GET http://localhost:3000/users/mario_rossi/comments
+GET http://localhost:3000/users/mario@example.com/comments
