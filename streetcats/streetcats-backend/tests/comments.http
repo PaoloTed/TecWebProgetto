@@ -10,7 +10,7 @@ GET http://localhost:3000/comments/1
 ### Modifica commento (richiede autenticazione + owner/admin)
 PUT http://localhost:3000/comments/1
 Content-Type: application/json
-Authorization: Bearer <TOKEN>
+Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 {
   "text": "Testo del commento modificato"
@@ -20,7 +20,7 @@ Authorization: Bearer <TOKEN>
 
 ### Elimina commento (richiede autenticazione + owner/admin)
 DELETE http://localhost:3000/comments/1
-Authorization: Bearer <TOKEN>
+Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 ###
 

@@ -8,7 +8,7 @@ GET http://localhost:3000/cats
 ###
 
 ### Dettaglio singolo gatto (pubblico)
-GET http://localhost:3000/cats/1
+GET http://localhost:3000/cats/2
 
 ###
 
@@ -16,7 +16,7 @@ GET http://localhost:3000/cats/1
 ### Prima fai login e sostituisci il token
 POST http://localhost:3000/cats
 Content-Type: application/json
-Authorization: Bearer <TOKEN>
+Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 {
   "name": "Micio",
@@ -34,7 +34,7 @@ Authorization: Bearer <TOKEN>
 ### Modifica gatto (richiede autenticazione + owner/admin)
 PUT http://localhost:3000/cats/1
 Content-Type: application/json
-Authorization: Bearer <TOKEN>
+Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 {
   "name": "Micio Aggiornato",
@@ -45,7 +45,7 @@ Authorization: Bearer <TOKEN>
 
 ### Elimina gatto (richiede autenticazione + owner/admin)
 DELETE http://localhost:3000/cats/1
-Authorization: Bearer <TOKEN>
+Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 ###
 
@@ -57,7 +57,7 @@ GET http://localhost:3000/cats/1/comments
 ### Aggiungi commento a un gatto (richiede autenticazione)
 POST http://localhost:3000/cats/1/comments
 Content-Type: application/json
-Authorization: Bearer <TOKEN>
+Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 {
   "text": "Che bel gattino! L'ho visto anche io in zona."

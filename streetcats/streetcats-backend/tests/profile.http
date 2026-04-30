@@ -2,7 +2,7 @@
 ### In questo caso il token è stato ottenuto dal login per mario_rossi per riprovarlo rifare il login
 ### e sostituire il token con il nuovo ottenuto
 GET http://localhost:3000/profile
-Authorization: Bearer eyhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibWFyaW9fcm9zc2kiLCJyb2xlIjoidXNlciIsImlhdCI6MTc2Nzg3MDA5NSwiZXhwIjoxNzY3OTU2NDk1fQ.STs49Aqj0gKoxrw6-CcIJp8d2R6uSvZQ2MoZFTD0YX8
+Authorization: Bearer {{$dotenv TEST_TOKEN}}
 
 ### Profilo senza autenticazione (deve fallire con 401)
 GET http://localhost:3000/profile
