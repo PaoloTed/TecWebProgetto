@@ -26,7 +26,7 @@
     <!-- Sezione 1: Identificazione -->
     <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 1.125rem;">🏷️</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--c-primary);"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
         <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Identificazione</h2>
       </div>
       <hr class="divider">
@@ -59,7 +59,7 @@
     <!-- Sezione 2: Luogo -->
     <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 1.125rem;">📍</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--c-accent);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Luogo dell'avvistamento</h2>
       </div>
       <hr class="divider">
@@ -75,14 +75,38 @@
     <!-- Sezione 3: Note -->
     <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 1.125rem;">📝</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--c-primary);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         <h2 style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0;">Note e condizioni</h2>
       </div>
       <hr class="divider">
       <div>
         <label for="description" class="section-label" style="display: block; margin-bottom: 6px;">Descrizione dettagliata</label>
-        <textarea id="description" formControlName="description" rows="4" class="input"
-                  placeholder="Segni particolari, comportamento, condizioni di salute…"></textarea>
+
+        <!-- Toolbar Markdown -->
+        <div class="md-toolbar">
+          <button type="button" class="md-toolbar-btn" (click)="bold()" title="Grassetto"><b>B</b></button>
+          <button type="button" class="md-toolbar-btn" (click)="italic()" title="Corsivo"><i>I</i></button>
+          <div class="md-toolbar-sep"></div>
+          <button type="button" class="md-toolbar-btn" (click)="link()" title="Inserisci link">🔗 Link</button>
+          <div class="md-toolbar-sep"></div>
+          <button type="button" class="md-toolbar-btn"
+                  [style.color]="showPreview ? 'var(--c-primary)' : ''"
+                  (click)="showPreview = !showPreview">
+            {{ showPreview ? '✏️ Modifica' : '👁 Anteprima' }}
+          </button>
+        </div>
+
+        @if (!showPreview) {
+          <textarea #descArea id="description" formControlName="description" rows="5" class="input"
+                    style="resize: vertical;"
+                    placeholder="Segni particolari, comportamento… Puoi usare **grassetto**, _corsivo_ e [link](https://…)"></textarea>
+        } @else {
+          <div class="input md-body" style="min-height: 120px; cursor: default;"
+               [innerHTML]="catForm.get('description')?.value || '_Nessuna descrizione_' | markdown">
+          </div>
+        }
+
+        <p class="md-hint">Supporta Markdown: **grassetto**, _corsivo_, [testo](URL)</p>
       </div>
 
       <!-- Toggle sterilizzato -->

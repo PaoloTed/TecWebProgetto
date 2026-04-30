@@ -1,11 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../_services/api/api.service';
+import { MarkdownPipe } from '../_pipes/markdown/markdown.pipe';
+import { applyMarkdown } from '../_utils/markdown-toolbar';
 
 @Component({
   selector: 'app-cat-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, MarkdownPipe],
   templateUrl: './cat-form.html',
   styleUrl: './cat-form.scss'
 })
@@ -14,9 +16,12 @@ export class CatForm {
   private apiService = inject(ApiService);
   private router = inject(Router);
 
+  @ViewChild('descArea') descArea!: ElementRef<HTMLTextAreaElement>;
+
   catForm: FormGroup;
-  isLoading = false;
+  isLoading    = false;
   errorMessage = '';
+  showPreview  = false;
 
   constructor() {
     this.catForm = this.fb.group({
@@ -29,13 +34,25 @@ export class CatForm {
     });
   }
 
+  // ── Toolbar Markdown ─────────────────────────────────────────
+  applyFmt(before: string, after: string, placeholder: string) {
+    const ta = this.descArea?.nativeElement;
+    if (!ta) return;
+    const current = this.catForm.get('description')?.value || '';
+    this.catForm.patchValue({
+      description: applyMarkdown(ta, before, after, placeholder)
+    });
+  }
+  bold()   { this.applyFmt('**', '**', 'testo in grassetto'); }
+  italic() { this.applyFmt('_', '_', 'testo in corsivo'); }
+  link()   { this.applyFmt('[', '](https://)', 'testo del link'); }
+
   onSubmit() {
     if (this.catForm.invalid) return;
-    
+
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Mocking lat e long for now
     const catData = {
       ...this.catForm.value,
       latitude: 45.0,
@@ -46,7 +63,7 @@ export class CatForm {
       next: (res) => {
         this.router.navigate(['/cats', res.id || res.cat?.id || '']);
       },
-      error: (err) => {
+      error: () => {
         this.errorMessage = 'Errore durante la creazione della segnalazione.';
         this.isLoading = false;
       }

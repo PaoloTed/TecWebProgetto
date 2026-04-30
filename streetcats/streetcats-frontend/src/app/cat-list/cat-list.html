@@ -33,7 +33,11 @@
 <!-- ═══════ EMPTY ═══════ -->
 } @else if (cats.length === 0) {
   <div class="card" style="text-align: center; padding: 6rem 2rem; display: flex; flex-direction: column; align-items: center;">
-    <div style="font-size: 4rem; margin-bottom: 1.25rem; opacity: .35;">🐈</div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="color: var(--c-subtle); opacity: .35; margin-bottom: 1.25rem;">
+      <path d="M20 7c0-2.21-1.34-4-3-4s-3 1.79-3 4"/><path d="M4 7c0-2.21 1.34-4 3-4s3 1.79 3 4"/>
+      <path d="M12 7v5"/><path d="M12 20c-4 0-8-2-8-7v-1h16v1c0 5-4 7-8 7z"/>
+      <path d="M9 14c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2"/>
+    </svg>
     <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin: 0 0 8px;">Ancora nessuna segnalazione</h3>
     <p style="font-size: 0.875rem; color: var(--c-muted); max-width: 36ch; margin: 0 0 2rem;">Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
     <a routerLink="/cats/new" class="btn-primary" style="text-decoration: none;">
@@ -54,7 +58,11 @@
             <img [src]="cat.photoUrl" [alt]="'Foto di ' + cat.name" style="width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease;">
           } @else {
             <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--c-subtle);">
-              <span style="font-size: 3rem;">🐾</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity: .3;">
+                <path d="M20 7c0-2.21-1.34-4-3-4s-3 1.79-3 4"/><path d="M4 7c0-2.21 1.34-4 3-4s3 1.79 3 4"/>
+                <path d="M12 7v5"/><path d="M12 20c-4 0-8-2-8-7v-1h16v1c0 5-4 7-8 7z"/>
+                <path d="M9 14c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2"/>
+              </svg>
               <span style="font-size: 0.75rem; font-weight: 500;">Nessuna foto</span>
             </div>
           }
@@ -63,7 +71,7 @@
           <!-- Badge -->
           <div style="position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
             @if (cat.neutered) {
-              <span class="badge badge-green">✓ Sterilizzato</span>
+              <span class="badge badge-green">Sterilizzato</span>
             }
             @if (cat.color) {
               <span class="badge badge-slate">{{ cat.color }}</span>
@@ -89,7 +97,7 @@
               }
               @if (cat.address) {
                 <span class="badge badge-orange" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
-                  📍 {{ cat.address }}
+                  {{ cat.address }}
                 </span>
               }
             </div>

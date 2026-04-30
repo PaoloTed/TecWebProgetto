@@ -1,6 +1,6 @@
 <!-- Breadcrumb -->
 <div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--c-muted); margin-bottom: 2rem;">
-  <a routerLink="/cats" style="color: var(--c-muted); text-decoration: none;">Gatti</a>
+  <a routerLink="/cats" style="color: var(--c-muted); text-decoration: none; transition: color .15s;">Gatti</a>
   <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   @if (cat) { <span style="color: white;">{{ cat.name }}</span> }
   @else      { <span style="color: white;">Dettaglio gatto</span> }
@@ -26,7 +26,7 @@
 <!-- Dettaglio -->
 } @else if (cat) {
 
-  <!-- ═══ HERO CARD ═══ -->
+  <!-- HERO CARD -->
   <div class="card" style="overflow: hidden; margin-bottom: 2rem;">
     <div style="display: grid; grid-template-columns: 1fr 1fr; min-height: 340px;">
 
@@ -37,14 +37,18 @@
                style="width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;">
         } @else {
           <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--c-subtle);">
-            <span style="font-size: 5rem; opacity: .5;">🐾</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity: .4;">
+              <path d="M20 7c0-2.21-1.34-4-3-4s-3 1.79-3 4"/><path d="M4 7c0-2.21 1.34-4 3-4s3 1.79 3 4"/>
+              <path d="M12 7v5"/><path d="M12 20c-4 0-8-2-8-7v-1h16v1c0 5-4 7-8 7z"/>
+              <path d="M9 14c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2"/>
+            </svg>
             <span style="font-size: 0.875rem;">Nessuna foto</span>
           </div>
         }
         <div style="position: absolute; inset: 0; background: linear-gradient(to right, transparent 50%, rgba(13,19,34,.9)); pointer-events: none;"></div>
         @if (cat.neutered) {
           <div style="position: absolute; top: 14px; left: 14px;">
-            <span class="badge badge-green">✓ Sterilizzato</span>
+            <span class="badge badge-green">Sterilizzato</span>
           </div>
         }
       </div>
@@ -65,7 +69,7 @@
               <div style="font-size: 0.9375rem; font-weight: 600; color: white;">{{ cat.size || '—' }}</div>
             </div>
             <div style="border-radius: 10px; padding: 12px; background: rgba(255,255,255,.04); border: 1px solid var(--c-border); grid-column: 1 / -1;">
-              <div class="section-label" style="margin-bottom: 3px;">📍 Ultima posizione</div>
+              <div class="section-label" style="margin-bottom: 3px;">Ultima posizione</div>
               <div style="font-size: 0.9375rem; font-weight: 600; color: white;">{{ cat.address || 'Non specificata' }}</div>
               @if (cat.latitude && cat.longitude) {
                 <div style="font-size: 0.72rem; color: var(--c-subtle); margin-top: 3px;">{{ cat.latitude }}, {{ cat.longitude }}</div>
@@ -76,7 +80,7 @@
           @if (cat.description) {
             <div>
               <div class="section-label" style="margin-bottom: 6px;">Descrizione</div>
-              <p style="font-size: 0.9375rem; color: var(--c-muted); line-height: 1.65; margin: 0;">{{ cat.description }}</p>
+              <div class="md-body" [innerHTML]="cat.description | markdown"></div>
             </div>
           }
         </div>
@@ -112,37 +116,60 @@
     </div>
   </div>
 
-  <!-- ═══ SEZIONE COMMENTI ═══ -->
+  <!-- SEZIONE COMMENTI -->
   <div>
     <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 1.5rem;">
       <h2 style="font-size: 1.25rem; font-weight: 700; color: white; margin: 0;">Commenti e avvistamenti</h2>
       <span style="font-size: 0.8125rem; color: var(--c-subtle);">{{ comments.length }}</span>
     </div>
 
-    <!-- ─ Form nuovo commento (solo se autenticato) ─ -->
+    <!-- Form nuovo commento (solo se autenticato) -->
     @if (isAuthenticated) {
       <div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
         <div style="display: flex; gap: 12px; align-items: flex-start;">
-          <!-- Avatar -->
           <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7c5cf6, #f97316); display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 700; color: white; flex-shrink: 0;">
             {{ currentUserEmail ? currentUserEmail.charAt(0).toUpperCase() : '?' }}
           </div>
-          <!-- Textarea + button -->
           <div style="flex: 1; min-width: 0;">
-            <textarea [(ngModel)]="newCommentText"
-                      placeholder="Hai avvistato questo gatto? Condividi le ultime informazioni con la comunità…"
-                      rows="3"
-                      class="input"
-                      style="resize: none; margin-bottom: 10px;"
-                      [disabled]="isPostingComment"></textarea>
+
+            <!-- Toolbar Markdown -->
+            <div class="md-toolbar">
+              <button type="button" class="md-toolbar-btn" (click)="bold()" title="Grassetto"><b>B</b></button>
+              <button type="button" class="md-toolbar-btn" (click)="italic()" title="Corsivo"><i>I</i></button>
+              <div class="md-toolbar-sep"></div>
+              <button type="button" class="md-toolbar-btn" (click)="link()" title="Inserisci link">Link</button>
+              <div class="md-toolbar-sep"></div>
+              <button type="button" class="md-toolbar-btn"
+                      [style.color]="showPreview ? 'var(--c-primary)' : ''"
+                      (click)="showPreview = !showPreview">
+                {{ showPreview ? 'Modifica' : 'Anteprima' }}
+              </button>
+            </div>
+
+            @if (!showPreview) {
+              <textarea #commentArea
+                        [(ngModel)]="newCommentText"
+                        placeholder="Hai avvistato questo gatto? Puoi usare **grassetto**, _corsivo_ e [link](https://…)"
+                        rows="4"
+                        class="input"
+                        style="resize: none;"
+                        [disabled]="isPostingComment"></textarea>
+            } @else {
+              <div class="input md-body"
+                   style="min-height: 90px; cursor: default;"
+                   [innerHTML]="newCommentText || '_Nessun testo da mostrare_' | markdown">
+              </div>
+            }
+
+            <p class="md-hint">Supporta Markdown: **grassetto**, _corsivo_, [testo](URL)</p>
 
             @if (commentError) {
-              <div class="alert alert-error" style="margin-bottom: 10px; font-size: 0.8125rem;">
+              <div class="alert alert-error" style="margin-top: 8px; font-size: 0.8125rem;">
                 {{ commentError }}
               </div>
             }
 
-            <div style="display: flex; justify-content: flex-end;">
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
               <button type="button" (click)="submitComment()"
                       [disabled]="!newCommentText.trim() || isPostingComment"
                       class="btn-primary btn-sm">
@@ -166,10 +193,10 @@
       </div>
     }
 
-    <!-- ─ Lista commenti ─ -->
+    <!-- Lista commenti -->
     @if (comments.length === 0) {
       <div class="card" style="padding: 3rem 2rem; text-align: center;">
-        <div style="font-size: 2.5rem; opacity: .2; margin-bottom: 0.75rem;">💬</div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity: .2; margin-bottom: 0.75rem; color: var(--c-subtle);"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <p style="font-size: 0.9375rem; font-weight: 600; color: white; margin: 0 0 4px;">Ancora nessun commento</p>
         <p style="font-size: 0.875rem; color: var(--c-muted); margin: 0;">Sii il primo a condividere un avvistamento!</p>
       </div>
@@ -195,7 +222,7 @@
                   </button>
                 }
               </div>
-              <p style="font-size: 0.9375rem; color: var(--c-muted); line-height: 1.6; margin: 0; white-space: pre-wrap;">{{ comment.text }}</p>
+              <div class="md-body" [innerHTML]="comment.text | markdown"></div>
             </div>
           </div>
         }

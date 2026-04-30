@@ -1,13 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatePipe, SlicePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { AuthService } from '../_services/auth/auth.service';
 import { ApiService } from '../_services/api/api.service';
 import { Router } from '@angular/router';
+import { MarkdownPipe } from '../_pipes/markdown/markdown.pipe';
 
 @Component({
   selector: 'app-profile',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, MarkdownPipe],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })
@@ -43,7 +44,7 @@ export class Profile implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/']);
+    this.router.navigate(['/cats']);
   }
 
   /** Restituisce la data di iscrizione formattata in testo leggibile */

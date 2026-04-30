@@ -1,14 +1,16 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ApiService } from '../_services/api/api.service';
 import { AuthService } from '../_services/auth/auth.service';
 import { Router } from '@angular/router';
+import { MarkdownPipe } from '../_pipes/markdown/markdown.pipe';
+import { applyMarkdown } from '../_utils/markdown-toolbar';
 
 @Component({
   selector: 'app-cat-detail',
-  imports: [RouterLink, DatePipe, FormsModule],
+  imports: [RouterLink, DatePipe, FormsModule, MarkdownPipe],
   templateUrl: './cat-detail.html',
   styleUrl: './cat-detail.scss'
 })
@@ -18,18 +20,21 @@ export class CatDetail implements OnInit {
   private authService = inject(AuthService);
   private router      = inject(Router);
 
+  @ViewChild('commentArea') commentArea!: ElementRef<HTMLTextAreaElement>;
+
   cat: any     = null;
   comments: any[] = [];
   isLoading    = true;
   error        = '';
 
   // Comment form state
-  newCommentText  = '';
+  newCommentText   = '';
   isPostingComment = false;
   commentError     = '';
+  showPreview      = false;
 
   // Delete state
-  isDeleting  = false;
+  isDeleting    = false;
   confirmDelete = false;
 
   ngOnInit() {
@@ -45,7 +50,7 @@ export class CatDetail implements OnInit {
   loadAll(id: number) {
     this.apiService.getCatById(id).subscribe({
       next: (cat) => {
-        this.cat = cat;
+        this.cat       = cat;
         this.isLoading = false;
         this.loadComments(id);
       },
@@ -59,18 +64,31 @@ export class CatDetail implements OnInit {
   loadComments(catId: number) {
     this.apiService.getCatComments(catId).subscribe({
       next: (c) => (this.comments = c),
-      error: () => {} // non blocca la pagina se i commenti falliscono
+      error: () => {}
     });
   }
 
   get isAuthenticated()  { return this.authService.isAuthenticated(); }
   get currentUserEmail() { return this.authService.currentUser()?.email; }
+
   get isOwnerOrAdmin() {
     if (!this.cat) return false;
     const u = this.authService.currentUser();
     return u && (u.email === this.cat.UserEmail || u.role === 'admin');
   }
 
+  // ── Toolbar Markdown ─────────────────────────────────────────
+  applyFmt(before: string, after: string, placeholder: string) {
+    const ta = this.commentArea?.nativeElement;
+    if (!ta) return;
+    this.newCommentText = applyMarkdown(ta, before, after, placeholder);
+  }
+
+  bold()   { this.applyFmt('**', '**', 'testo in grassetto'); }
+  italic() { this.applyFmt('_', '_', 'testo in corsivo'); }
+  link()   { this.applyFmt('[', '](https://)', 'testo del link'); }
+
+  // ── Invio commento ────────────────────────────────────────────
   submitComment() {
     const text = this.newCommentText.trim();
     if (!text || this.isPostingComment) return;
@@ -80,9 +98,13 @@ export class CatDetail implements OnInit {
 
     this.apiService.addComment(this.cat.id, text).subscribe({
       next: (comment) => {
-        // Aggiunge il commento in cima localmente per feedback immediato
-        this.comments.unshift({ ...comment, UserEmail: this.currentUserEmail, createdAt: new Date().toISOString() });
+        this.comments.unshift({
+          ...comment,
+          UserEmail: this.currentUserEmail,
+          createdAt: new Date().toISOString()
+        });
         this.newCommentText   = '';
+        this.showPreview      = false;
         this.isPostingComment = false;
       },
       error: (err) => {
@@ -92,20 +114,18 @@ export class CatDetail implements OnInit {
     });
   }
 
+  // ── Eliminazione gatto ────────────────────────────────────────
   deleteCat() {
-    if (!this.confirmDelete) {
-      this.confirmDelete = true;
-      return;
-    }
+    if (!this.confirmDelete) { this.confirmDelete = true; return; }
     this.isDeleting = true;
     this.apiService.deleteCat(this.cat.id).subscribe({
       next: () => this.router.navigate(['/cats']),
       error: () => { this.isDeleting = false; this.confirmDelete = false; }
     });
   }
-
   cancelDelete() { this.confirmDelete = false; }
 
+  // ── Eliminazione commento ─────────────────────────────────────
   canDeleteComment(comment: any): boolean {
     if (!this.isAuthenticated) return false;
     const u = this.authService.currentUser();
