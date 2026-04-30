@@ -1,0 +1,38 @@
+{
+  "name": "tecweb2024",
+  "version": "1.0.0",
+  "description": "TecWeb Exam Project Year2023/24@UNINA",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-css": "tailwindcss -i ./frontend/static/css/main.css -o ./frontend/static/css/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbwark/TecWeb2024.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bbwark/TecWeb2024/issues"
+  },
+  "homepage": "https://github.com/bbwark/TecWeb2024#readme",
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "axios": "^1.7.2",
+    "bcrypt": "^5.1.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^13.0.2",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "sanitize-html": "^2.15.0",
+    "sequelize": "^6.37.3"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10"
+  }
+}

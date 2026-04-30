@@ -1,0 +1,41 @@
+### Registrazione nuovo utente
+POST http://localhost:3000/signup
+Content-Type: application/json
+
+{
+  "userName": "mario_rossi",
+  "password": "password123",
+  "email": "mario@example.com"
+}
+
+### Registrazione utente esistente (deve fallire con 400)
+### "error": "Username già in uso. Scegline un altro."
+POST http://localhost:3000/signup
+Content-Type: application/json
+
+{
+  "userName": "mario_rossi",
+  "password": "password123",
+  "email": "mario@example.com"
+}
+
+### Registrazione utente esistente (deve fallire con 400)
+### "Email già registrata. Usa un'altra email o effettua il login."
+POST http://localhost:3000/signup
+Content-Type: application/json
+
+{
+  "userName": "mario_rossolino",
+  "password": "password123",
+  "email": "mario@example.com"
+}
+
+### Registrazione secondo utente
+POST http://localhost:3000/signup
+Content-Type: application/json
+
+{
+  "userName": "luigi_verdi",
+  "password": "password456",
+  "email": "luigi@example.com"
+}

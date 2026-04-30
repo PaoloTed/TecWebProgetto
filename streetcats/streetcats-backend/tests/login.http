@@ -1,0 +1,21 @@
+### Login utente esistente
+POST http://localhost:3000/auth
+Content-Type: application/json
+
+{
+  "userName": "mario_rossi",
+  "password": "password123"
+}
+
+### Login con credenziali errate
+POST http://localhost:3000/auth
+Content-Type: application/json
+
+{
+  "userName": "mario_rossi",
+  "password": "wrongpassword"
+}
+
+### Login senza credenziali
+POST http://localhost:3000/auth
+Content-Type: application/json

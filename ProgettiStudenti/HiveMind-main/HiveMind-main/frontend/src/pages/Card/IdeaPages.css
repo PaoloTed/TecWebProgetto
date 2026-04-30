@@ -1,0 +1,40 @@
+.ideas-page {
+    display: flex;
+    margin-top: 100px;
+    margin-bottom: 15px;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure the page takes at least the full viewport height */
+  }
+  .ideas-list {
+    flex: 1; /* Take up remaining space to push pagination to the bottom */
+    margin-bottom: 100px; /* Space for the pagination */
+  }
+  
+  .pagination {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color:  rgb(50, 65, 87); /* Ensure background color for pagination */
+    padding: 20px 0;
+    text-align: center;
+    margin-bottom: 80px; /* Esempio: spazio per PC */
+    z-index: 100; /* Ensure it stays above other content */
+  }
+  
+  /* Stili per tablet */
+@media (min-width: 768px) {
+    .pagination {
+      margin-bottom: 60px; /* Esempio: aumentato lo spazio per tablet */
+      position: fixed; /* Mantieni il posizionamento fisso per schermi più grandi */
+    }
+  }
+  
+  /* Stili per telefono */
+  @media (max-width: 767px) {
+    .pagination {
+      margin-bottom: 80px; /* Esempio: spazio ridotto per i telefoni */
+      position: fixed; /* Mantieni il posizionamento fisso per telefoni */
+    }
+  
+  }
+  

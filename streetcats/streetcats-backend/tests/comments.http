@@ -1,0 +1,28 @@
+### ===============================
+### TEST API COMMENTI - StreetCats
+### ===============================
+
+### Dettaglio singolo commento
+GET http://localhost:3000/comments/1
+
+###
+
+### Modifica commento (richiede autenticazione + owner/admin)
+PUT http://localhost:3000/comments/1
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+
+{
+  "text": "Testo del commento modificato"
+}
+
+###
+
+### Elimina commento (richiede autenticazione + owner/admin)
+DELETE http://localhost:3000/comments/1
+Authorization: Bearer <TOKEN>
+
+###
+
+### Lista commenti di un utente
+GET http://localhost:3000/users/mario_rossi/comments

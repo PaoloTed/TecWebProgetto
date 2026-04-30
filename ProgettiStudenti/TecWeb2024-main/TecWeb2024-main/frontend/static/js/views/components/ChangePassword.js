@@ -1,0 +1,108 @@
+import { state } from "../../config.js";
+import rest from "../../rest.js";
+import { removeAlert, showAlert, validatePassword } from "../../utilities/utilities.js";
+import AbstractView from "../AbstractView.js";
+
+export default class extends AbstractView {
+  constructor(params) {
+    super(params);
+    this.setTitle("Change Password");
+    
+    this.boundHandlers = {
+      click: this.handleClick.bind(this)
+    };
+  }
+  
+  onMount() {
+    const app = document.querySelector("#app");
+    app.addEventListener('click', this.boundHandlers.click);
+    console.log("ChangePassword mounted: event listeners added");
+  }
+  
+  onUnmount() {
+    const app = document.querySelector("#app");
+    app.removeEventListener('click', this.boundHandlers.click);
+    console.log("ChangePassword unmounted: event listeners removed");
+  }
+  
+  handleClick(e) {
+    if (!document.getElementById('change-password')) return;
+    
+    const target = e.target.closest('[data-action]');
+    if (!target) return;
+    
+    const action = target.dataset.action;
+    
+    switch(action) {
+      case 'change-password':
+        this.changePassword();
+        break;
+    }
+  }
+
+  async getHtml() {
+    return `
+        <div class="flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+          <div class="max-w-md w-full space-y-8">
+            <h1 class="text-2xl font-bold mb-4">Change Password</h1>
+            <div id="change-password" class="p-4 bg-white rounded shadow">
+                <div class="mb-4">
+                    <label for="old-password" class="block text-sm font-medium text-gray-700">Old Password:</label>
+                    <input type="password" id="old-password" name="oldPassword" class="mt-1 p-2 block w-full border border-gray-300 rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label for="new-password" class="block text-sm font-medium text-gray-700">New Password:</label>
+                    <input type="password" id="new-password" name="newPassword" class="mt-1 p-2 block w-full border border-gray-300 rounded" required>
+                </div>
+                <button 
+                  data-action="change-password" 
+                  class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Change Password
+                </button>
+            </div>
+          </div>
+        </div>
+        `;
+  }
+
+  async changePassword() {
+    let oldPasswordInserted = document.getElementById("old-password");
+    let newPasswordInserted = document.getElementById("new-password");
+    if (oldPasswordInserted && newPasswordInserted) {
+
+      const isOldPasswordCorrect = await rest.checkPassword(
+        oldPasswordInserted.value
+      );
+
+      if (isOldPasswordCorrect) {
+        if (oldPasswordInserted.value !== newPasswordInserted.value) {
+          if (validatePassword(newPasswordInserted.value)) {
+            await rest.updateUser(state.userId, {
+              password: newPasswordInserted.value,
+            });
+            oldPasswordInserted.value = "";
+            newPasswordInserted.value = "";
+            showAlert("Password changed successfully", "green", "change-password");
+            removeAlert("change-password", 2000);
+          } else {
+            showAlert("Invalid Password", "red", "change-password", [
+              "Password must be at least 8 characters long",
+              "Password must contain at least one uppercase letter",
+              "Password must contain at least one lowercase letter",
+              "Password must contain at least one number",
+              "Password must contain at least one special character",
+            ]);
+          }
+        } else {
+          showAlert(
+            "Old password and new password are the same",
+            "red",
+            "change-password"
+          );
+        }
+      } else {
+        showAlert("Old password is incorrect", "red", "change-password");
+      }
+    }
+  }
+}
