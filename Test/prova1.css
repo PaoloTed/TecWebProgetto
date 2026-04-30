@@ -1,0 +1,6 @@
+.f { color: yellow ; }
+ #g { color: blue ; }
+ h1 .f { color: green !important ; }
+ div h1 { color: pink !important ; }
+
+ #cont h1 .f { color: black ; }
