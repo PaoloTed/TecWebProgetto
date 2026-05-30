@@ -1,12 +1,7 @@
 import { DataTypes } from "sequelize";
 
-/**
- * Modello Comment
- * Rappresenta un commento associato a un gatto
- */
 export function createModel(database) {
   database.define('Comment', {
-    // Attributi Comment
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -19,10 +14,8 @@ export function createModel(database) {
         len: [1, 2000]
       }
     }
-    // createdAt e updatedAt sono aggiunti automaticamente da Sequelize
-    // UserEmail (FK) verrà aggiunto dall'associazione
-    // CatId (FK) verrà aggiunto dall'associazione
-  }, {
-    // Opzioni del modello
+    // createdAt e updatedAt aggiunti da Sequelize
+    // UserEmail (FK) aggiunto dall'associazione
+    // CatId (FK) aggiunto dall'associazione
   });
 }

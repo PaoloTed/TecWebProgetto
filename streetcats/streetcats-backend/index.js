@@ -3,10 +3,8 @@ import morgan from "morgan"; // Logging delle richieste HTTP
 import cors from "cors";
 import path from "path";
 
-// Importa la configurazione del database (inizializza i modelli)
 import { database } from "./models/Database.js";
 
-// Importa router e middleware
 import { authRouter } from "./routes/authRouter.js";
 import { catRouter } from "./routes/catRouter.js";
 import { commentRouter } from "./routes/commentRouter.js";
@@ -14,12 +12,10 @@ import { commentRouter } from "./routes/commentRouter.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(morgan('dev')); // Log delle richieste in formato 'dev'
-app.use(cors()); // Abilita CORS per le richieste dal frontend Angular
-app.use(express.json()); // Parse del body JSON delle richieste
+app.use(morgan('dev'));
+app.use(cors());
+app.use(express.json());
 
-// Servire i file statici degli upload
 app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 
 // Rotta di test
@@ -29,23 +25,6 @@ app.get("/", (req, res) => {
     version: "1.0.0",
     status: "running"
   });
-});
-
-// Rotta per verificare lo stato del database
-app.get("/health", async (req, res) => {
-  try {
-    await database.authenticate();
-    res.json({
-      status: "ok",
-      database: "connected"
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      database: "disconnected",
-      error: error.message
-    });
-  }
 });
 
 

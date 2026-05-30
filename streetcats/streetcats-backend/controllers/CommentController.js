@@ -1,32 +1,21 @@
 import { Comment, Cat, User } from "../models/Database.js";
 
-/**
- * Controller per la gestione dei commenti
- * Operazioni CRUD (Create, Read, Update, Delete)
- */
+// Controller per la gestione dei commenti (inserimento, lettura, modifica ed eliminazione)
 export class CommentController {
 
-  /**
-   * Ottiene tutti i commenti di un gatto
-   * @param {number} catId - ID del gatto
-   * @returns {Promise<Comment[]>}
-   */
+  // Ottiene tutti i commenti associati ad un gatto specifico (include lo username dell'autore)
   static async getCommentsByCat(catId) {
     return Comment.findAll({
       where: { CatId: catId },
       include: [{
         model: User,
-        attributes: ['userName'] // Include solo lo username dell'autore
+        attributes: ['userName']
       }],
       order: [['createdAt', 'DESC']]
     });
   }
 
-  /**
-   * Ottiene tutti i commenti di un utente
-   * @param {string} email - Email dell'utente
-   * @returns {Promise<Comment[]>}
-   */
+  // Ottiene tutti i commenti scritti da un determinato utente
   static async getCommentsByUser(email) {
     return Comment.findAll({
       where: { UserEmail: email },
@@ -38,24 +27,13 @@ export class CommentController {
     });
   }
 
-  /**
-   * Trova un commento per ID
-   * @param {number} id - ID del commento
-   * @returns {Promise<Comment|null>}
-   */
+  // Trova un commento tramite il suo ID
   static async findById(id) {
     return Comment.findByPk(id);
   }
 
-  /**
-   * Crea un nuovo commento
-   * @param {Object} commentData - Dati del commento
-   * @param {number} catId - ID del gatto
-   * @param {string} email - Email dell'autore
-   * @returns {Promise<Comment>}
-   */
+  // Crea e salva un nuovo commento per un gatto
   static async createComment(commentData, catId, email) {
-    // Verifica che il gatto esista
     const cat = await Cat.findByPk(catId);
     if (!cat) {
       throw new Error('Gatto non trovato');
@@ -69,31 +47,21 @@ export class CommentController {
     return comment.save();
   }
 
-  /**
-   * Aggiorna un commento esistente
-   * @param {number} id - ID del commento
-   * @param {Object} updatedData - Dati aggiornati
-   * @returns {Promise<Comment|null>}
-   */
+  // Aggiorna il testo di un commento esistente
   static async updateComment(id, updatedData) {
     const comment = await Comment.findByPk(id);
     if (!comment) return null;
-    
+
     comment.set({ text: updatedData.text });
     return comment.save();
   }
 
-  /**
-   * Elimina un commento
-   * @param {number} id - ID del commento
-   * @returns {Promise<Comment|null>}
-   */
+  // Elimina un commento dal database
   static async deleteComment(id) {
     const comment = await Comment.findByPk(id);
     if (!comment) return null;
-    
+
     await comment.destroy();
     return comment;
   }
-
 }

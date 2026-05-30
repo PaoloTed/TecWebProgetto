@@ -1,9 +1,5 @@
 import { DataTypes } from "sequelize";
 
-/**
- * Modello Cat
- * Rappresenta un gatto di strada registrato nel sistema
- */
 export function createModel(database) {
   database.define('Cat', {
     id: {
@@ -56,9 +52,7 @@ export function createModel(database) {
         max: 180
       }
     }
-    // createdAt e updatedAt sono aggiunti automaticamente da Sequelize
-    // UserEmail (FK) verrà aggiunto dall'associazione
-  }, {
-    // Opzioni del modello
+    // createdAt e updatedAt aggiunti da Sequelize
+    // UserEmail (FK) aggiunto dall'associazione
   });
 }

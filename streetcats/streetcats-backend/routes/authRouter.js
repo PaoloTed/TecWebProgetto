@@ -1,38 +1,12 @@
 import express from "express";
 import { AuthController } from "../controllers/AuthController.js";
 import { Cat, Comment } from "../models/Database.js";
-import { enforceAuthentication } from "../middleware/authorization.js";
+import { requireAuth } from "../middleware/authorization.js";
+import { createHash } from "crypto";
 
 export const authRouter = express.Router();
 
-/**
- * @swagger
- * /auth:
- *   post:
- *     summary: Login utente
- *     description: Autentica un utente e restituisce un token JWT
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 example: mario@example.com
- *               password:
- *                 type: string
- *                 example: password123
- *     responses:
- *       200:
- *         description: Login riuscito, restituisce il token JWT
- *       401:
- *         description: Credenziali non valide
- */
+// POST /auth - Gestisce il login degli utenti
 authRouter.post("/auth", async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -44,8 +18,11 @@ authRouter.post("/auth", async (req, res, next) => {
       });
     }
 
+    // Cifra la password inserita per il confronto con il database
+    const hashedPassword = createHash("sha256").update(password).digest("hex");
+
     // Verifica credenziali
-    const user = await AuthController.checkCredentials(email, password);
+    const user = await AuthController.checkCredentials(email, hashedPassword);
 
     if (user) {
       // Genera e restituisce il token
@@ -69,38 +46,7 @@ authRouter.post("/auth", async (req, res, next) => {
   }
 });
 
-/**
- * @swagger
- * /signup:
- *   post:
- *     summary: Registrazione nuovo utente
- *     description: Crea un nuovo account utente
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - userName
- *               - password
- *               - email
- *             properties:
- *               userName:
- *                 type: string
- *                 example: mario_rossi
- *               password:
- *                 type: string
- *                 example: password123
- *               email:
- *                 type: string
- *                 example: mario@example.com
- *     responses:
- *       201:
- *         description: Utente creato con successo
- *       400:
- *         description: Dati non validi o utente già esistente
- */
+// POST /signup - Registrazione di un nuovo utente nel sistema
 authRouter.post("/signup", async (req, res, next) => {
   try {
     const { userName, password, email } = req.body;
@@ -140,8 +86,11 @@ authRouter.post("/signup", async (req, res, next) => {
       });
     }
 
+    // Cifra la password prima di passare i dati al controller per la creazione
+    const hashedPassword = createHash("sha256").update(password).digest("hex");
+
     // Crea l'utente
-    const newUser = await AuthController.saveUser({ userName, password, email });
+    const newUser = await AuthController.saveUser({ userName, password: hashedPassword, email });
 
     // Genera token per login automatico dopo la registrazione
     const token = AuthController.issueToken(newUser.email, newUser.role);
@@ -166,21 +115,8 @@ authRouter.post("/signup", async (req, res, next) => {
   }
 });
 
-/**
- * @swagger
- * /profile:
- *   get:
- *     summary: Profilo utente corrente con statistiche
- *     description: Restituisce i dati dell'utente autenticato, il conteggio di gatti e commenti, e la lista delle segnalazioni
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Dati del profilo utente con statistiche
- *       401:
- *         description: Non autenticato
- */
-authRouter.get("/profile", enforceAuthentication, async (req, res, next) => {
+// GET /profile - Restituisce i dettagli del profilo dell'utente autenticato e le sue ultime attività
+authRouter.get("/profile", requireAuth, async (req, res, next) => {
   try {
     if (!req.email) return res.status(401).json({ error: "Non autenticato" });
 

@@ -1,12 +1,12 @@
 import express from "express";
 import { CatController } from "../controllers/CatController.js";
 import { CommentController } from "../controllers/CommentController.js";
-import { enforceAuthentication } from "../middleware/authorization.js";
+import { requireAuth } from "../middleware/authorization.js";
 import { upload } from "../middleware/upload.js";
 
 export const catRouter = express.Router();
 
-/** GET /cats - Lista tutti i gatti */
+// GET /cats - Lista tutti i gatti
 catRouter.get("/cats", async (req, res, next) => {
   try {
     const cats = await CatController.getAllCats();
@@ -14,7 +14,7 @@ catRouter.get("/cats", async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-/** GET /cats/:id - Dettaglio singolo gatto */
+// GET /cats/:id - Dettaglio singolo gatto
 catRouter.get("/cats/:id", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
@@ -23,7 +23,7 @@ catRouter.get("/cats/:id", async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-/** GET /cats/:id/comments - Commenti di un gatto */
+// GET /cats/:id/comments - Commenti di un gatto
 catRouter.get("/cats/:id/comments", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
@@ -34,8 +34,8 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 });
 
 
-/** POST /cats - Crea nuovo gatto (richiede autenticazione) */
-catRouter.post("/cats", enforceAuthentication, upload.single('photo'), async (req, res, next) => {
+// POST /cats - Crea nuovo gatto (richiede autenticazione)
+catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
     const { name, description, color, size, address, latitude, longitude } = req.body;
     if (!name) return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
@@ -62,8 +62,8 @@ catRouter.post("/cats", enforceAuthentication, upload.single('photo'), async (re
   } catch (err) { next(err); }
 });
 
-/** PUT /cats/:id - Modifica gatto (richiede autenticazione + owner/admin) */
-catRouter.put("/cats/:id", enforceAuthentication, upload.single('photo'), async (req, res, next) => {
+// PUT /cats/:id - Modifica gatto (richiede autenticazione + owner/admin)
+catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
     if (!cat) return next({ status: 404, message: "Gatto non trovato" });
@@ -83,8 +83,8 @@ catRouter.put("/cats/:id", enforceAuthentication, upload.single('photo'), async 
   } catch (err) { next(err); }
 });
 
-/** DELETE /cats/:id - Elimina gatto (richiede autenticazione + owner/admin) */
-catRouter.delete("/cats/:id", enforceAuthentication, async (req, res, next) => {
+// DELETE /cats/:id - Elimina gatto (richiede autenticazione + owner/admin)
+catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
     if (!cat) return next({ status: 404, message: "Gatto non trovato" });
@@ -97,8 +97,8 @@ catRouter.delete("/cats/:id", enforceAuthentication, async (req, res, next) => {
 });
 
 
-/** POST /cats/:id/comments - Aggiungi commento (richiede autenticazione) */
-catRouter.post("/cats/:id/comments", enforceAuthentication, async (req, res, next) => {
+// POST /cats/:id/comments - Aggiungi commento (richiede autenticazione)
+catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   try {
     const { text } = req.body;
     if (!text || text.trim().length === 0) {
@@ -115,11 +115,8 @@ catRouter.post("/cats/:id/comments", enforceAuthentication, async (req, res, nex
   }
 });
 
-/**
- * DELETE /cats/:catId/comments/:commentId
- * Elimina un commento — solo l'autore o un admin possono farlo
- */
-catRouter.delete("/cats/:catId/comments/:commentId", enforceAuthentication, async (req, res, next) => {
+// DELETE /cats/:catId/comments/:commentId - Elimina un commento (solo autore o admin)
+catRouter.delete("/cats/:catId/comments/:commentId", requireAuth, async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.commentId);
     if (!comment) return next({ status: 404, message: "Commento non trovato" });

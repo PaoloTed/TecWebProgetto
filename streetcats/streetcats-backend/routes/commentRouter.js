@@ -1,12 +1,10 @@
 import express from "express";
 import { CommentController } from "../controllers/CommentController.js";
-import { enforceAuthentication } from "../middleware/authorization.js";
+import { requireAuth } from "../middleware/authorization.js";
 
 export const commentRouter = express.Router();
 
-/**
- * GET /comments/:id - Dettaglio singolo commento
- */
+// GET /comments/:id - Dettaglio singolo commento
 commentRouter.get("/comments/:id", async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.id);
@@ -20,10 +18,8 @@ commentRouter.get("/comments/:id", async (req, res, next) => {
   }
 });
 
-/**
- * PUT /comments/:id - Modifica commento (richiede autenticazione + owner/admin)
- */
-commentRouter.put("/comments/:id", enforceAuthentication, async (req, res, next) => {
+// PUT /comments/:id - Modifica commento (richiede autenticazione + owner/admin)
+commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
   try {
     const commentId = req.params.id;
     const comment = await CommentController.findById(commentId);
@@ -50,10 +46,8 @@ commentRouter.put("/comments/:id", enforceAuthentication, async (req, res, next)
   }
 });
 
-/**
- * DELETE /comments/:id - Elimina commento (richiede autenticazione + owner/admin)
- */
-commentRouter.delete("/comments/:id", enforceAuthentication, async (req, res, next) => {
+// DELETE /comments/:id - Elimina commento (richiede autenticazione + owner/admin)
+commentRouter.delete("/comments/:id", requireAuth, async (req, res, next) => {
   try {
     const commentId = req.params.id;
     const comment = await CommentController.findById(commentId);
@@ -74,9 +68,7 @@ commentRouter.delete("/comments/:id", enforceAuthentication, async (req, res, ne
   }
 });
 
-/**
- * GET /users/:email/comments - Commenti di un utente
- */
+// GET /users/:email/comments - Commenti di un utente
 commentRouter.get("/users/:email/comments", async (req, res, next) => {
   try {
     const comments = await CommentController.getCommentsByUser(req.params.email);

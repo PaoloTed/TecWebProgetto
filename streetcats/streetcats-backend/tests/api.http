@@ -1,5 +1,2 @@
 ### Test rotta principale - StreetCats API
 GET http://localhost:3000/
-
-### Test health check - Verifica database
-GET http://localhost:3000/health

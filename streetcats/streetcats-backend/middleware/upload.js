@@ -14,9 +14,9 @@ const storage = multer.diskStorage({
     cb(null, uploadDir); // Cartella di destinazione
   },
   filename: function (req, file, cb) {
-    // Genera un nome univoco (timestamp + nome originale)
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    // Genera un nome per il file caricato basato sul timestamp
+    const suffisso = Date.now() + '-' + file.originalname;
+    cb(null, suffisso);
   }
 });
 
@@ -30,7 +30,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Crea l'istanza multer con un limite di dimensione di 5MB
-export const upload = multer({ 
+export const upload = multer({
   storage: storage,
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB

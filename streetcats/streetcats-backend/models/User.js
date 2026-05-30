@@ -1,13 +1,8 @@
 import { DataTypes } from "sequelize";
 import { createHash } from "crypto";
 
-/**
- * Modello User
- * Rappresenta un utente registrato
- */
 export function createModel(database) {
   database.define('User', {
-    // Attributi User
     userName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -38,8 +33,7 @@ export function createModel(database) {
       defaultValue: 'user',
       allowNull: false
     }
-    // createdAt e updatedAt sono aggiunti automaticamente da Sequelize
+    // createdAt e updatedAt aggiunti da Sequelize
   }, {
-    // Opzioni del modello
   });
 }
