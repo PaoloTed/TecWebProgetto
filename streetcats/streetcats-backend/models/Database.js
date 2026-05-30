@@ -6,8 +6,7 @@ import { createModel as createCommentModel } from "./Comment.js";
 import 'dotenv/config.js'; // Legge il file .env e rende disponibili le variabili in process.env
 
 /**
- * Configurazione del database
- * Utilizza SQLite 
+ * Configurazione del database SQLite 
  */
 export const database = new Sequelize({
   dialect: 'sqlite',

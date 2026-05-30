@@ -37,7 +37,7 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 /** POST /cats - Crea nuovo gatto (richiede autenticazione) */
 catRouter.post("/cats", enforceAuthentication, upload.single('photo'), async (req, res, next) => {
   try {
-    const { name, description, color, size, neutered, address, latitude, longitude } = req.body;
+    const { name, description, color, size, address, latitude, longitude } = req.body;
     if (!name) return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
     
     let photoUrl = req.body.photoUrl;
@@ -51,7 +51,6 @@ catRouter.post("/cats", enforceAuthentication, upload.single('photo'), async (re
         description, 
         color, 
         size, 
-        neutered: neutered === 'true' || neutered === true, 
         photoUrl, 
         address, 
         latitude, 
@@ -73,9 +72,7 @@ catRouter.put("/cats/:id", enforceAuthentication, upload.single('photo'), async 
     }
     
     const updateData = { ...req.body };
-    if (updateData.neutered !== undefined) {
-      updateData.neutered = updateData.neutered === 'true' || updateData.neutered === true;
-    }
+
     
     if (req.file) {
       updateData.photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;

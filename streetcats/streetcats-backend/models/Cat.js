@@ -30,11 +30,7 @@ export function createModel(database) {
       type: DataTypes.ENUM('piccolo', 'medio', 'grande'),
       allowNull: true
     },
-    neutered: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false
-    },
+
     photoUrl: {
       type: DataTypes.STRING,
       allowNull: true

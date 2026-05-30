@@ -49,7 +49,7 @@ export class CatController {
       description: catData.description,
       color: catData.color,
       size: catData.size,
-      neutered: catData.neutered || false,
+
       photoUrl: catData.photoUrl,
       address: catData.address,
       latitude: catData.latitude,

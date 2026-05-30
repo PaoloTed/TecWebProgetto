@@ -217,7 +217,6 @@ authRouter.get("/profile", enforceAuthentication, async (req, res, next) => {
         address: c.address,
         color: c.color,
         photoUrl: c.photoUrl,
-        neutered: c.neutered,
         createdAt: c.createdAt
       })),
       recentComments: comments.map(c => ({

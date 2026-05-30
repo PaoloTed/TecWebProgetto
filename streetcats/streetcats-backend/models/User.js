@@ -3,11 +3,11 @@ import { createHash } from "crypto";
 
 /**
  * Modello User
- * Rappresenta un utente registrato nel sistema
+ * Rappresenta un utente registrato
  */
 export function createModel(database) {
   database.define('User', {
-    // Attributi del modello User
+    // Attributi User
     userName: {
       type: DataTypes.STRING,
       allowNull: false,

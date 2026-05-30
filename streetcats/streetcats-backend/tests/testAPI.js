@@ -118,7 +118,6 @@ async function runTests() {
     description: 'Gatto nero molto simpatico',
     color: 'nero',
     size: 'medio',
-    neutered: true,
     address: 'Via Test 123, Milano',
     latitude: 45.4642,
     longitude: 9.1900

@@ -2,11 +2,11 @@ import { DataTypes } from "sequelize";
 
 /**
  * Modello Comment
- * Rappresenta un commento testuale associato a un gatto
+ * Rappresenta un commento associato a un gatto
  */
 export function createModel(database) {
   database.define('Comment', {
-    // Attributi del modello Comment
+    // Attributi Comment
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,

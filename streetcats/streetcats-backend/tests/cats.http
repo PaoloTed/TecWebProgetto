@@ -23,7 +23,6 @@ Authorization: Bearer {{$dotenv TEST_TOKEN}}
   "description": "Gatto tigrato molto affettuoso",
   "color": "tigrato",
   "size": "medio",
-  "neutered": true,
   "address": "Via Roma 1, Milano",
   "latitude": 45.4642,
   "longitude": 9.1900

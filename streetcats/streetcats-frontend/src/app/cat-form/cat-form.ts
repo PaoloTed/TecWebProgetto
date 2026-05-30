@@ -41,8 +41,7 @@ export class CatForm implements OnInit {
       description: [''],
       color: [''],
       size: [''],
-      address: ['', Validators.required],
-      neutered: [false]
+      address: ['', Validators.required]
     });
   }
 
@@ -64,8 +63,7 @@ export class CatForm implements OnInit {
           description: cat.description,
           color: cat.color,
           size: cat.size,
-          address: cat.address,
-          neutered: cat.neutered
+          address: cat.address
         });
         this.pickedLat = cat.latitude;
         this.pickedLng = cat.longitude;

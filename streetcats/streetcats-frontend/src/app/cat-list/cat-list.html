@@ -1,4 +1,4 @@
-<!-- ═══════ HEADER ═══════ -->
+<!--  HEADER  -->
 <div style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.25rem;">
   <div>
 
@@ -19,14 +19,14 @@
   }
 </div>
 
-<!-- ═══════ LOADING ═══════ -->
+<!--  LOADING  -->
 @if (isLoading) {
   <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8rem 0; gap: 1rem;">
     <div class="spinner"></div>
     <p style="font-size: 0.875rem; color: var(--c-muted);">Caricamento gatti in corso…</p>
   </div>
 
-<!-- ═══════ ERROR ═══════ -->
+<!--  ERROR  -->
 } @else if (error) {
   <div class="alert alert-error" style="max-width: 36rem;">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -36,7 +36,7 @@
     </div>
   </div>
 
-<!-- ═══════ EMPTY ═══════ -->
+<!--  EMPTY  -->
 } @else if (cats.length === 0) {
   <div class="card" style="text-align: center; padding: 6rem 2rem; display: flex; flex-direction: column; align-items: center;">
     <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="color: var(--c-subtle); opacity: .35; margin-bottom: 1.25rem;">
@@ -56,7 +56,7 @@
     }
   </div>
 
-<!-- ═══════ MAPPA + GRIGLIA ═══════ -->
+<!--  MAPPA + GRIGLIA  -->
 } @else {
 
   <!-- Mappa interattiva -->
@@ -95,9 +95,7 @@
 
           <!-- Badge -->
           <div style="position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
-            @if (cat.neutered) {
-              <span class="badge badge-green">Sterilizzato</span>
-            }
+
             @if (cat.color) {
               <span class="badge badge-slate">{{ cat.color }}</span>
             }
