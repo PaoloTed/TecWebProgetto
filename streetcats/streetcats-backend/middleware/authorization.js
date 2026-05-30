@@ -34,7 +34,7 @@ export function enforceAuthentication(req, res, next) {
 /**
  * Middleware opzionale per l'autenticazione
  * Se il token è presente e valido, aggiunge i dati utente alla request
- * Se non presente o non valido, continua comunque (per rotte pubbliche con features extra per utenti autenticati)
+ * Se non presente o non valido, continua comunque (per rotte pubbliche con funzionalità maggipo per utenti autenticati)
  */
 export function optionalAuthentication(req, res, next) {
   const authHeader = req.headers['authorization'];

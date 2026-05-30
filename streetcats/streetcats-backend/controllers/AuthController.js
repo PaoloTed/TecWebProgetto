@@ -54,7 +54,7 @@ export class AuthController {
     return Jwt.sign(
       { email: email, role: role },
       process.env.TOKEN_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '365d' } // Token valido in base al .env (default 365 giorni)
+      { expiresIn: process.env.JWT_EXPIRES_IN || '365d' } // Token valido in base al .env (365 giorni)
     );
   }
 

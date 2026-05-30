@@ -16,4 +16,5 @@ export class Navbar {
     this.authService.logout();
     this.router.navigate(['/cats']);
   }
+
 }

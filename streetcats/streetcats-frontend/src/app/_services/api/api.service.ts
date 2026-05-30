@@ -35,6 +35,10 @@ export class ApiService {
     return this.http.post<any>(`${this.baseUrl}/cats`, catData);
   }
 
+  updateCat(id: number, catData: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/cats/${id}`, catData);
+  }
+
   // Comments endpoints
   getCatComments(catId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/cats/${catId}/comments`);

@@ -107,68 +107,68 @@ erDiagram
 
 ```
 streetcats-backend/
-├── index.js                    # Entry point
-├── .env                        # Variabili ambiente
-├── package.json
-├── models/
-│   ├── Database.js             # Configurazione Sequelize
-│   ├── User.js                 # Modello utente
-│   ├── Cat.js                  # Modello gatto
-│   └── Comment.js              # Modello commento
-├── controllers/
-│   ├── AuthController.js       # Logica autenticazione
-│   ├── CatController.js        # CRUD gatti
-│   └── CommentController.js    # CRUD commenti
-├── routes/
-│   ├── authRouter.js           # Routes autenticazione
-│   ├── catRouter.js            # Routes gatti
-│   └── commentRouter.js        # Routes commenti
-├── middleware/
-│   ├── authorization.js        # Verifica JWT
-│   └── validation.js           # Validazione input
-└── public/                     # File statici (uploads)
+├-- index.js                    # Entry point
+├-- .env                        # Variabili ambiente
+├-- package.json
+├-- models/
+│   ├-- Database.js             # Configurazione Sequelize
+│   ├-- User.js                 # Modello utente
+│   ├-- Cat.js                  # Modello gatto
+│   └-- Comment.js              # Modello commento
+├-- controllers/
+│   ├-- AuthController.js       # Logica autenticazione
+│   ├-- CatController.js        # CRUD gatti
+│   └-- CommentController.js    # CRUD commenti
+├-- routes/
+│   ├-- authRouter.js           # Routes autenticazione
+│   ├-- catRouter.js            # Routes gatti
+│   └-- commentRouter.js        # Routes commenti
+├-- middleware/
+│   ├-- authorization.js        # Verifica JWT
+│   └-- validation.js           # Validazione input
+└-- public/                     # File statici (uploads)
 ```
 
 ### Frontend (Angular)
 
 ```
 streetcats-frontend/
-├── src/
-│   ├── app/
-│   │   ├── app.component.ts
-│   │   ├── app.config.ts
-│   │   ├── app.routes.ts
-│   │   ├── _guards/
-│   │   │   └── auth/
-│   │   │       └── auth.guard.ts
-│   │   ├── _interceptors/
-│   │   │   └── auth/
-│   │   │       └── auth.interceptor.ts
-│   │   ├── _services/
-│   │   │   ├── auth/
-│   │   │   │   ├── auth.service.ts
-│   │   │   │   └── auth-state.type.ts
-│   │   │   └── api/
-│   │   │       ├── api.service.ts
-│   │   │       ├── cat.type.ts
-│   │   │       └── comment.type.ts
-│   │   ├── home/                   # Homepage
-│   │   ├── login/                  # Pagina login
-│   │   ├── signup/                 # Pagina registrazione
-│   │   ├── navbar/                 # Navbar component
-│   │   ├── footer/                 # Footer component
-│   │   ├── cat-list/               # Lista gatti
-│   │   ├── cat-detail/             # Dettaglio gatto con commenti
-│   │   ├── cat-form/               # Form creazione/modifica gatto
-│   │   ├── map-view/               # Mappa gatti (opzionale)
-│   │   ├── profile/                # Profilo utente
-│   │   └── admin/                  # Area amministrazione
-│   ├── assets/
-│   ├── styles.scss
-│   └── index.html
-├── angular.json
-├── package.json
-└── tailwind.config.js
+├-- src/
+│   ├-- app/
+│   │   ├-- app.component.ts
+│   │   ├-- app.config.ts
+│   │   ├-- app.routes.ts
+│   │   ├-- _guards/
+│   │   │   └-- auth/
+│   │   │       └-- auth.guard.ts
+│   │   ├-- _interceptors/
+│   │   │   └-- auth/
+│   │   │       └-- auth.interceptor.ts
+│   │   ├-- _services/
+│   │   │   ├-- auth/
+│   │   │   │   ├-- auth.service.ts
+│   │   │   │   └-- auth-state.type.ts
+│   │   │   └-- api/
+│   │   │       ├-- api.service.ts
+│   │   │       ├-- cat.type.ts
+│   │   │       └-- comment.type.ts
+│   │   ├-- home/                   # Homepage
+│   │   ├-- login/                  # Pagina login
+│   │   ├-- signup/                 # Pagina registrazione
+│   │   ├-- navbar/                 # Navbar component
+│   │   ├-- footer/                 # Footer component
+│   │   ├-- cat-list/               # Lista gatti
+│   │   ├-- cat-detail/             # Dettaglio gatto con commenti
+│   │   ├-- cat-form/               # Form creazione/modifica gatto
+│   │   ├-- map-view/               # Mappa gatti (opzionale)
+│   │   ├-- profile/                # Profilo utente
+│   │   └-- admin/                  # Area amministrazione
+│   ├-- assets/
+│   ├-- styles.scss
+│   └-- index.html
+├-- angular.json
+├-- package.json
+└-- tailwind.config.js
 ```
 
 ---

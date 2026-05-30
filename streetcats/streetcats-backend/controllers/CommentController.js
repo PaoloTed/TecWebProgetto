@@ -96,14 +96,4 @@ export class CommentController {
     return comment;
   }
 
-  /**
-   * Verifica se l'utente è il proprietario del commento
-   * @param {string} email - Email dell'utente
-   * @param {number} commentId - ID del commento
-   * @returns {Promise<boolean>}
-   */
-  static async isOwner(email, commentId) {
-    const comment = await Comment.findByPk(commentId);
-    return comment && comment.UserEmail === email;
-  }
 }

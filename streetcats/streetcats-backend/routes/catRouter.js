@@ -2,6 +2,7 @@ import express from "express";
 import { CatController } from "../controllers/CatController.js";
 import { CommentController } from "../controllers/CommentController.js";
 import { enforceAuthentication } from "../middleware/authorization.js";
+import { upload } from "../middleware/upload.js";
 
 export const catRouter = express.Router();
 
@@ -34,12 +35,28 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 
 
 /** POST /cats - Crea nuovo gatto (richiede autenticazione) */
-catRouter.post("/cats", enforceAuthentication, async (req, res, next) => {
+catRouter.post("/cats", enforceAuthentication, upload.single('photo'), async (req, res, next) => {
   try {
-    const { name, description, color, size, neutered, photoUrl, address, latitude, longitude } = req.body;
+    const { name, description, color, size, neutered, address, latitude, longitude } = req.body;
     if (!name) return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
+    
+    let photoUrl = req.body.photoUrl;
+    if (req.file) {
+      photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    }
+
     const newCat = await CatController.createCat(
-      { name, description, color, size, neutered, photoUrl, address, latitude, longitude },
+      { 
+        name, 
+        description, 
+        color, 
+        size, 
+        neutered: neutered === 'true' || neutered === true, 
+        photoUrl, 
+        address, 
+        latitude, 
+        longitude 
+      },
       req.email
     );
     res.status(201).json(newCat);
@@ -47,14 +64,24 @@ catRouter.post("/cats", enforceAuthentication, async (req, res, next) => {
 });
 
 /** PUT /cats/:id - Modifica gatto (richiede autenticazione + owner/admin) */
-catRouter.put("/cats/:id", enforceAuthentication, async (req, res, next) => {
+catRouter.put("/cats/:id", enforceAuthentication, upload.single('photo'), async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
     if (!cat) return next({ status: 404, message: "Gatto non trovato" });
     if (cat.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per modificare questo gatto" });
     }
-    const updatedCat = await CatController.updateCat(req.params.id, req.body);
+    
+    const updateData = { ...req.body };
+    if (updateData.neutered !== undefined) {
+      updateData.neutered = updateData.neutered === 'true' || updateData.neutered === true;
+    }
+    
+    if (req.file) {
+      updateData.photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    }
+
+    const updatedCat = await CatController.updateCat(req.params.id, updateData);
     res.json(updatedCat);
   } catch (err) { next(err); }
 });

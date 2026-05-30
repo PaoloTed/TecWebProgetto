@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan"; // Logging delle richieste HTTP
 import cors from "cors";
+import path from "path";
 
 // Importa la configurazione del database (inizializza i modelli)
 import { database } from "./models/Database.js";
@@ -9,7 +10,6 @@ import { database } from "./models/Database.js";
 import { authRouter } from "./routes/authRouter.js";
 import { catRouter } from "./routes/catRouter.js";
 import { commentRouter } from "./routes/commentRouter.js";
-import { enforceAuthentication } from "./middleware/authorization.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +18,9 @@ const PORT = process.env.PORT || 3000;
 app.use(morgan('dev')); // Log delle richieste in formato 'dev'
 app.use(cors()); // Abilita CORS per le richieste dal frontend Angular
 app.use(express.json()); // Parse del body JSON delle richieste
+
+// Servire i file statici degli upload
+app.use('/uploads', express.static(path.join(process.cwd(), 'public/uploads')));
 
 // Rotta di test
 app.get("/", (req, res) => {

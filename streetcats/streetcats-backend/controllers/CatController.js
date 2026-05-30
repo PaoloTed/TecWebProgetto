@@ -1,4 +1,4 @@
-import { Cat, Comment } from "../models/Database.js";
+import { Cat } from "../models/Database.js";
 
 /**
  * Controller per la gestione dei gatti
@@ -86,38 +86,4 @@ export class CatController {
     return cat;
   }
 
-  /**
-   * Cerca gatti vicini a una posizione
-   * @param {number} lat - Latitudine
-   * @param {number} lon - Longitudine
-   * @param {number} radius - Raggio in km (default 5)
-   * @returns {Promise<Cat[]>}
-   */
-  static async findNearby(lat, lon, radius = 5) {
-    // Approssimazione: 1 grado ~ 111 km
-    const latDelta = radius / 111;
-    const lonDelta = radius / (111 * Math.cos(lat * Math.PI / 180));
-
-    return Cat.findAll({
-      where: {
-        latitude: {
-          [Op.between]: [lat - latDelta, lat + latDelta]
-        },
-        longitude: {
-          [Op.between]: [lon - lonDelta, lon + lonDelta]
-        }
-      }
-    });
-  }
-
-  /**
-   * Verifica se l'utente è il proprietario del gatto
-   * @param {string} email - Email dell'utente
-   * @param {number} catId - ID del gatto
-   * @returns {Promise<boolean>}
-   */
-  static async isOwner(email, catId) {
-    const cat = await Cat.findByPk(catId);
-    return cat && cat.UserEmail === email;
-  }
 }

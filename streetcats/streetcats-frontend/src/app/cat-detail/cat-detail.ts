@@ -7,10 +7,11 @@ import { AuthService } from '../_services/auth/auth.service';
 import { Router } from '@angular/router';
 import { MarkdownPipe } from '../_pipes/markdown/markdown.pipe';
 import { applyMarkdown } from '../_utils/markdown-toolbar';
+import { MapComponent } from '../map/map.component';
 
 @Component({
   selector: 'app-cat-detail',
-  imports: [RouterLink, DatePipe, FormsModule, MarkdownPipe],
+  imports: [RouterLink, DatePipe, FormsModule, MarkdownPipe, MapComponent],
   templateUrl: './cat-detail.html',
   styleUrl: './cat-detail.scss'
 })
@@ -77,7 +78,7 @@ export class CatDetail implements OnInit {
     return u && (u.email === this.cat.UserEmail || u.role === 'admin');
   }
 
-  // ── Toolbar Markdown ─────────────────────────────────────────
+  // -- Toolbar Markdown -----------------------------------------
   applyFmt(before: string, after: string, placeholder: string) {
     const ta = this.commentArea?.nativeElement;
     if (!ta) return;
@@ -88,7 +89,7 @@ export class CatDetail implements OnInit {
   italic() { this.applyFmt('_', '_', 'testo in corsivo'); }
   link()   { this.applyFmt('[', '](https://)', 'testo del link'); }
 
-  // ── Invio commento ────────────────────────────────────────────
+  // -- Invio commento --------------------------------------------
   submitComment() {
     const text = this.newCommentText.trim();
     if (!text || this.isPostingComment) return;
@@ -114,7 +115,7 @@ export class CatDetail implements OnInit {
     });
   }
 
-  // ── Eliminazione gatto ────────────────────────────────────────
+  // -- Eliminazione gatto ----------------------------------------
   deleteCat() {
     if (!this.confirmDelete) { this.confirmDelete = true; return; }
     this.isDeleting = true;
@@ -125,7 +126,7 @@ export class CatDetail implements OnInit {
   }
   cancelDelete() { this.confirmDelete = false; }
 
-  // ── Eliminazione commento ─────────────────────────────────────
+  // -- Eliminazione commento -------------------------------------
   canDeleteComment(comment: any): boolean {
     if (!this.isAuthenticated) return false;
     const u = this.authService.currentUser();

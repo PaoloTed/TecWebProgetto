@@ -1,17 +1,15 @@
-<!-- Breadcrumb -->
-<div style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--c-muted); margin-bottom: 2rem;">
-  <a routerLink="/cats" style="color: var(--c-muted); text-decoration: none; transition: color .15s;">Gatti</a>
-  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-  <span style="color: white;">Nuova segnalazione</span>
-</div>
-
 <div style="max-width: 42rem;">
 
   <!-- Header -->
   <div style="margin-bottom: 2rem;">
-    <div class="section-label" style="margin-bottom: 6px;">Segnalazione gatto randagio</div>
-    <h1 style="font-size: 1.5rem; font-weight: 700; color: white; margin: 0 0 8px;">Hai visto un micio?</h1>
-    <p style="font-size: 0.875rem; color: var(--c-muted); margin: 0; line-height: 1.6;">Compila il modulo con le informazioni che conosci — anche parziali vanno bene.</p>
+
+    @if (isEditMode) {
+      <h1 style="font-size: 1.5rem; font-weight: 700; color: white; margin: 0 0 8px;">Modifica segnalazione</h1>
+      <p style="font-size: 0.875rem; color: var(--c-muted); margin: 0; line-height: 1.6;">Aggiorna le informazioni del gatto.</p>
+    } @else {
+      <h1 style="font-size: 1.5rem; font-weight: 700; color: white; margin: 0 0 8px;">Hai visto un micio?</h1>
+      <p style="font-size: 0.875rem; color: var(--c-muted); margin: 0; line-height: 1.6;">Compila il modulo con le informazioni che conosci — anche parziali vanno bene.</p>
+    }
   </div>
 
   @if (errorMessage) {
@@ -54,6 +52,26 @@
           </select>
         </div>
       </div>
+
+      <!-- Foto del gatto -->
+      <div style="margin-top: 1rem;">
+        <label for="photo" class="section-label" style="display: block; margin-bottom: 6px;">Foto del gatto (opzionale)</label>
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <label for="photo" class="btn-ghost" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Carica un'immagine
+          </label>
+          <input id="photo" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+          @if (selectedFile) {
+            <span style="font-size: 0.875rem; color: var(--c-subtle); word-break: break-all;">{{ selectedFile.name }}</span>
+          }
+        </div>
+        @if (previewUrl) {
+          <div style="margin-top: 1rem; border-radius: 8px; overflow: hidden; width: 120px; height: 120px; border: 1px solid var(--c-border);">
+            <img [src]="previewUrl" alt="Anteprima foto" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        }
+      </div>
     </div>
 
     <!-- Sezione 2: Luogo -->
@@ -69,6 +87,32 @@
         </label>
         <input id="address" formControlName="address" type="text" class="input"
                placeholder="Es. Piazza Navona, Roma — o: vicino al parco di Via Garibaldi">
+      </div>
+
+      <!-- Mappa pick -->
+      <div>
+        <div class="section-label" style="margin-bottom: 6px;">Posizione sulla mappa</div>
+        <p style="font-size: 0.78rem; color: var(--c-subtle); margin: 0 0 10px;">
+          Clicca sulla mappa per indicare il punto esatto dell'avvistamento. Puoi trascinare il marker per correggere.
+        </p>
+        <app-map
+          mode="pick"
+          [lat]="pickedLat"
+          [lng]="pickedLng"
+          height="320px"
+          (positionPicked)="onPositionPicked($event)"
+          style="border-radius: 10px; overflow: hidden; border: 1px solid var(--c-border); display: block;">
+        </app-map>
+        @if (pickedLat != null && pickedLng != null) {
+          <div style="margin-top: 8px; font-size: 0.78rem; color: var(--c-subtle); display: flex; align-items: center; gap: 6px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Posizione selezionata: {{ pickedLat | number:'1.4-4' }}, {{ pickedLng | number:'1.4-4' }}
+          </div>
+        } @else {
+          <div style="margin-top: 8px; font-size: 0.78rem; color: var(--c-subtle);">
+            Nessuna posizione selezionata — verrà usata una posizione di default.
+          </div>
+        }
       </div>
     </div>
 
@@ -87,12 +131,12 @@
           <button type="button" class="md-toolbar-btn" (click)="bold()" title="Grassetto"><b>B</b></button>
           <button type="button" class="md-toolbar-btn" (click)="italic()" title="Corsivo"><i>I</i></button>
           <div class="md-toolbar-sep"></div>
-          <button type="button" class="md-toolbar-btn" (click)="link()" title="Inserisci link">🔗 Link</button>
+          <button type="button" class="md-toolbar-btn" (click)="link()" title="Inserisci link">Link</button>
           <div class="md-toolbar-sep"></div>
           <button type="button" class="md-toolbar-btn"
                   [style.color]="showPreview ? 'var(--c-primary)' : ''"
                   (click)="showPreview = !showPreview">
-            {{ showPreview ? '✏️ Modifica' : '👁 Anteprima' }}
+            {{ showPreview ? 'Modifica' : 'Anteprima' }}
           </button>
         </div>
 

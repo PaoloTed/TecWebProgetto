@@ -38,41 +38,47 @@ Questa checklist riassume lo stato di completamento del progetto per l'esame di 
 
 - [x] **Setup Ambiente**
   - [x] Generazione del progetto Angular (versione 19.x)
-  - [/] Configurazione del framework CSS (es. TailwindCSS o setup SCSS base)
+  - [x] Configurazione del framework CSS (es. TailwindCSS o setup SCSS base)
 
-- [/] **Servizi Angular e Core**
-  - [/] `AuthService` per la gestione dello stato di login/logout e salvataggio token
-  - [/] `ApiService` per le chiamate HTTP al backend (Cats e Comments)
-  - [/] `AuthInterceptor` per iniettare il token JWT nelle richieste HTTP
-  - [/] `AuthGuard` per proteggere le pagine (es. impedire creazione gatti se non loggati)
+- [x] **Servizi Angular e Core**
+  - [x] `AuthService` per la gestione dello stato di login/logout e salvataggio token
+  - [x] `ApiService` per le chiamate HTTP al backend (Cats e Comments)
+  - [x] `AuthInterceptor` per iniettare il token JWT nelle richieste HTTP
+  - [x] `AuthGuard` per proteggere le pagine (es. impedire creazione gatti se non loggati)
 
-- [/] **Componenti di Base (Scheletro UI)**
-  - [/] `NavbarComponent` (Gestione menu e link login/logout)
-  - [/] `FooterComponent`
-  - [/] Layout principale responsive (mobile e desktop)
+- [x] **Componenti di Base (Scheletro UI)**
+  - [x] `NavbarComponent` (Gestione menu e link login/logout)
+  - [x] `FooterComponent`
+  - [x] Layout principale responsive (mobile e desktop)
 
-- [/] **Autenticazione e Profilo**
-  - [/] `LoginComponent` (Form di accesso)
-  - [ ] `SignupComponent` (Form di registrazione)
-  - [ ] `ProfileComponent` (Visualizzazione dati utente e proprie segnalazioni)
+- [x] **Autenticazione e Profilo**
+  - [x] `LoginComponent` (Form di accesso)
+  - [x] `SignupComponent` (Form di registrazione con validatore password custom)
+  - [x] `ProfileComponent` (Visualizzazione dati utente e proprie segnalazioni)
 
-- [/] **Gestione Gatti e Commenti (Core App)**
-  - [/] `CatListComponent` (Vista a griglia/lista di tutti i gatti segnalati)
-  - [ ] `CatDetailComponent` (Dettaglio singolo gatto con la lista dei commenti)
-  - [ ] `CatFormComponent` (Form per creare una nuova segnalazione o modificare una esistente)
-  - [ ] Integrazione lista commenti e input per l'invio di un nuovo commento
+- [x] **Gestione Gatti e Commenti (Core App)**
+  - [x] `CatListComponent` (Vista a griglia/lista di tutti i gatti segnalati)
+  - [x] `CatDetailComponent` (Dettaglio singolo gatto con la lista dei commenti)
+  - [x] `CatFormComponent` (Form per creare una nuova segnalazione o modificare una esistente)
+  - [x] Integrazione lista commenti e input per l'invio di un nuovo commento (con toolbar Markdown)
 
-- [ ] **Funzionalità Avanzate**
-  - [ ] Visualizzazione dei gatti su mappa interattiva (es. Leaflet/OpenStreetMap) - *Opzionale*
-  - [ ] Barra di ricerca e filtri (es. ricerca per zona o colore)
+- [x] **Funzionalità Avanzate**
+  - [x] Visualizzazione dei gatti su mappa interattiva (Leaflet/OpenStreetMap) con marker e tooltip → pagina dettaglio
+  - [x] Mappa nella pagina dettaglio per visualizzare la posizione del gatto
+  - [x] Mappa nel form di inserimento per selezionare la posizione tramite clic
+  - [x] Integrazione API esterna per curiosità casuali (Catfact.ninja) nel footer
 
-- [ ] **Rifiniture (Polish)**
-  - [ ] Gestione chiara degli errori tramite Notifiche/Toasts (es. Login fallito)
-  - [ ] Animazioni e transizioni (Loading spinners, transizioni di route)
+- [x] **Rifiniture (Polish) & UI/UX**
+  - [x] Transizione a UI Flat e Professionale (rimozione gradienti, layout full-width)
+  - [x] Rimozione emoticon e sostituzione con icone SVG e logo grafico dedicato
+  - [x] Miglioramenti UX (card interamente cliccabili, easter egg audio, UI de-cluttered)
+  - [x] Animazioni base e stati di caricamento (Loading spinners)
+  - [ ] Gestione chiara degli errori tramite Notifiche/Toasts globali
 
 ---
 
 ## 🚀 Prossimi Passi (Priorità Alta)
-1. **Configurare Angular**: iniziare a configurare i file di base e il routing nel frontend.
-2. **Creare i servizi base (`AuthService` e `ApiService`)**: per testare immediatamente la connessione con il backend.
-3. **Creare schermate base (`CatList` e `Login`)**: per avere un'interfaccia rudimentale funzionante da cui poi estendere tutto il resto.
+1. **Test E2E con Playwright** (≥ 10 test che usano il browser) — requisito obbligatorio della specifica.
+2. [x] **Upload immagini con Multer** — implementato upload reale delle foto nel backend e invio tramite FormData dal frontend.
+3. **Toast / notifiche errori** — sostituire gli errori inline con un sistema di notifiche visivo.
+

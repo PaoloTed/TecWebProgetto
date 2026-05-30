@@ -1,16 +1,22 @@
 <!-- ═══════ HEADER ═══════ -->
-<div style="margin-bottom: 2.5rem; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.25rem;">
+<div style="margin-bottom: 2rem; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.25rem;">
   <div>
-    <div class="section-label" style="margin-bottom: 6px;">Avvistamenti della comunità</div>
+
     <h1 style="font-size: 1.875rem; font-weight: 800; color: white; line-height: 1.2; margin: 0 0 6px;">
-      Gatti di strada <span class="gradient-text">nella tua zona</span>
+      Gatti di strada <span style="color: var(--c-accent);">nella tua zona</span>
     </h1>
     <p style="font-size: 0.875rem; color: var(--c-muted); margin: 0;">Segnala un avvistamento o sfoglia i mici del quartiere.</p>
   </div>
-  <a routerLink="/cats/new" class="btn-accent btn-lg" style="text-decoration: none; flex-shrink: 0;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Nuova segnalazione
-  </a>
+  @if (authService.isAuthenticated()) {
+    <a routerLink="/cats/new" class="btn-accent btn-lg" style="text-decoration: none; flex-shrink: 0;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nuova segnalazione
+    </a>
+  } @else {
+    <a routerLink="/login" class="btn-primary btn-lg" style="text-decoration: none; flex-shrink: 0;">
+      Accedi per segnalare
+    </a>
+  }
 </div>
 
 <!-- ═══════ LOADING ═══════ -->
@@ -40,17 +46,36 @@
     </svg>
     <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin: 0 0 8px;">Ancora nessuna segnalazione</h3>
     <p style="font-size: 0.875rem; color: var(--c-muted); max-width: 36ch; margin: 0 0 2rem;">Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
-    <a routerLink="/cats/new" class="btn-primary" style="text-decoration: none;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Fai una segnalazione
-    </a>
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/cats/new" class="btn-primary" style="text-decoration: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Fai una segnalazione
+      </a>
+    } @else {
+      <a routerLink="/login" class="btn-primary" style="text-decoration: none;">Accedi per segnalare</a>
+    }
   </div>
 
-<!-- ═══════ GRID ═══════ -->
+<!-- ═══════ MAPPA + GRIGLIA ═══════ -->
 } @else {
+
+  <!-- Mappa interattiva -->
+  @if (catsWithCoords.length > 0) {
+    <div class="card" style="overflow: hidden; margin-bottom: 2rem;">
+
+      <app-map
+        mode="view-all"
+        [cats]="catsWithCoords"
+        height="480px"
+        (catClicked)="onCatClicked($event)">
+      </app-map>
+    </div>
+  }
+
+  <!-- Griglia card -->
   <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
     @for (cat of cats; track cat.id) {
-      <article class="card card-interactive" style="display: flex; flex-direction: column; overflow: hidden;">
+      <article [routerLink]="['/cats', cat.id]" class="card card-interactive" style="display: flex; flex-direction: column; overflow: hidden; cursor: pointer;">
 
         <!-- Immagine -->
         <div style="position: relative; height: 210px; overflow: hidden; background: #0d1322;">
@@ -103,15 +128,6 @@
             </div>
           }
 
-          <hr class="divider">
-
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
-            <span style="font-size: 0.75rem; color: var(--c-subtle);">#{{ cat.id }}</span>
-            <a [routerLink]="['/cats', cat.id]" class="btn-ghost btn-sm" style="text-decoration: none;">
-              Vedi dettagli
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </a>
-          </div>
         </div>
       </article>
     }
