@@ -17,23 +17,23 @@ import { Comment } from '../_services/api/comment.type';
   styleUrl: './cat-detail.component.scss'
 })
 export class CatDetail implements OnInit {
-  private route       = inject(ActivatedRoute);
-  private apiService  = inject(ApiService);
+  private route = inject(ActivatedRoute);
+  private apiService = inject(ApiService);
   private authService = inject(AuthService);
-  private router      = inject(Router);
+  private router = inject(Router);
 
   cat: Cat | null = null;
   comments: Comment[] = [];
-  isLoading    = true;
-  error        = '';
+  isLoading = true;
+  error = '';
 
   // Comment form state
-  newCommentText   = '';
+  newCommentText = '';
   isPostingComment = false;
-  commentError     = '';
+  commentError = '';
 
   // Delete state
-  isDeleting    = false;
+  isDeleting = false;
   confirmDelete = false;
 
   ngOnInit() {
@@ -49,12 +49,12 @@ export class CatDetail implements OnInit {
   loadAll(id: number) {
     this.apiService.getCatById(id).subscribe({
       next: (cat) => {
-        this.cat       = cat;
+        this.cat = cat;
         this.isLoading = false;
         this.loadComments(id);
       },
       error: () => {
-        this.error    = 'Impossibile caricare i dettagli del gatto.';
+        this.error = 'Impossibile caricare i dettagli del gatto.';
         this.isLoading = false;
       }
     });
@@ -112,7 +112,7 @@ export class CatDetail implements OnInit {
     }
 
     this.isPostingComment = true;
-    this.commentError     = '';
+    this.commentError = '';
 
     this.apiService.addComment(this.cat.id, text).subscribe({
       next: (comment) => {
@@ -121,7 +121,7 @@ export class CatDetail implements OnInit {
           UserEmail: this.currentUserEmail,
           createdAt: new Date().toISOString()
         });
-        this.newCommentText   = '';
+        this.newCommentText = '';
         this.isPostingComment = false;
       },
       error: (err) => {

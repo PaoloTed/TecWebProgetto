@@ -56,7 +56,7 @@ export class Profile implements OnInit {
   /** Restituisce la data di iscrizione formattata in testo leggibile */
   getMemberSince(): string {
     if (this.user === null || this.user.createdAt === undefined) {
-      return '—';
+      return '-';
     }
     const d = new Date(this.user.createdAt);
     return d.toLocaleDateString('it-IT', { year: 'numeric', month: 'long', day: 'numeric' });

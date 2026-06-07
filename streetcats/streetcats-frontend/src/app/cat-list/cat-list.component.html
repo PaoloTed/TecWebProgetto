@@ -1,50 +1,48 @@
 <!--  HEADER  -->
-<div class="mb-[30px] flex flex-wrap items-end justify-between gap-5">
+<header class="list-header">
   <div>
-    <h1 class="text-3xl text-white leading-snug m-0 mb-[5px]">
-      <b>Gatti di strada <span class="text-accent">nella tua zona</span></b>
-    </h1>
-    <p class="text-[15px] text-text-secondary m-0">Segnala un avvistamento o sfoglia i mici del quartiere.</p>
+    <h1>Gatti di strada <span>nella tua zona</span></h1>
+    <p>Segnala un avvistamento o sfoglia i mici del quartiere.</p>
   </div>
   @if (authService.isAuthenticated()) {
-    <a routerLink="/cats/new" class="bg-accent hover:bg-accent-hover text-white px-5 py-[15px] text-[15px] font-medium flex items-center justify-center gap-1.2 cursor-pointer transition-opacity shrink-0">
+    <a routerLink="/cats/new" class="btn-accent btn-lg list-action-btn">
       Nuova segnalazione
     </a>
   } @else {
-    <a routerLink="/login" class="bg-primary hover:bg-primary-hover text-white px-5 py-[15px] text-[15px] font-medium flex items-center justify-center gap-1.2 cursor-pointer transition-opacity shrink-0">
+    <a routerLink="/login" class="btn-primary btn-lg list-action-btn">
       Accedi per segnalare
     </a>
   }
-</div>
+</header>
 
 <!--  LOADING  -->
 @if (isLoading) {
-  <div class="flex flex-col items-center justify-center py-[130px] gap-3.5">
-    <div class="w-8 h-8 border-2 border-primary/10 border-t-primary rounded-full animate-spin"></div>
-    <p class="text-[15px] text-text-secondary">Caricamento gatti in corso…</p>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Caricamento gatti in corso…</p>
   </div>
 
 <!--  ERROR  -->
 } @else if (error) {
-  <div class="flex items-start gap-2.5 p-2.5 text-[15px] bg-danger/10 text-[#fda4af] max-w-[580px]">
+  <div class="alert alert-error error-state">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div>
-      <p class="text-[15px] m-0 mb-[2px]"><b>Impossibile caricare i dati</b></p>
-      <p class="text-[10px] opacity-80 m-0">{{ error }}</p>
+      <h3>Impossibile caricare i dati</h3>
+      <p class="error-msg">{{ error }}</p>
     </div>
   </div>
 
 <!--  EMPTY  -->
 } @else if (cats.length === 0) {
-  <div class="bg-background border border-border-subtle text-center py-[100px] px-7.5 flex flex-col items-center">
-    <h3 class="text-xl text-white m-0 mb-2.5"><b>Ancora nessuna segnalazione</b></h3>
-    <p class="text-[15px] text-text-secondary max-w-[36ch] mb-[30px]">Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
+  <div class="card empty-state">
+    <h3>Ancora nessuna segnalazione</h3>
+    <p>Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
     @if (authService.isAuthenticated()) {
-      <a routerLink="/cats/new" class="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 text-[15px] font-medium flex items-center justify-center gap-1.2 cursor-pointer transition-opacity">
+      <a routerLink="/cats/new" class="btn-primary">
         Fai una segnalazione
       </a>
     } @else {
-      <a routerLink="/login" class="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 text-[15px] font-medium flex items-center justify-center gap-1.2 cursor-pointer transition-opacity">Accedi per segnalare</a>
+      <a routerLink="/login" class="btn-primary">Accedi per segnalare</a>
     }
   </div>
 
@@ -53,8 +51,7 @@
 
   <!-- Mappa interattiva -->
   @if (catsWithCoords.length > 0) {
-    <div class="bg-background border border-border-subtle overflow-hidden mb-[30px]">
-
+    <div class="card map-container">
       <app-map
         mode="view-all"
         [cats]="catsWithCoords"
@@ -65,26 +62,26 @@
   }
 
   <!-- Elenco gatti semplificato (senza immagini) -->
-  <div class="flex flex-col gap-3.5">
+  <div class="cats-list">
     @for (cat of cats; track cat.id) {
-      <article [routerLink]="['/cats', cat.id]" class="bg-background border border-border-subtle p-5 cursor-pointer flex flex-col gap-2.5 hover:bg-neutral-800/10 transition-colors">
+      <article [routerLink]="['/cats', cat.id]" class="card card-interactive cat-card">
         
         <!-- Intestazione: Nome e Badge -->
-        <div class="flex justify-between items-center gap-3.5 flex-wrap">
-          <h2 class="text-xl text-white m-0"><b>{{ cat.name }}</b></h2>
+        <header>
+          <h2>{{ cat.name }}</h2>
           
-          <div class="flex gap-1.2 flex-wrap">
+          <div class="badges-row">
             @if (cat.color) {
-              <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold tracking-wider whitespace-nowrap bg-slate-500/8 text-slate-400">{{ cat.color }}</span>
+              <span class="badge badge-slate">{{ cat.color }}</span>
             }
             @if (cat.size) {
-              <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold tracking-wider whitespace-nowrap bg-primary/12 text-[#a78bfa]">{{ cat.size }}</span>
+              <span class="badge badge-purple">{{ cat.size }}</span>
             }
           </div>
-        </div>
+        </header>
 
         <!-- Descrizione -->
-        <p class="text-[15px] text-text-secondary leading-normal m-0">
+        <p>
           {{ cat.description || 'Nessuna descrizione disponibile.' }}
         </p>
 

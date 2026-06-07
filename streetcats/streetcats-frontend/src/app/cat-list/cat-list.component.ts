@@ -13,7 +13,7 @@ import { Cat } from '../_services/api/cat.type';
 })
 export class CatList implements OnInit {
   private apiService = inject(ApiService);
-  private router     = inject(Router);
+  private router = inject(Router);
   public authService = inject(AuthService);
 
   @ViewChild(MapComponent) mapComp?: MapComponent;

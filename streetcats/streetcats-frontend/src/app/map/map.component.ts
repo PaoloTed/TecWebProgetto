@@ -55,8 +55,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   readonly mapId = `sc-map-${Math.random().toString(36).slice(2)}`;
 
   private platformId = inject(PLATFORM_ID);
-  private ngZone     = inject(NgZone);
-  private router     = inject(Router);
+  private ngZone = inject(NgZone);
+  private router = inject(Router);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private map: any = null;
@@ -111,10 +111,10 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     if (this.mode === 'view-one' && this.lat != null && this.lng != null) {
       center = [this.lat, this.lng];
-      zoom   = 15;
+      zoom = 15;
     } else if (this.mode === 'pick' && this.lat != null && this.lng != null) {
       center = [this.lat, this.lng];
-      zoom   = 14;
+      zoom = 14;
     }
 
     // -- Inizializzazione mappa (guida: L.map('id').setView([lat,lng], zoom)) --
@@ -129,7 +129,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     // -- Contenuto in base alla modalità --------------------------------------
     if (this.mode === 'view-all') this._renderCatMarkers();
     if (this.mode === 'view-one') this._renderSingleMarker();
-    if (this.mode === 'pick')     this._setupPickMode();
+    if (this.mode === 'pick') this._setupPickMode();
   }
 
   // -- Marker gatti (come da Quick Start) -----------------------------------

@@ -1,1 +1,116 @@
+.list-header {
+  margin-bottom: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  h1 {
+    font-size: 30px;
+    color: white;
+    line-height: 1.2;
+    margin: 0 0 5px;
+    font-weight: bold;
+    span {
+      color: var(--color-accent);
+    }
+  }
+  p {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+  .list-action-btn {
+    flex-shrink: 0;
+  }
+}
 
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 130px 0;
+  gap: 15px;
+  p {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.error-state {
+  max-width: 580px;
+  h3 {
+    font-size: 15px;
+    margin: 0 0 2px;
+    font-weight: bold;
+  }
+  .error-msg {
+    font-size: 10px;
+    opacity: .8;
+    margin: 0;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 100px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  h3 {
+    font-size: 20px;
+    color: white;
+    margin: 0 0 10px;
+    font-weight: bold;
+  }
+  p {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    max-width: 36ch;
+    margin: 0 0 30px;
+  }
+}
+
+.map-container {
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.cats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cat-card {
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    h2 {
+      font-size: 20px;
+      color: white;
+      margin: 0;
+      font-weight: bold;
+    }
+    .badges-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+  }
+  p {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+}

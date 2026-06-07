@@ -27,20 +27,20 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
   styleUrl: './signup.component.scss'
 })
 export class Signup {
-  private fb          = inject(FormBuilder);
+  private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-  private apiService  = inject(ApiService);
-  private router      = inject(Router);
+  private apiService = inject(ApiService);
+  private router = inject(Router);
 
   form: FormGroup;
-  isLoading   = false;
+  isLoading = false;
   errorMessage = '';
 
   constructor() {
     this.form = this.fb.group({
-      userName:        ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-      email:           ['', [Validators.required, Validators.email]],
-      password:        ['', [Validators.required, Validators.minLength(6)]],
+      userName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, { validators: passwordMatchValidator });
   }

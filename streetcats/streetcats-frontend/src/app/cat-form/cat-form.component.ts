@@ -22,7 +22,7 @@ export class CatForm implements OnInit {
   @ViewChild('descArea') descArea!: ElementRef<HTMLTextAreaElement>;
 
   catForm: FormGroup;
-  isLoading    = false;
+  isLoading = false;
   errorMessage = '';
   showPreview  = false;
   selectedFile: File | null = null;
@@ -87,9 +87,9 @@ export class CatForm implements OnInit {
       description: applyMarkdown(ta, before, after, placeholder)
     });
   }
-  bold()   { this.applyFmt('**', '**', 'testo in grassetto'); }
+  bold() { this.applyFmt('**', '**', 'testo in grassetto'); }
   italic() { this.applyFmt('_', '_', 'testo in corsivo'); }
-  link()   { this.applyFmt('[', '](https://)', 'testo del link'); }
+  link() { this.applyFmt('[', '](https://)', 'testo del link'); }
 
   // -- Posizione dalla mappa -------------------------------------
   onPositionPicked(coords: [number, number]) {

@@ -1,15 +1,15 @@
-<footer class="border-t border-border-subtle bg-background mt-auto">
-  <div class="w-full px-6 py-5 flex items-center justify-between flex-wrap gap-2.5 box-border">
-    <div class="flex items-center gap-2.5 cursor-pointer">
-      <span class="w-[25px] h-[25px] bg-primary inline-flex items-center justify-center">
-        <img src="/gattologo.webp" class="w-full h-full object-contain p-0.5">
+<footer>
+  <div class="footer-container">
+    <div class="footer-logo">
+      <span class="logo-bg">
+        <img src="/gattologo.webp" alt="Logo StreetCats">
       </span>
-      <span class="text-[15px] text-white font-bold">StreetCats</span>
-      <span class="text-text-muted text-[10px]">- Progetto TecWeb 2025</span>
+      <span class="logo-text">StreetCats</span>
+      <span class="project-info">- Progetto TecWeb 2025</span>
     </div>
   </div>
   @if (catFact) {
-    <div class="w-full px-6 py-2.5 border-t border-white/4 text-center text-[10px] text-text-secondary">
+    <div class="cat-fact">
       <strong>Lo sapevi?</strong> <i>{{ catFact }}</i>
     </div>
   }

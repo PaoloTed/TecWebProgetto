@@ -97,7 +97,7 @@ catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res,
   } catch (err) { next(err); }
 });
 
-// DELETE /cats/:id - Elimina gatto (richiede autenticazione + owner/admin)
+// DELETE /cats/:id - Elimina gatto (richiede autenticazione + owner OR admin)
 catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
