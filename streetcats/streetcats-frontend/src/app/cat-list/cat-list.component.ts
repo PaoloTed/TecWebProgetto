@@ -31,23 +31,45 @@ export class CatList implements OnInit {
     this.apiService.getCats().subscribe({
       next: (data) => {
         this.cats = data;
+        
         // Calcola e salva l'array una sola volta, per evitare che la mappa 
         // si resetti ad ogni ciclo di change detection di Angular
-        this.catsWithCoords = this.cats
-          .filter(c => c.latitude != null && c.longitude != null)
-          .map(c => ({
-            id: c.id,
-            name: c.name,
-            latitude: c.latitude as number,
-            longitude: c.longitude as number,
-            color: c.color ?? undefined,
-            photoUrl: c.photoUrl ?? undefined
-          }));
+        const validCats: MapCat[] = [];
+        for (let i = 0; i < this.cats.length; i++) {
+          const c = this.cats[i];
+          if (c.latitude !== null && c.longitude !== null) {
+            let catColor: string | undefined = undefined;
+            if (c.color !== null) {
+              catColor = c.color;
+            }
+            let catPhotoUrl: string | undefined = undefined;
+            if (c.photoUrl !== null) {
+              catPhotoUrl = c.photoUrl;
+            }
+            validCats.push({
+              id: c.id,
+              name: c.name,
+              latitude: c.latitude,
+              longitude: c.longitude,
+              color: catColor,
+              photoUrl: catPhotoUrl
+            });
+          }
+        }
+        this.catsWithCoords = validCats;
         
         this.isLoading = false;
         // Dopo che @if(catsWithCoords) renderizza la mappa, chiama refresh()
-        setTimeout(() => this.mapComp?.refresh(), 0);
-        setTimeout(() => this.mapComp?.refresh(), 400);
+        setTimeout(() => {
+          if (this.mapComp !== undefined) {
+            this.mapComp.refresh();
+          }
+        }, 0);
+        setTimeout(() => {
+          if (this.mapComp !== undefined) {
+            this.mapComp.refresh();
+          }
+        }, 400);
       },
       error: () => {
         this.error = 'Errore nel caricamento dei gatti.';

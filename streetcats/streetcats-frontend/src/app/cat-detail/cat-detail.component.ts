@@ -67,20 +67,49 @@ export class CatDetail implements OnInit {
     });
   }
 
-  get isAuthenticated()  { return this.authService.isAuthenticated(); }
-  get currentUserEmail() { return this.authService.currentUser()?.email; }
+  get isAuthenticated() {
+    if (this.authService.isAuthenticated()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  get currentUserEmail() {
+    const u = this.authService.currentUser();
+    if (u !== null) {
+      return u.email;
+    } else {
+      return '';
+    }
+  }
 
   get isOwnerOrAdmin() {
-    if (!this.cat) return false;
+    if (this.cat === null) {
+      return false;
+    }
     const u = this.authService.currentUser();
-    return u && (u.email === this.cat.UserEmail || u.role === 'admin');
+    if (u === null) {
+      return false;
+    }
+    if (u.email === this.cat.UserEmail) {
+      return true;
+    }
+    if (u.role === 'admin') {
+      return true;
+    }
+    return false;
   }
 
   // Invio commento 
   submitComment() {
-    if (!this.cat) return;
+    if (this.cat === null) {
+      return;
+    }
     const text = this.newCommentText.trim();
-    if (!text || this.isPostingComment) return;
+    if (text === '' || this.isPostingComment) {
+      return;
+    }
 
     this.isPostingComment = true;
     this.commentError     = '';
@@ -89,14 +118,18 @@ export class CatDetail implements OnInit {
       next: (comment) => {
         this.comments.unshift({
           ...comment,
-          UserEmail: this.currentUserEmail || '',
+          UserEmail: this.currentUserEmail,
           createdAt: new Date().toISOString()
         });
         this.newCommentText   = '';
         this.isPostingComment = false;
       },
       error: (err) => {
-        this.commentError     = err.error?.error || 'Errore durante l\'invio del commento.';
+        if (err.error && err.error.error) {
+          this.commentError = err.error.error;
+        } else {
+          this.commentError = 'Errore durante l\'invio del commento.';
+        }
         this.isPostingComment = false;
       }
     });
@@ -104,31 +137,54 @@ export class CatDetail implements OnInit {
 
   // Eliminazione gatto 
   deleteCat() {
-    if (!this.cat) return;
+    if (this.cat === null) {
+      return;
+    }
     this.isDeleting = true;
     this.apiService.deleteCat(this.cat.id).subscribe({
-      next: () => this.router.navigate(['/cats']),
-      error: () => { this.isDeleting = false; }
+      next: () => {
+        this.router.navigate(['/cats']);
+      },
+      error: () => {
+        this.isDeleting = false;
+      }
     });
   }
 
   //  Eliminazione commento 
   canDeleteComment(comment: Comment): boolean {
-    if (!this.isAuthenticated) return false;
+    if (this.isAuthenticated === false) {
+      return false;
+    }
     const u = this.authService.currentUser();
-    if (!u) return false;
-    return u.email === comment.UserEmail || u.role === 'admin';
+    if (u === null) {
+      return false;
+    }
+    if (u.email === comment.UserEmail) {
+      return true;
+    }
+    if (u.role === 'admin') {
+      return true;
+    }
+    return false;
   }
 
   deleteComment(comment: Comment) {
-    if (!this.cat) return;
+    if (this.cat === null) {
+      return;
+    }
     this.apiService.deleteComment(this.cat.id, comment.id).subscribe({
       next: () => {
         this.comments = this.comments.filter(c => c.id !== comment.id);
       },
       error: (err) => {
-        this.commentError = err.error?.error || 'Impossibile eliminare il commento.';
+        if (err.error && err.error.error) {
+          this.commentError = err.error.error;
+        } else {
+          this.commentError = 'Impossibile eliminare il commento.';
+        }
       }
     });
   }
 }
+

@@ -11,37 +11,50 @@ catRouter.get("/cats", async (req, res, next) => {
   try {
     const cats = await CatController.getAllCats();
     res.json(cats);
-  } catch (err) { next(err); }
+  } catch (err) {
+    next(err);
+  }
 });
 
 // GET /cats/:id - Dettaglio singolo gatto
 catRouter.get("/cats/:id", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
-    if (cat) res.json(cat);
-    else next({ status: 404, message: "Gatto non trovato" });
-  } catch (err) { next(err); }
+    if (cat !== null) {
+      res.json(cat);
+    } else {
+      next({ status: 404, message: "Gatto non trovato" });
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
 // GET /cats/:id/comments - Commenti di un gatto
 catRouter.get("/cats/:id/comments", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
-    if (!cat) return next({ status: 404, message: "Gatto non trovato" });
+    if (cat === null) {
+      return next({ status: 404, message: "Gatto non trovato" });
+    }
     const comments = await CommentController.getCommentsByCat(req.params.id);
     res.json(comments);
-  } catch (err) { next(err); }
+  } catch (err) {
+    next(err);
+  }
 });
 
 
 // POST /cats - Crea nuovo gatto (richiede autenticazione)
 catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
-    const { name, description, color, size, address, latitude, longitude } = req.body;
-    if (!name) return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
+    const { name, description, color, size, latitude, longitude } = req.body;
+    if (name === undefined || name === null || name === "") {
+      return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
+    }
     
     let photoUrl = req.body.photoUrl;
-    if (req.file) {
+    if (req.file !== undefined && req.file !== null) {
       photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
     }
 
@@ -52,7 +65,6 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
         color, 
         size, 
         photoUrl, 
-        address, 
         latitude, 
         longitude 
       },
@@ -66,7 +78,9 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
 catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
-    if (!cat) return next({ status: 404, message: "Gatto non trovato" });
+    if (cat === null) {
+      return next({ status: 404, message: "Gatto non trovato" });
+    }
     if (cat.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per modificare questo gatto" });
     }
@@ -87,7 +101,9 @@ catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res,
 catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
-    if (!cat) return next({ status: 404, message: "Gatto non trovato" });
+    if (cat === null) {
+      return next({ status: 404, message: "Gatto non trovato" });
+    }
     if (cat.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per eliminare questo gatto" });
     }
@@ -101,7 +117,7 @@ catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
 catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   try {
     const { text } = req.body;
-    if (!text || text.trim().length === 0) {
+    if (text === undefined || text === null || text.trim().length === 0) {
       return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
     }
     if (text.length > 2000) {
@@ -119,11 +135,15 @@ catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
 catRouter.delete("/cats/:catId/comments/:commentId", requireAuth, async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.commentId);
-    if (!comment) return next({ status: 404, message: "Commento non trovato" });
+    if (comment === null) {
+      return next({ status: 404, message: "Commento non trovato" });
+    }
     if (comment.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per eliminare questo commento" });
     }
     await CommentController.deleteComment(req.params.commentId);
     res.json({ message: "Commento eliminato con successo" });
-  } catch (err) { next(err); }
+  } catch (err) {
+    next(err);
+  }
 });

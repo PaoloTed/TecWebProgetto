@@ -5,10 +5,15 @@ import { createModel as createCommentModel } from "./Comment.js";
 
 import 'dotenv/config.js'; // Legge il file .env e rende disponibili le variabili in process.env
 
+let dbStorage = './database.sqlite';
+if (process.env.DB_CONNECTION_URI !== undefined && process.env.DB_CONNECTION_URI !== null && process.env.DB_CONNECTION_URI !== "") {
+  dbStorage = process.env.DB_CONNECTION_URI;
+}
+
 // Configurazione del database SQLite 
 export const database = new Sequelize({
   dialect: 'sqlite',
-  storage: process.env.DB_CONNECTION_URI || './database.sqlite',
+  storage: dbStorage,
   logging: false
 });
 

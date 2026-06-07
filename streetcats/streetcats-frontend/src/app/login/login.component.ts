@@ -28,7 +28,9 @@ export class Login {
   }
 
   onSubmit() {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      return;
+    }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -40,7 +42,11 @@ export class Login {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.error || 'Errore durante il login';
+        if (err.error && err.error.error) {
+          this.errorMessage = err.error.error;
+        } else {
+          this.errorMessage = 'Errore durante il login';
+        }
       }
     });
   }

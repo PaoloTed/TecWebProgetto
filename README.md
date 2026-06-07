@@ -2,7 +2,7 @@
 
 Questa repository contiene tutto il materiale, gli esercizi e i progetti relativi al corso di **Tecnologie Web** del terzo anno d'università.
 
-## 📂 Struttura della Repository
+## Struttura della Repository
 
 La repository è organizzata nelle seguenti cartelle principali:
 

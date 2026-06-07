@@ -1,16 +1,16 @@
 <!-- Loading -->
 @if (isLoading) {
-  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 130px 0; gap: 15px;">
-    <div class="spinner"></div>
-    <p style="font-size: 15px; color: var(--color-text-secondary);">Caricamento scheda gatto…</p>
+  <div class="flex flex-col items-center justify-center py-[130px] gap-3.5">
+    <div class="w-8 h-8 border-2 border-primary/10 border-t-primary rounded-full animate-spin"></div>
+    <p class="text-[15px] text-text-secondary">Caricamento scheda gatto…</p>
   </div>
 
 <!-- Error -->
 } @else if (error) {
-  <div class="alert alert-error" style="max-width: 580px;">
+  <div class="flex items-start gap-2.5 p-2.5 text-[15px] bg-danger/10 text-[#fda4af] max-w-[580px]">
     <div>
-      <p style="font-size: 15px; margin: 2px;"><b>Gatto non trovato</b></p>
-      <p style="font-size: 10px; opacity: .8;;">{{ error }}</p>
+      <p class="text-[15px] m-0.5"><b>Gatto non trovato</b></p>
+      <p class="text-[10px] opacity-80">{{ error }}</p>
     </div>
   </div>
 
@@ -18,66 +18,66 @@
 } @else if (cat) {
 
   <!-- CARD -->
-  <div style="display: flex; flex-direction: column; gap: 25px; margin-bottom: 40px; width: 100%;">
+  <div class="flex flex-col gap-6 mb-10 w-full">
 
     <!-- Layout a tre colonne per Nome/Descrizione, Mappa e Foto -->
-    <div class="detail-three-columns">
+    <div class="flex flex-col gap-6 w-full lg:flex-row lg:items-stretch lg:gap-6">
       
       <!-- Colonna 1: Nome, Badges, Descrizione -->
-      <div class="column-info">
+      <div class="flex-1 flex flex-col gap-6 min-w-0">
         
         <!-- Intestazione -->
-        <div style="margin-bottom: 10px;">
-          <h1 style="font-size: 35px; color: white; margin: 10px;"><b>{{ cat.name }}</b></h1>
+        <div class="mb-2.5">
+          <h1 class="text-4xl text-white m-2.5"><b>{{ cat.name }}</b></h1>
           
           <!-- Badges attributi -->
-          <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-            <span class="badge badge-slate">Colore: {{ cat.color }}</span>
-            <span class="badge badge-purple">Taglia: {{ cat.size }}</span>
-            <span style="font-size: 10px; color: var(--color-text-muted);">
+          <div class="flex gap-2.5 flex-wrap items-center">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold tracking-wider whitespace-nowrap bg-slate-500/8 text-slate-400">Colore: {{ cat.color }}</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold tracking-wider whitespace-nowrap bg-primary/12 text-[#a78bfa]">Taglia: {{ cat.size }}</span>
+            <span class="text-[10px] text-text-muted">
               Segnalato da {{ cat.UserEmail }}
             </span>
           </div>
         </div>
 
         <!-- Descrizione -->
-          <div class="card" style="padding: 25px; width: 100%;">
-            <h2 style="font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; margin: 5px; letter-spacing: 0.05em;"><b>Descrizione</b></h2>
-            <div class="md-body" [innerHTML]="cat.description | markdown"></div>
-          </div>
+        <div class="bg-background border border-border-subtle p-6 w-full">
+          <h2 class="text-[10px] text-text-secondary uppercase m-1.2 tracking-wider"><b>Descrizione</b></h2>
+          <div class="text-[15px] leading-relaxed text-text-secondary break-words md-body" [innerHTML]="cat.description | markdown"></div>
+        </div>
       </div>
 
       <!-- Colonna 2: Mappa  -->
-        <div class="column-map card" style="padding: 25px;">
-          <h2 style="font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; margin: 10px; letter-spacing: 0.05em;"><b>Ultima Posizione</b></h2>
-          <app-map
-            mode="view-one"
-            [lat]="cat.latitude"
-            [lng]="cat.longitude"
-            style="overflow: hidden; display: block; margin-bottom: 10px;">
-          </app-map>
-          <p style="font-size: 10px; color: var(--color-text-muted);">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{ cat.longitude | number:'1.4-4' }}</p>
-        </div>
+      <div class="w-full max-w-[500px] shrink-0 flex flex-col box-border lg:w-80 lg:h-full xl:w-[500px] xl:h-full bg-background border border-border-subtle p-6">
+        <h2 class="text-[10px] text-text-secondary uppercase m-2.5 tracking-wider"><b>Ultima Posizione</b></h2>
+        <app-map
+          mode="view-one"
+          [lat]="cat.latitude"
+          [lng]="cat.longitude"
+          class="overflow-hidden block mb-2.5 w-full! h-[450px]! grow lg:max-xl:h-[270px]!">
+        </app-map>
+        <p class="text-[10px] text-text-muted">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{ cat.longitude | number:'1.4-4' }}</p>
+      </div>
     
 
       <!-- Colonna 3: Immagine  -->
-        <div class="column-photo card" style="padding: 25px;">
-          <h2 style="font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; margin: 10px; letter-spacing: 0.05em;"><b>Foto</b></h2>
-          <div class="cat-img-container">
-            <img [src]="cat.photoUrl">
-          </div>
+      <div class="w-full max-w-[500px] shrink-0 flex flex-col box-border lg:w-80 lg:h-full xl:w-[500px] xl:h-full bg-background border border-border-subtle p-6">
+        <h2 class="text-[10px] text-text-secondary uppercase m-2.5 tracking-wider"><b>Foto</b></h2>
+        <div class="overflow-hidden bg-[#0d1322] w-full h-[450px] grow lg:max-xl:h-[270px]">
+          <img [src]="cat.photoUrl" class="w-full h-full object-cover block">
         </div>
+      </div>
 
     </div>
 
     <!-- Azioni proprietario/admin -->
     @if (isOwnerOrAdmin) {
-      <div style="display: flex; justify-content: flex-start; margin-top: 10px; width: 100%;">
-        <div style="display: flex; gap: 10px;">
-          <a [routerLink]="['/cats', cat.id, 'edit']" class="btn-ghost" style="padding: 5px; font-size: 15px;">
+      <div class="flex justify-start mt-2.5 w-full">
+        <div class="flex gap-2.5">
+          <a [routerLink]="['/cats', cat.id, 'edit']" class="bg-white/5 hover:bg-white/10 text-text-main px-4 py-2.5 text-[15px] font-medium flex items-center justify-center gap-1.2 cursor-pointer transition-opacity">
             Modifica
           </a>
-          <button type="button" (click)="deleteCat()" class="btn-danger-ghost btn-sm">
+          <button type="button" (click)="deleteCat()" class="bg-danger/10 text-danger hover:opacity-90 transition-opacity px-[15px] py-2.5 text-[10px] font-medium flex items-center justify-center gap-1.2 cursor-pointer">
             Elimina
           </button>
         </div>
@@ -88,26 +88,25 @@
 
   <!-- COMMENTI -->
   <div>
-    <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 25px;">
-      <h2 style="font-size: 20px; color: white; margin: 0;"><b>Commenti e avvistamenti</b></h2>
-      <span style="font-size: 10px; color: var(--color-text-muted);">{{ comments.length }}</span>
+    <div class="flex items-baseline gap-2.5 mb-6">
+      <h2 class="text-xl text-white m-0"><b>Commenti e avvistamenti</b></h2>
+      <span class="text-[10px] text-text-muted">{{ comments.length }}</span>
     </div>
 
     <!-- Form nuovo commento  -->
     @if (isAuthenticated) {
-      <div class="card" style="padding: 20px; margin-bottom: 25px;">
-        <div style="display: flex; gap: 10px; align-items: flex-start;">
+      <div class="bg-background border border-border-subtle p-5 mb-6">
+        <div class="flex gap-2.5 items-start">
 
-          <div style="flex: 1; min-width: 0;">
+          <div class="flex-1 min-w-0">
             <textarea [(ngModel)]="newCommentText"
                       placeholder="Hai avvistato questo gatto? Lascia un commento..."
                       rows="4"
-                      class="input"
-                      style="resize: none;"
+                      class="block w-full bg-background border border-border-subtle p-2.5 text-[15px] text-text-main outline-none focus:ring-2 focus:ring-primary resize-none"
                       [disabled]="isPostingComment"></textarea>
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
-              <button type="button" (click)="submitComment()" class="btn-primary btn-sm">
+            <div class="flex justify-end mt-2.5">
+              <button type="button" (click)="submitComment()" class="bg-primary hover:bg-primary-hover text-white px-[15px] py-2.5 text-[10px] font-medium flex items-center justify-center gap-1.2 cursor-pointer transition-opacity">
                 Pubblica commento
               </button>
             </div>
@@ -116,36 +115,37 @@
       </div>
 
     } @else {
-      <div class="card" style="padding: 20px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Accedi per lasciare un commento o un avvistamento.</p>
-        <a routerLink="/login" class="btn-primary btn-sm">Accedi</a>
+      <div class="bg-background border border-border-subtle p-5 mb-6 flex items-center justify-between flex-wrap gap-2.5">
+        <p class="text-[15px] text-text-secondary m-0">Accedi per lasciare un commento o un avvistamento.</p>
+        <a routerLink="/login" class="bg-primary hover:bg-primary-hover text-white px-[15px] py-2.5 text-[10px] font-medium flex items-center justify-center gap-1.2 cursor-pointer transition-opacity">Accedi</a>
       </div>
     }
 
     <!-- Lista commenti -->
     @if (comments.length === 0) {
-      <div class="card" style="padding: 50px 30px; text-align: center;">
-        <p style="font-size: 15px; color: white; margin: 0 0 4px;"><b>Ancora nessun commento</b></p>
-        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Sii il primo a condividere un avvistamento!</p>
+      <div class="bg-background border border-border-subtle py-[50px] px-7.5 text-center">
+        <p class="text-[15px] text-white m-0 mb-1"><b>Ancora nessun commento</b></p>
+        <p class="text-[15px] text-text-secondary m-0">Sii il primo a condividere un avvistamento!</p>
       </div>
     } @else {
-      <div style="display: flex; flex-direction: column; gap: 10px;">
+      <div class="flex flex-col gap-2.5">
         @for (comment of comments; track comment.id) {
-          <div class="card" style="padding: 20px; display: flex; gap: 10px;">
+          <div class="bg-background border border-border-subtle p-5 flex gap-2.5">
 
-            <div style="flex: 1; min-width: 0;">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 5px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                  <span style="font-size: 15px; color: white; word-break: break-all;"><b>{{ comment.UserEmail }}</b></span>
-                  <span style="font-size: 10px; color: var(--color-text-muted); flex-shrink: 0;">{{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2.5 mb-1.2 flex-wrap">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <span class="text-[15px] text-white break-all"><b>{{ comment.UserEmail }}</b></span>
+                  <span class="text-[10px] text-text-muted shrink-0">{{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}</span>
                 </div>
                 @if (canDeleteComment(comment)) {
                   <button type="button" (click)="deleteComment(comment)" title="Elimina commento"
-                          style="background: transparent; border: none; cursor: pointer; color: var(--color-text-muted); padding: 4px; display: flex; align-items: center; flex-shrink: 0;">
+                          class="bg-transparent border-none cursor-pointer text-text-muted hover:text-danger p-1 flex items-center shrink-0 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                   </button>
                 }
               </div>
-              <p style="font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); margin: 0; white-space: pre-wrap;">{{ comment.text }}</p>
+              <p class="text-[15px] leading-normal text-text-secondary m-0 whitespace-pre-wrap">{{ comment.text }}</p>
             </div>
           </div>
         }

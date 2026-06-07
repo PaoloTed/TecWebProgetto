@@ -6,9 +6,18 @@ import { ApiService } from '../_services/api/api.service';
 
 /** Validatore custom: verifica che password e conferma corrispondano */
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const pw  = group.get('password')?.value;
-  const cpw = group.get('confirmPassword')?.value;
-  return pw && cpw && pw !== cpw ? { passwordMismatch: true } : null;
+  const passwordControl = group.get('password');
+  const confirmPasswordControl = group.get('confirmPassword');
+  if (passwordControl === null || confirmPasswordControl === null) {
+    return null;
+  }
+  const pw = passwordControl.value;
+  const cpw = confirmPasswordControl.value;
+  if (pw && cpw && pw !== cpw) {
+    return { passwordMismatch: true };
+  } else {
+    return null;
+  }
 }
 
 @Component({
@@ -37,11 +46,21 @@ export class Signup {
   }
 
   get pwMismatch() {
-    return this.form.hasError('passwordMismatch') && this.form.get('confirmPassword')?.touched;
+    const confirmPasswordControl = this.form.get('confirmPassword');
+    if (confirmPasswordControl === null) {
+      return false;
+    }
+    if (this.form.hasError('passwordMismatch') && confirmPasswordControl.touched) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      return;
+    }
     this.isLoading   = true;
     this.errorMessage = '';
 
@@ -52,7 +71,11 @@ export class Signup {
         this.router.navigate(['/cats']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.error || 'Errore durante la registrazione.';
+        if (err.error && err.error.error) {
+          this.errorMessage = err.error.error;
+        } else {
+          this.errorMessage = 'Errore durante la registrazione.';
+        }
         this.isLoading = false;
       }
     });

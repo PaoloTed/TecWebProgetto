@@ -32,10 +32,6 @@ export function createModel(database) {
       allowNull: true
     },
     // Campi per la posizione
-    address: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
     latitude: {
       type: DataTypes.FLOAT,
       allowNull: true,

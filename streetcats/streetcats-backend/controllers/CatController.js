@@ -1,6 +1,6 @@
 import { Cat } from "../models/Database.js";
 
-// Controller per la gestione dei gatti (operazioni di inserimento, lettura, modifica ed eliminazione)
+// Controller per la gestione dei gatti CRUD
 export class CatController {
 
   // Ottiene tutti i gatti ordinati per i più recenti
@@ -31,7 +31,6 @@ export class CatController {
       color: catData.color,
       size: catData.size,
       photoUrl: catData.photoUrl,
-      address: catData.address,
       latitude: catData.latitude,
       longitude: catData.longitude,
       UserEmail: email
@@ -42,7 +41,9 @@ export class CatController {
   // Aggiorna i dati di un gatto esistente
   static async updateCat(id, updatedData) {
     const cat = await Cat.findByPk(id);
-    if (!cat) return null;
+    if (cat === null) {
+      return null;
+    }
 
     cat.set(updatedData);
     return cat.save();
@@ -51,7 +52,9 @@ export class CatController {
   // Elimina un gatto dal database
   static async deleteCat(id) {
     const cat = await Cat.findByPk(id);
-    if (!cat) return null;
+    if (cat === null) {
+      return null;
+    }
 
     await cat.destroy();
     return cat;

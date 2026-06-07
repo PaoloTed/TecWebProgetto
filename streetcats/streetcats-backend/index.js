@@ -10,7 +10,10 @@ import { catRouter } from "./routes/catRouter.js";
 import { commentRouter } from "./routes/commentRouter.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+let PORT = 3000;
+if (process.env.PORT !== undefined && process.env.PORT !== null && process.env.PORT !== "") {
+  PORT = process.env.PORT;
+}
 
 app.use(morgan('dev'));
 app.use(cors());
@@ -40,9 +43,17 @@ app.use(commentRouter);
 // Gestione errori globale
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(err.status || 500).json({
-    code: err.status || 500,
-    description: err.message || "An error occurred"
+  let status = 500;
+  if (err.status !== undefined && err.status !== null) {
+    status = err.status;
+  }
+  let message = "An error occurred";
+  if (err.message !== undefined && err.message !== null && err.message !== "") {
+    message = err.message;
+  }
+  res.status(status).json({
+    code: status,
+    description: message
   });
 });
 

@@ -4,7 +4,7 @@ import fs from 'fs';
 
 // Controllo che la cartella esista
 const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-if (!fs.existsSync(uploadDir)) {
+if (fs.existsSync(uploadDir) === false) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 

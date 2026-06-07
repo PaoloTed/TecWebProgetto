@@ -1,58 +1,58 @@
 <!-- Page header -->
-<div style="margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 25px; flex-wrap: wrap;">
+<div class="mb-[30px] flex items-center justify-between gap-6 flex-wrap">
   <div>
-    <h1 style="font-size: 30px; color: white; margin: 0 0 5px;">
+    <h1 class="text-3xl text-white m-0 mb-[5px]">
       <b>{{ user?.userName || 'Profilo' }}</b>
     </h1>
     @if (user) {
-      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--color-text-secondary);">
+      <div class="flex items-center gap-2.5 flex-wrap text-[15px] text-text-secondary">
         <span>{{ user.email }}</span>
-        <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--color-text-muted); display: inline-block;"></span>
+        <span class="w-1 h-1 rounded-full bg-text-muted inline-block"></span>
         <span>{{ user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
-        <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--color-text-muted); display: inline-block;"></span>
+        <span class="w-1 h-1 rounded-full bg-text-muted inline-block"></span>
         <span>Membro dal {{ getMemberSince() }}</span>
       </div>
     }
   </div>
   @if (user) {
-    <button (click)="logout()" class="btn-danger-ghost btn-sm">
+    <button (click)="logout()" class="bg-danger/10 text-danger hover:opacity-90 transition-opacity px-[15px] py-2.5 text-[10px] font-medium flex items-center justify-center gap-1.2 cursor-pointer">
       Disconnetti
     </button>
   }
 </div>
 
 @if (isLoading) {
-  <div style="display: flex; align-items: center; justify-content: center; padding: 100px 0;">
-    <div class="spinner"></div>
+  <div class="flex items-center justify-center py-25">
+    <div class="w-8 h-8 border-2 border-primary/10 border-t-primary rounded-full animate-spin"></div>
   </div>
 
 } @else if (error) {
-  <div class="alert alert-error" style="max-width: 580px;">{{ error }}</div>
+  <div class="flex items-start gap-2.5 p-2.5 text-[15px] bg-danger/10 text-[#fda4af] max-w-[580px]">{{ error }}</div>
 
 } @else if (user) {
-  <div style="display: flex; flex-direction: column; gap: 30px; max-width: 770px;">
+  <div class="flex flex-col gap-7.5 max-w-[770px]">
 
     <!-- Segnalazioni -->
     <div>
-      <h2 style="font-size: 20px; color: white; margin: 0 0 15px;">
+      <h2 class="text-xl text-white m-0 mb-3.5">
         <b>Le mie segnalazioni ({{ user.stats?.cats ?? 0 }})</b>
       </h2>
       
       @if (!user.recentCats || user.recentCats.length === 0) {
-        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Non hai ancora fatto nessuna segnalazione.</p>
+        <p class="text-[15px] text-text-secondary m-0">Non hai ancora fatto nessuna segnalazione.</p>
       } @else {
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="flex flex-col gap-2.5">
           @for (cat of user.recentCats; track cat.id) {
-            <a [routerLink]="['/cats', cat.id]" class="card" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; cursor: pointer;">
-              <div style="min-width: 0;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
-                  <span style="font-size: 15px; color: white;"><b>{{ cat.name }}</b></span>
+            <a [routerLink]="['/cats', cat.id]" class="bg-background border border-border-subtle p-3.5 flex justify-between items-center gap-3.5 cursor-pointer hover:bg-neutral-800/10 transition-colors">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2.5 mb-1 flex-wrap">
+                  <span class="text-[15px] text-white"><b>{{ cat.name }}</b></span>
                   @if (cat.color) {
-                    <span class="badge badge-slate">{{ cat.color }}</span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold tracking-wider whitespace-nowrap bg-slate-500/8 text-slate-400">{{ cat.color }}</span>
                   }
                 </div>
               </div>
-              <span style="font-size: 10px; color: var(--color-text-muted); flex-shrink: 0;">
+              <span class="text-[10px] text-text-muted shrink-0">
                 {{ cat.createdAt | date:'d MMM yyyy' }}
               </span>
             </a>
@@ -63,27 +63,27 @@
 
     <!-- Commenti -->
     <div>
-      <h2 style="font-size: 20px; color: white; margin: 0 0 15px;">
+      <h2 class="text-xl text-white m-0 mb-3.5">
         <b>I miei commenti recenti ({{ user.stats?.comments ?? 0 }})</b>
       </h2>
 
       @if (!user.recentComments || user.recentComments.length === 0) {
-        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Non hai ancora lasciato nessun commento.</p>
+        <p class="text-[15px] text-text-secondary m-0">Non hai ancora lasciato nessun commento.</p>
       } @else {
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="flex flex-col gap-2.5">
           @for (comment of user.recentComments; track comment.id) {
-            <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="card" style="padding: 15px; display: flex; flex-direction: column; gap: 5px; cursor: pointer;">
-              <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="bg-background border border-border-subtle p-3.5 flex flex-col gap-1.2 cursor-pointer hover:bg-neutral-800/10 transition-colors">
+              <div class="flex justify-between items-center gap-3.5 flex-wrap">
                 @if (comment.cat) {
-                  <span style="font-size: 10px; color: var(--color-primary);">
-                    <b>{{ comment.cat.name }}</b>
+                  <span class="text-[10px] text-primary font-bold">
+                    {{ comment.cat.name }}
                   </span>
                 }
-                <span style="font-size: 10px; color: var(--color-text-muted);">
+                <span class="text-[10px] text-text-muted">
                   {{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}
                 </span>
               </div>
-              <p style="font-size: 15px; color: var(--color-text-secondary)">
+              <p class="text-[15px] text-text-secondary">
                 {{ comment.text }}
               </p>
             </a>
@@ -94,4 +94,3 @@
 
   </div>
 }
-

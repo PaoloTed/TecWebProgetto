@@ -1,6 +1,6 @@
 import { Comment, Cat, User } from "../models/Database.js";
 
-// Controller per la gestione dei commenti (inserimento, lettura, modifica ed eliminazione)
+// Controller per la gestione dei commenti CRUD
 export class CommentController {
 
   // Ottiene tutti i commenti associati ad un gatto specifico (include lo username dell'autore)
@@ -35,7 +35,7 @@ export class CommentController {
   // Crea e salva un nuovo commento per un gatto
   static async createComment(commentData, catId, email) {
     const cat = await Cat.findByPk(catId);
-    if (!cat) {
+    if (cat === null) {
       throw new Error('Gatto non trovato');
     }
 
@@ -50,7 +50,9 @@ export class CommentController {
   // Aggiorna il testo di un commento esistente
   static async updateComment(id, updatedData) {
     const comment = await Comment.findByPk(id);
-    if (!comment) return null;
+    if (comment === null) {
+      return null;
+    }
 
     comment.set({ text: updatedData.text });
     return comment.save();
@@ -59,7 +61,9 @@ export class CommentController {
   // Elimina un commento dal database
   static async deleteComment(id) {
     const comment = await Comment.findByPk(id);
-    if (!comment) return null;
+    if (comment === null) {
+      return null;
+    }
 
     await comment.destroy();
     return comment;

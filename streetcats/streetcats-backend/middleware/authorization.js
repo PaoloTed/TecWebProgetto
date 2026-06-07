@@ -3,9 +3,15 @@ import { AuthController } from "../controllers/AuthController.js";
 // Middleware per verificare il token JWT (inserisce email e ruolo dell'utente loggato nell'oggetto request)
 export function requireAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader?.split(' ')[1]; // Formato: "Bearer <token>"
+  let token = null;
+  if (authHeader !== undefined && authHeader !== null) {
+    const parts = authHeader.split(' ');
+    if (parts.length > 1) {
+      token = parts[1];
+    }
+  }
 
-  if (!token) {
+  if (token === null) {
     return next({
       status: 401,
       message: "Unauthorized: Token non fornito"

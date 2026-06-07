@@ -1,16 +1,13 @@
-/**
- * Inserisce formattazione Markdown attorno al testo selezionato
- * in una textarea, o aggiunge un template se nulla è selezionato.
- */
+//Inserisce formattazione Markdown attorno al testo selezionato
 export function applyMarkdown(
   textarea: HTMLTextAreaElement,
   before: string,
   after: string,
   placeholder = ''
 ): string {
-  const start  = textarea.selectionStart;
-  const end    = textarea.selectionEnd;
-  const value  = textarea.value;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
   const selected = value.substring(start, end) || placeholder;
   const replacement = `${before}${selected}${after}`;
 

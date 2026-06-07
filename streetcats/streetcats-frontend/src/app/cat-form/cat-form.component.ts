@@ -46,9 +46,9 @@ export class CatForm implements OnInit {
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
+    if (idParam !== null) {
       this.isEditMode = true;
-      this.catId = +idParam;
+      this.catId = Number(idParam);
       this.loadCatData(this.catId);
     }
   }
@@ -65,7 +65,7 @@ export class CatForm implements OnInit {
         });
         this.pickedLat = cat.latitude;
         this.pickedLng = cat.longitude;
-        if (cat.photoUrl) {
+        if (cat.photoUrl !== null) {
           this.previewUrl = cat.photoUrl;
         }
         this.isLoading = false;
@@ -79,8 +79,10 @@ export class CatForm implements OnInit {
 
   // -- Toolbar Markdown -----------------------------------------
   applyFmt(before: string, after: string, placeholder: string) {
-    const ta = this.descArea?.nativeElement;
-    if (!ta) return;
+    if (this.descArea === undefined || this.descArea.nativeElement === undefined) {
+      return;
+    }
+    const ta = this.descArea.nativeElement;
     this.catForm.patchValue({
       description: applyMarkdown(ta, before, after, placeholder)
     });
@@ -97,8 +99,9 @@ export class CatForm implements OnInit {
 
   // -- Selezione Immagine --------------------------------------
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
       this.selectedFile = file;
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -109,7 +112,9 @@ export class CatForm implements OnInit {
   }
 
   onSubmit() {
-    if (this.catForm.invalid) return;
+    if (this.catForm.invalid) {
+      return;
+    }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -118,20 +123,32 @@ export class CatForm implements OnInit {
     
     // Aggiungi tutti i campi testo
     const formVals = this.catForm.value;
-    Object.keys(formVals).forEach(key => {
-      if (formVals[key] !== null && formVals[key] !== undefined) {
-        formData.append(key, formVals[key]);
+    const keys = Object.keys(formVals);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const val = formVals[key];
+      if (val !== null && val !== undefined) {
+        formData.append(key, val);
       }
-    });
+    }
 
-    formData.append('latitude', String(this.pickedLat ?? 45.0));
-    formData.append('longitude', String(this.pickedLng ?? 9.0));
+    let lat = 45.0;
+    if (this.pickedLat !== null) {
+      lat = this.pickedLat;
+    }
+    let lng = 9.0;
+    if (this.pickedLng !== null) {
+      lng = this.pickedLng;
+    }
 
-    if (this.selectedFile) {
+    formData.append('latitude', String(lat));
+    formData.append('longitude', String(lng));
+
+    if (this.selectedFile !== null) {
       formData.append('photo', this.selectedFile);
     }
 
-    if (this.isEditMode && this.catId) {
+    if (this.isEditMode && this.catId !== null) {
       this.apiService.updateCat(this.catId, formData).subscribe({
         next: (res) => {
           this.router.navigate(['/cats', this.catId]);

@@ -8,7 +8,7 @@ export const commentRouter = express.Router();
 commentRouter.get("/comments/:id", async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.id);
-    if (comment) {
+    if (comment !== null) {
       res.json(comment);
     } else {
       next({ status: 404, message: "Commento non trovato" });
@@ -24,7 +24,7 @@ commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
     const commentId = req.params.id;
     const comment = await CommentController.findById(commentId);
 
-    if (!comment) {
+    if (comment === null) {
       return next({ status: 404, message: "Commento non trovato" });
     }
 
@@ -35,7 +35,7 @@ commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
 
     // Validazione
     const { text } = req.body;
-    if (!text || text.trim().length === 0) {
+    if (text === undefined || text === null || text.trim().length === 0) {
       return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
     }
 
@@ -52,7 +52,7 @@ commentRouter.delete("/comments/:id", requireAuth, async (req, res, next) => {
     const commentId = req.params.id;
     const comment = await CommentController.findById(commentId);
 
-    if (!comment) {
+    if (comment === null) {
       return next({ status: 404, message: "Commento non trovato" });
     }
 

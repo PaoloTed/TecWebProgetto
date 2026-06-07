@@ -24,7 +24,7 @@ export class Profile implements OnInit {
   error = '';
 
   ngOnInit() {
-    if (!this.authService.isAuthenticated()) {
+    if (this.authService.isAuthenticated() === false) {
       this.router.navigate(['/login']);
       return;
     }
@@ -38,7 +38,11 @@ export class Profile implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        this.error = err.error?.error || 'Impossibile caricare il profilo.';
+        if (err.error && err.error.error) {
+          this.error = err.error.error;
+        } else {
+          this.error = 'Impossibile caricare il profilo.';
+        }
         this.isLoading = false;
       }
     });
@@ -51,7 +55,9 @@ export class Profile implements OnInit {
 
   /** Restituisce la data di iscrizione formattata in testo leggibile */
   getMemberSince(): string {
-    if (!this.user?.createdAt) return '—';
+    if (this.user === null || this.user.createdAt === undefined) {
+      return '—';
+    }
     const d = new Date(this.user.createdAt);
     return d.toLocaleDateString('it-IT', { year: 'numeric', month: 'long', day: 'numeric' });
   }

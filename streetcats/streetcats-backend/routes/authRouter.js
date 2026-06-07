@@ -86,11 +86,9 @@ authRouter.post("/signup", async (req, res, next) => {
       });
     }
 
-    // Cifra la password prima di passare i dati al controller per la creazione
-    const hashedPassword = createHash("sha256").update(password).digest("hex");
-
     // Crea l'utente
-    const newUser = await AuthController.saveUser({ userName, password: hashedPassword, email });
+    
+    const newUser = await AuthController.saveUser({ userName, password, email });
 
     // Genera token per login automatico dopo la registrazione
     const token = AuthController.issueToken(newUser.email, newUser.role);
@@ -118,10 +116,14 @@ authRouter.post("/signup", async (req, res, next) => {
 // GET /profile - Restituisce i dettagli del profilo dell'utente autenticato e le sue ultime attività
 authRouter.get("/profile", requireAuth, async (req, res, next) => {
   try {
-    if (!req.email) return res.status(401).json({ error: "Non autenticato" });
+    if (req.email === undefined || req.email === null || req.email === "") {
+      return res.status(401).json({ error: "Non autenticato" });
+    }
 
     const user = await AuthController.findUserByEmail(req.email);
-    if (!user) return res.status(404).json({ error: "Utente non trovato" });
+    if (user === null) {
+      return res.status(404).json({ error: "Utente non trovato" });
+    }
 
     // Ultime 10 segnalazioni
     const cats = await Cat.findAll({
@@ -150,17 +152,22 @@ authRouter.get("/profile", requireAuth, async (req, res, next) => {
       recentCats: cats.map(c => ({
         id: c.id,
         name: c.name,
-        address: c.address,
         color: c.color,
         photoUrl: c.photoUrl,
         createdAt: c.createdAt
       })),
-      recentComments: comments.map(c => ({
-        id: c.id,
-        text: c.text,
-        createdAt: c.createdAt,
-        cat: c.Cat ? { id: c.Cat.id, name: c.Cat.name } : null
-      }))
+      recentComments: comments.map(c => {
+        let catInfo = null;
+        if (c.Cat) {
+          catInfo = { id: c.Cat.id, name: c.Cat.name };
+        }
+        return {
+          id: c.id,
+          text: c.text,
+          createdAt: c.createdAt,
+          cat: catInfo
+        };
+      })
     });
   } catch (err) {
     next(err);
