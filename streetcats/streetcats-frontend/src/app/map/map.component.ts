@@ -20,7 +20,6 @@ export interface MapCat {
   latitude: number;
   longitude: number;
   color?: string;
-  address?: string;
   photoUrl?: string;
 }
 

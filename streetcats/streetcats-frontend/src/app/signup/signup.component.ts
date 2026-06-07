@@ -14,8 +14,8 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
 @Component({
   selector: 'app-signup',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './signup.html',
-  styleUrl: './signup.scss'
+  templateUrl: './signup.component.html',
+  styleUrl: './signup.component.scss'
 })
 export class Signup {
   private fb          = inject(FormBuilder);

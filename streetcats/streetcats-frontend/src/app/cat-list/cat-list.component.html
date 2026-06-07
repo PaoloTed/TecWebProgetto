@@ -1,0 +1,94 @@
+<!--  HEADER  -->
+<div style="margin-bottom: 30px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px;">
+  <div>
+    <h1 style="font-size: 30px; color: white; line-height: 1.2; margin: 0 0 5px;">
+      <b>Gatti di strada <span style="color: var(--color-accent);">nella tua zona</span></b>
+    </h1>
+    <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Segnala un avvistamento o sfoglia i mici del quartiere.</p>
+  </div>
+  @if (authService.isAuthenticated()) {
+    <a routerLink="/cats/new" class="btn-accent btn-lg" style=" flex-shrink: 0;">
+      Nuova segnalazione
+    </a>
+  } @else {
+    <a routerLink="/login" class="btn-primary btn-lg" style="flex-shrink: 0;">
+      Accedi per segnalare
+    </a>
+  }
+</div>
+
+<!--  LOADING  -->
+@if (isLoading) {
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 130px 0; gap: 15px;">
+    <div class="spinner"></div>
+    <p style="font-size: 15px; color: var(--color-text-secondary);">Caricamento gatti in corso…</p>
+  </div>
+
+<!--  ERROR  -->
+} @else if (error) {
+  <div class="alert alert-error" style="max-width: 580px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>
+      <p style="font-size: 15px; margin: 0 0 2px;"><b>Impossibile caricare i dati</b></p>
+      <p style="font-size: 10px; opacity: .8; margin: 0;">{{ error }}</p>
+    </div>
+  </div>
+
+<!--  EMPTY  -->
+} @else if (cats.length === 0) {
+  <div class="card" style="text-align: center; padding: 100px 30px; display: flex; flex-direction: column; align-items: center;">
+    <h3 style="font-size: 20px; color: white; margin: 0 0 10px;"><b>Ancora nessuna segnalazione</b></h3>
+    <p style="font-size: 15px; color: var(--color-text-secondary); max-width: 36ch; margin: 0 0 30px;">Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/cats/new" class="btn-primary">
+        Fai una segnalazione
+      </a>
+    } @else {
+      <a routerLink="/login" class="btn-primary">Accedi per segnalare</a>
+    }
+  </div>
+
+<!--  MAPPA + GRIGLIA  -->
+} @else {
+
+  <!-- Mappa interattiva -->
+  @if (catsWithCoords.length > 0) {
+    <div class="card" style="overflow: hidden; margin-bottom: 30px;">
+
+      <app-map
+        mode="view-all"
+        [cats]="catsWithCoords"
+        height="480px"
+        (catClicked)="onCatClicked($event)">
+      </app-map>
+    </div>
+  }
+
+  <!-- Elenco gatti semplificato (senza immagini) -->
+  <div style="display: flex; flex-direction: column; gap: 15px;">
+    @for (cat of cats; track cat.id) {
+      <article [routerLink]="['/cats', cat.id]" class="card card-interactive" style="padding: 20px; cursor: pointer; display: flex; flex-direction: column; gap: 10px;">
+        
+        <!-- Intestazione: Nome e Badge -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+          <h2 style="font-size: 20px; color: white; margin: 0;"><b>{{ cat.name }}</b></h2>
+          
+          <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+            @if (cat.color) {
+              <span class="badge badge-slate">{{ cat.color }}</span>
+            }
+            @if (cat.size) {
+              <span class="badge badge-purple">{{ cat.size }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Descrizione -->
+        <p style="font-size: 15px; color: var(--color-text-secondary); line-height: 1.5; margin: 0;">
+          {{ cat.description || 'Nessuna descrizione disponibile.' }}
+        </p>
+
+      </article>
+    }
+  </div>
+}

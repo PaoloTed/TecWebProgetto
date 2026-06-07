@@ -1,0 +1,154 @@
+<div style="max-width: 670px;">
+
+  <!-- Header -->
+  <div style="margin-bottom: 30px;">
+
+    @if (isEditMode) {
+      <h1 style="font-size: 25px; color: white; margin: 0 0 10px;"><b>Modifica segnalazione</b></h1>
+      <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0; line-height: 1.6;">Aggiorna le informazioni del gatto.</p>
+    } @else {
+      <h1 style="font-size: 25px; color: white; margin: 0 0 10px;"><b>Hai visto un micio?</b></h1>
+      <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0; line-height: 1.6;">Compila il modulo con le informazioni che conosci — anche parziali vanno bene.</p>
+    }
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-error" style="margin-bottom: 25px;">
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  <form [formGroup]="catForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 25px;">
+
+    <!-- Sezione 1: Identificazione -->
+    <div class="card" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <h2 style="font-size: 15px; color: white;"><b>Identificazione</b></h2>
+      </div>
+      <hr class="divider">
+
+      <div>
+        <label for="name" class="section-label" style="display: block; margin-bottom: 5px;">
+          Nome o soprannome <span style="color: var(--color-danger);">*</span>
+        </label>
+        <input id="name" formControlName="name" type="text" class="input" placeholder="Es. Zorro, Pallino…">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+          <label for="color" class="section-label" style="display: block; margin-bottom: 5px;">Colore mantello</label>
+          <input id="color" formControlName="color" type="text" class="input" placeholder="Es. Grigio tigrato">
+        </div>
+        <div>
+          <label for="size" class="section-label" style="display: block; margin-bottom: 5px;">Taglia stimata</label>
+          <select id="size" formControlName="size" class="input">
+            <option value="Piccolo">Piccolo</option>
+            <option value="Medio">Medio</option>
+            <option value="Grande">Grande</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Foto del gatto -->
+      <div style="margin-top: 15px;">
+        <label for="photo" class="section-label" style="display: block; margin-bottom: 5px;">Foto del gatto (opzionale)</label>
+        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+          <label for="photo" class="btn-ghost" style="cursor: pointer; display: inline-flex; align-items: center; gap: 10px;">
+            Carica un'immagine
+          </label>
+          <input id="photo" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+          @if (selectedFile) {
+            <span style="font-size: 15px; color: var(--color-text-muted); word-break: break-all;">{{ selectedFile.name }}</span>
+          }
+        </div>
+        @if (previewUrl) {
+          <div style="margin-top: 15px; overflow: hidden; width: 120px; height: 120px; border: 1px solid var(--color-border);">
+            <img [src]="previewUrl" alt="Anteprima foto" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Sezione 2: Luogo -->
+    <div class="card" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <h2 style="font-size: 15px; color: white; margin: 0;"><b>Luogo dell'avvistamento</b></h2>
+      </div>
+      <hr class="divider">
+
+      <!-- Mappa pick -->
+      <div>
+        <div class="section-label" style="margin-bottom: 5px;">Posizione sulla mappa</div>
+        <p style="font-size: 10px; color: var(--color-text-muted); margin: 0 0 10px;">
+          Clicca sulla mappa per indicare il punto esatto dell'avvistamento. Puoi trascinare il marker per correggere.
+        </p>
+        <app-map
+          mode="pick"
+          [lat]="pickedLat"
+          [lng]="pickedLng"
+          height="320px"
+          (positionPicked)="onPositionPicked($event)"
+          style="overflow: hidden; border: 1px solid var(--color-border); display: block;">
+        </app-map>
+        @if (pickedLat != null && pickedLng != null) {
+          <div style="margin-top: 10px; font-size: 10px; color: var(--color-text-muted); display: flex; align-items: center; gap: 5px;">
+            Posizione selezionata: {{ pickedLat | number:'1.4-4' }}, {{ pickedLng | number:'1.4-4' }}
+          </div>
+        } @else {
+          <div style="margin-top: 10px; font-size: 10px; color: var(--color-text-muted);">
+            Nessuna posizione selezionata - verrà usata una posizione di default.
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Sezione 3: Note -->
+    <div class="card" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <h2 style="font-size: 15px; color: white; margin: 0;"><b>Note e condizioni</b></h2>
+      </div>
+      <hr class="divider">
+      <div>
+        <label for="description" class="section-label" style="display: block; margin-bottom: 5px;">Descrizione dettagliata</label>
+
+        <!-- Toolbar Markdown -->
+        <div class="md-toolbar">
+          <button type="button" class="md-toolbar-btn" (click)="bold()" title="Grassetto"><b>B</b></button>
+          <button type="button" class="md-toolbar-btn" (click)="italic()" title="Corsivo"><i>I</i></button>
+          <div class="md-toolbar-sep"></div>
+          <button type="button" class="md-toolbar-btn" (click)="link()" title="Inserisci link">Link</button>
+          <div class="md-toolbar-sep"></div>
+          <button type="button" class="md-toolbar-btn"
+                  [style.color]="showPreview ? 'var(--color-primary)' : ''"
+                  (click)="showPreview = !showPreview">
+            {{ showPreview ? 'Modifica' : 'Anteprima' }}
+          </button>
+        </div>
+
+        @if (!showPreview) {
+          <textarea #descArea id="description" formControlName="description" rows="5" class="input"
+                    style="resize: vertical;"
+                    placeholder="Segni particolari, comportamento… Puoi usare **grassetto**, _corsivo_ e [link](https://…)"></textarea>
+        } @else {
+          <div class="input md-body" style="min-height: 120px; cursor: default;"
+               [innerHTML]="catForm.get('description')?.value || '_Nessuna descrizione_' | markdown">
+          </div>
+        }
+
+        <p class="md-hint">Supporta Markdown: **grassetto**, _corsivo_, [testo](URL)</p>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; align-items: center;">
+      <a routerLink="/cats" class="btn-ghost">
+        Annulla
+      </a>
+      <button type="submit" [disabled]="catForm.invalid" class="btn-accent">
+        Pubblica segnalazione
+      </button>
+    </div>
+
+  </form>
+</div>

@@ -1,0 +1,155 @@
+<!-- Loading -->
+@if (isLoading) {
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 130px 0; gap: 15px;">
+    <div class="spinner"></div>
+    <p style="font-size: 15px; color: var(--color-text-secondary);">Caricamento scheda gatto…</p>
+  </div>
+
+<!-- Error -->
+} @else if (error) {
+  <div class="alert alert-error" style="max-width: 580px;">
+    <div>
+      <p style="font-size: 15px; margin: 2px;"><b>Gatto non trovato</b></p>
+      <p style="font-size: 10px; opacity: .8;;">{{ error }}</p>
+    </div>
+  </div>
+
+<!-- Dettaglio -->
+} @else if (cat) {
+
+  <!-- CARD -->
+  <div style="display: flex; flex-direction: column; gap: 25px; margin-bottom: 40px; width: 100%;">
+
+    <!-- Layout a tre colonne per Nome/Descrizione, Mappa e Foto -->
+    <div class="detail-three-columns">
+      
+      <!-- Colonna 1: Nome, Badges, Descrizione -->
+      <div class="column-info">
+        
+        <!-- Intestazione -->
+        <div style="margin-bottom: 10px;">
+          <h1 style="font-size: 35px; color: white; margin: 10px;"><b>{{ cat.name }}</b></h1>
+          
+          <!-- Badges attributi -->
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <span class="badge badge-slate">Colore: {{ cat.color }}</span>
+            <span class="badge badge-purple">Taglia: {{ cat.size }}</span>
+            <span style="font-size: 10px; color: var(--color-text-muted);">
+              Segnalato da {{ cat.UserEmail }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Descrizione -->
+          <div class="card" style="padding: 25px; width: 100%;">
+            <h2 style="font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; margin: 5px; letter-spacing: 0.05em;"><b>Descrizione</b></h2>
+            <div class="md-body" [innerHTML]="cat.description | markdown"></div>
+          </div>
+      </div>
+
+      <!-- Colonna 2: Mappa  -->
+        <div class="column-map card" style="padding: 25px;">
+          <h2 style="font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; margin: 10px; letter-spacing: 0.05em;"><b>Ultima Posizione</b></h2>
+          <app-map
+            mode="view-one"
+            [lat]="cat.latitude"
+            [lng]="cat.longitude"
+            style="overflow: hidden; display: block; margin-bottom: 10px;">
+          </app-map>
+          <p style="font-size: 10px; color: var(--color-text-muted);">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{ cat.longitude | number:'1.4-4' }}</p>
+        </div>
+    
+
+      <!-- Colonna 3: Immagine  -->
+        <div class="column-photo card" style="padding: 25px;">
+          <h2 style="font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; margin: 10px; letter-spacing: 0.05em;"><b>Foto</b></h2>
+          <div class="cat-img-container">
+            <img [src]="cat.photoUrl">
+          </div>
+        </div>
+
+    </div>
+
+    <!-- Azioni proprietario/admin -->
+    @if (isOwnerOrAdmin) {
+      <div style="display: flex; justify-content: flex-start; margin-top: 10px; width: 100%;">
+        <div style="display: flex; gap: 10px;">
+          <a [routerLink]="['/cats', cat.id, 'edit']" class="btn-ghost" style="padding: 5px; font-size: 15px;">
+            Modifica
+          </a>
+          <button type="button" (click)="deleteCat()" class="btn-danger-ghost btn-sm">
+            Elimina
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <!-- COMMENTI -->
+  <div>
+    <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 25px;">
+      <h2 style="font-size: 20px; color: white; margin: 0;"><b>Commenti e avvistamenti</b></h2>
+      <span style="font-size: 10px; color: var(--color-text-muted);">{{ comments.length }}</span>
+    </div>
+
+    <!-- Form nuovo commento  -->
+    @if (isAuthenticated) {
+      <div class="card" style="padding: 20px; margin-bottom: 25px;">
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+
+          <div style="flex: 1; min-width: 0;">
+            <textarea [(ngModel)]="newCommentText"
+                      placeholder="Hai avvistato questo gatto? Lascia un commento..."
+                      rows="4"
+                      class="input"
+                      style="resize: none;"
+                      [disabled]="isPostingComment"></textarea>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+              <button type="button" (click)="submitComment()" class="btn-primary btn-sm">
+                Pubblica commento
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    } @else {
+      <div class="card" style="padding: 20px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Accedi per lasciare un commento o un avvistamento.</p>
+        <a routerLink="/login" class="btn-primary btn-sm">Accedi</a>
+      </div>
+    }
+
+    <!-- Lista commenti -->
+    @if (comments.length === 0) {
+      <div class="card" style="padding: 50px 30px; text-align: center;">
+        <p style="font-size: 15px; color: white; margin: 0 0 4px;"><b>Ancora nessun commento</b></p>
+        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Sii il primo a condividere un avvistamento!</p>
+      </div>
+    } @else {
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        @for (comment of comments; track comment.id) {
+          <div class="card" style="padding: 20px; display: flex; gap: 10px;">
+
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 5px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <span style="font-size: 15px; color: white; word-break: break-all;"><b>{{ comment.UserEmail }}</b></span>
+                  <span style="font-size: 10px; color: var(--color-text-muted); flex-shrink: 0;">{{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}</span>
+                </div>
+                @if (canDeleteComment(comment)) {
+                  <button type="button" (click)="deleteComment(comment)" title="Elimina commento"
+                          style="background: transparent; border: none; cursor: pointer; color: var(--color-text-muted); padding: 4px; display: flex; align-items: center; flex-shrink: 0;">
+                  </button>
+                }
+              </div>
+              <p style="font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); margin: 0; white-space: pre-wrap;">{{ comment.text }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

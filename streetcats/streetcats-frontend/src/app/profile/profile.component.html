@@ -1,0 +1,97 @@
+<!-- Page header -->
+<div style="margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 25px; flex-wrap: wrap;">
+  <div>
+    <h1 style="font-size: 30px; color: white; margin: 0 0 5px;">
+      <b>{{ user?.userName || 'Profilo' }}</b>
+    </h1>
+    @if (user) {
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--color-text-secondary);">
+        <span>{{ user.email }}</span>
+        <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--color-text-muted); display: inline-block;"></span>
+        <span>{{ user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
+        <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--color-text-muted); display: inline-block;"></span>
+        <span>Membro dal {{ getMemberSince() }}</span>
+      </div>
+    }
+  </div>
+  @if (user) {
+    <button (click)="logout()" class="btn-danger-ghost btn-sm">
+      Disconnetti
+    </button>
+  }
+</div>
+
+@if (isLoading) {
+  <div style="display: flex; align-items: center; justify-content: center; padding: 100px 0;">
+    <div class="spinner"></div>
+  </div>
+
+} @else if (error) {
+  <div class="alert alert-error" style="max-width: 580px;">{{ error }}</div>
+
+} @else if (user) {
+  <div style="display: flex; flex-direction: column; gap: 30px; max-width: 770px;">
+
+    <!-- Segnalazioni -->
+    <div>
+      <h2 style="font-size: 20px; color: white; margin: 0 0 15px;">
+        <b>Le mie segnalazioni ({{ user.stats?.cats ?? 0 }})</b>
+      </h2>
+      
+      @if (!user.recentCats || user.recentCats.length === 0) {
+        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Non hai ancora fatto nessuna segnalazione.</p>
+      } @else {
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          @for (cat of user.recentCats; track cat.id) {
+            <a [routerLink]="['/cats', cat.id]" class="card" style="padding: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px; cursor: pointer;">
+              <div style="min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+                  <span style="font-size: 15px; color: white;"><b>{{ cat.name }}</b></span>
+                  @if (cat.color) {
+                    <span class="badge badge-slate">{{ cat.color }}</span>
+                  }
+                </div>
+              </div>
+              <span style="font-size: 10px; color: var(--color-text-muted); flex-shrink: 0;">
+                {{ cat.createdAt | date:'d MMM yyyy' }}
+              </span>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Commenti -->
+    <div>
+      <h2 style="font-size: 20px; color: white; margin: 0 0 15px;">
+        <b>I miei commenti recenti ({{ user.stats?.comments ?? 0 }})</b>
+      </h2>
+
+      @if (!user.recentComments || user.recentComments.length === 0) {
+        <p style="font-size: 15px; color: var(--color-text-secondary); margin: 0;">Non hai ancora lasciato nessun commento.</p>
+      } @else {
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          @for (comment of user.recentComments; track comment.id) {
+            <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="card" style="padding: 15px; display: flex; flex-direction: column; gap: 5px; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                @if (comment.cat) {
+                  <span style="font-size: 10px; color: var(--color-primary);">
+                    <b>{{ comment.cat.name }}</b>
+                  </span>
+                }
+                <span style="font-size: 10px; color: var(--color-text-muted);">
+                  {{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}
+                </span>
+              </div>
+              <p style="font-size: 15px; color: var(--color-text-secondary)">
+                {{ comment.text }}
+              </p>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+}
+

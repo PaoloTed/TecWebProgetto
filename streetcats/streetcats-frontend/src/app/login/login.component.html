@@ -3,18 +3,16 @@
 
     <!-- Logo + heading -->
     <div class="text-center mb-8">
-
       <h1 class="text-2xl font-bold text-white mb-1">Bentornato su StreetCats</h1>
-      <p class="text-sm" style="color: var(--c-muted);">Inserisci le tue credenziali per continuare</p>
+      <p class="text-sm" style="color: var(--color-text-secondary);">Inserisci le tue credenziali per continuare</p>
     </div>
 
     <!-- Card -->
-    <div class="card p-8" style="background: rgba(255,255,255,0.03);">
+    <div class="card p-8">
 
       <!-- Error alert -->
       @if (errorMessage) {
         <div class="alert alert-error mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" flex-shrink="0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span>{{ errorMessage }}</span>
         </div>
       }
@@ -40,21 +38,16 @@
 
         <!-- Submit -->
         <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn-primary btn-lg w-full">
-          @if (isLoading) {
-            <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            Accesso in corso…
-          } @else {
-            Accedi all'account
-          }
+          Accedi all'account
         </button>
 
       </form>
     </div>
 
     <!-- Footer -->
-    <p style="text-align: center; font-size: 0.875rem; margin-top: 1.5rem; color: var(--c-subtle);">
+    <p style="text-align: center; font-size: 15px; margin-top: 25px; color: var(--color-text-muted);">
       Non hai un account?&nbsp;
-      <a routerLink="/signup" style="color: var(--c-primary); text-decoration: none; font-weight: 600;">Registrati gratuitamente</a>
+      <a routerLink="/signup" style="color: var(--color-primary);"><b>Registrati</b></a>
     </p>
 
   </div>

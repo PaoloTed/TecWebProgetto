@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { CatList }   from './cat-list/cat-list';
-import { CatDetail } from './cat-detail/cat-detail';
-import { CatForm }   from './cat-form/cat-form';
-import { Login }     from './login/login';
-import { Signup }    from './signup/signup';
-import { Profile }   from './profile/profile';
+import { CatList }   from './cat-list/cat-list.component';
+import { CatDetail } from './cat-detail/cat-detail.component';
+import { CatForm }   from './cat-form/cat-form.component';
+import { Login }     from './login/login.component';
+import { Signup }    from './signup/signup.component';
+import { Profile }   from './profile/profile.component';
 import { authGuard } from './_guards/auth/auth.guard';
 
 export const routes: Routes = [

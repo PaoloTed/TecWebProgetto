@@ -7,8 +7,8 @@ import { ApiService } from '../_services/api/api.service';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './login.html',
-  styleUrl: './login.scss'
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss'
 })
 export class Login {
   private fb = inject(FormBuilder);

@@ -10,8 +10,8 @@ import { MapComponent } from '../map/map.component';
 @Component({
   selector: 'app-cat-form',
   imports: [ReactiveFormsModule, RouterLink, MarkdownPipe, MapComponent, DecimalPipe],
-  templateUrl: './cat-form.html',
-  styleUrl: './cat-form.scss'
+  templateUrl: './cat-form.component.html',
+  styleUrl: './cat-form.component.scss'
 })
 export class CatForm implements OnInit {
   private fb = inject(FormBuilder);
@@ -40,8 +40,7 @@ export class CatForm implements OnInit {
       name: ['', Validators.required],
       description: [''],
       color: [''],
-      size: [''],
-      address: ['', Validators.required]
+      size: ['']
     });
   }
 
@@ -62,8 +61,7 @@ export class CatForm implements OnInit {
           name: cat.name,
           description: cat.description,
           color: cat.color,
-          size: cat.size,
-          address: cat.address
+          size: cat.size
         });
         this.pickedLat = cat.latitude;
         this.pickedLng = cat.longitude;
@@ -146,7 +144,7 @@ export class CatForm implements OnInit {
     } else {
       this.apiService.createCat(formData).subscribe({
         next: (res) => {
-          this.router.navigate(['/cats', res.id || res.cat?.id || '']);
+          this.router.navigate(['/cats', res.id]);
         },
         error: () => {
           this.errorMessage = 'Errore durante la creazione della segnalazione.';

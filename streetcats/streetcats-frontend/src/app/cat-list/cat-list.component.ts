@@ -2,13 +2,14 @@ import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../_services/api/api.service';
 import { AuthService } from '../_services/auth/auth.service';
-import { MapComponent } from '../map/map.component';
+import { MapComponent, MapCat } from '../map/map.component';
+import { Cat } from '../_services/api/cat.type';
 
 @Component({
   selector: 'app-cat-list',
   imports: [RouterLink, MapComponent],
-  templateUrl: './cat-list.html',
-  styleUrl: './cat-list.scss'
+  templateUrl: './cat-list.component.html',
+  styleUrl: './cat-list.component.scss'
 })
 export class CatList implements OnInit {
   private apiService = inject(ApiService);
@@ -17,8 +18,8 @@ export class CatList implements OnInit {
 
   @ViewChild(MapComponent) mapComp?: MapComponent;
 
-  cats: any[] = [];
-  catsWithCoords: any[] = [];
+  cats: Cat[] = [];
+  catsWithCoords: MapCat[] = [];
   isLoading = true;
   error = '';
 
@@ -32,7 +33,16 @@ export class CatList implements OnInit {
         this.cats = data;
         // Calcola e salva l'array una sola volta, per evitare che la mappa 
         // si resetti ad ogni ciclo di change detection di Angular
-        this.catsWithCoords = this.cats.filter(c => c.latitude != null && c.longitude != null);
+        this.catsWithCoords = this.cats
+          .filter(c => c.latitude != null && c.longitude != null)
+          .map(c => ({
+            id: c.id,
+            name: c.name,
+            latitude: c.latitude as number,
+            longitude: c.longitude as number,
+            color: c.color ?? undefined,
+            photoUrl: c.photoUrl ?? undefined
+          }));
         
         this.isLoading = false;
         // Dopo che @if(catsWithCoords) renderizza la mappa, chiama refresh()
