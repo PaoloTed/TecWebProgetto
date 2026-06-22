@@ -138,11 +138,7 @@
                   <span class="author-email">{{ comment.UserEmail }}</span>
                   <span class="comment-date">{{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}</span>
                 </div>
-                @if (canDeleteComment(comment)) {
-                  <button type="button" (click)="deleteComment(comment)" title="Elimina commento" class="delete-comment-btn">
-                    <img src="/trash.png" alt="Elimina commento">
-                  </button>
-                }
+
               </header>
               <p class="comment-text">{{ comment.text }}</p>
             </div>

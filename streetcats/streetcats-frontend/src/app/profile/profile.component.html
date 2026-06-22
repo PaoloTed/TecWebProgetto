@@ -3,88 +3,82 @@
   <div>
     <h1>{{ user?.userName || 'Profilo' }}</h1>
     @if (user) {
-      <div class="user-meta">
-        <span>{{ user.email }}</span>
-        <span class="meta-dot"></span>
-        <span>{{ user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
-        <span class="meta-dot"></span>
-        <span>Membro dal {{ getMemberSince() }}</span>
-      </div>
+    <div class="user-meta">
+      <span>{{ user.email }}</span>
+      <span class="meta-dot"></span>
+      <span>{{ user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
+      <span class="meta-dot"></span>
+    </div>
     }
   </div>
-  @if (user) {
-    <button (click)="logout()" class="btn-danger-ghost btn-sm">
-      Disconnetti
-    </button>
-  }
 </header>
 
 @if (isLoading) {
-  <div class="loading-state">
-    <div class="spinner"></div>
-  </div>
+<div class="loading-state">
+  <div class="spinner"></div>
+</div>
 
 } @else if (error) {
-  <div class="alert alert-error error-state">{{ error }}</div>
+<div class="alert alert-error error-state">{{ error }}</div>
 
 } @else if (user) {
-  <div class="profile-content">
+<div class="profile-content">
 
-    <!-- Segnalazioni -->
-    <section>
-      <h2>Le mie segnalazioni ({{ user.stats?.cats ?? 0 }})</h2>
-      
-      @if (!user.recentCats || user.recentCats.length === 0) {
-        <p class="empty-msg">Non hai ancora fatto nessuna segnalazione.</p>
-      } @else {
-        <div class="items-list">
-          @for (cat of user.recentCats; track cat.id) {
-            <a [routerLink]="['/cats', cat.id]" class="card cat-item">
-              <div class="item-body">
-                <div class="item-header">
-                  <span class="item-name">{{ cat.name }}</span>
-                  @if (cat.color) {
-                    <span class="badge badge-slate">{{ cat.color }}</span>
-                  }
-                </div>
-              </div>
-              <span class="item-date">
-                {{ cat.createdAt | date:'d MMM yyyy' }}
-              </span>
-            </a>
-          }
+  <!-- Segnalazioni -->
+  <section>
+    <h2>Le mie segnalazioni ({{ user.stats?.cats ?? 0 }})</h2>
+
+    @if (!user.recentCats || user.recentCats.length === 0) {
+    <p class="empty-msg">Non hai ancora fatto nessuna segnalazione.</p>
+    } @else {
+    <div class="items-list">
+      @for (cat of user.recentCats; track cat.id) {
+      <a [routerLink]="['/cats', cat.id]" class="card cat-item">
+        <div class="item-body">
+          <div class="item-header">
+            <span class="item-name">{{ cat.name }}</span>
+            @if (cat.color) {
+            <span class="badge badge-slate">{{ cat.color }}</span>
+            }
+          </div>
         </div>
+        <span class="item-date">
+          {{ cat.createdAt | date:'d MMM yyyy' }}
+        </span>
+      </a>
       }
-    </section>
+    </div>
+    }
+  </section>
 
-    <!-- Commenti -->
-    <section>
-      <h2>I miei commenti recenti ({{ user.stats?.comments ?? 0 }})</h2>
+  <!-- Commenti -->
+  <section>
+    <h2>I miei commenti recenti ({{ user.stats?.comments ?? 0 }})</h2>
 
-      @if (!user.recentComments || user.recentComments.length === 0) {
-        <p class="empty-msg">Non hai ancora lasciato nessun commento.</p>
-      } @else {
-        <div class="items-list">
-          @for (comment of user.recentComments; track comment.id) {
-            <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="card comment-item">
-              <header>
-                @if (comment.cat) {
-                  <span class="cat-name">
-                    {{ comment.cat.name }}
-                  </span>
-                }
-                <span class="comment-date">
-                  {{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}
-                </span>
-              </header>
-              <p class="comment-text">
-                {{ comment.text }}
-              </p>
-            </a>
+    @if (!user.recentComments || user.recentComments.length === 0) {
+    <p class="empty-msg">Non hai ancora lasciato nessun commento.</p>
+    } @else {
+    <div class="items-list">
+      @for (comment of user.recentComments; track comment.id) {
+      <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="card comment-item">
+        <header>
+          @if (comment.cat) {
+          <span class="cat-name">
+            {{ comment.cat.name }}
+          </span>
           }
-        </div>
+          <span class="comment-date">
+            {{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}
+          </span>
+        </header>
+        <p class="comment-text">
+          {{ comment.text }}
+        </p>
+      </a>
       }
-    </section>
+    </div>
+    }
+  </section>
 
-  </div>
+</div>
 }

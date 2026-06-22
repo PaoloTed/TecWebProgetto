@@ -23,17 +23,10 @@ export interface MapCat {
   photoUrl?: string;
 }
 
-/**
- * Componente mappa Leaflet — implementato seguendo la guida ufficiale:
- * https://leafletjs.com/examples/quick-start/
- *
- * Leaflet è caricato come script globale (window.L) via CDN in index.html.
- * Nessun import npm: zero problemi di bundler / CSS mancante.
- */
+
 @Component({
   selector: 'app-map',
   template: `
-    <!-- div con id univoco e altezza esplicita, come da guida Leaflet -->
     <div [id]="mapId" [style.height]="height" style="width:100%;"></div>
   `,
   styles: [`:host { display: block; width: 100%; }`]
@@ -47,7 +40,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() height = '400px';
 
   /** Emette l'id del gatto quando l'utente clicca su un marker */
-  @Output() catClicked    = new EventEmitter<number>();
+  @Output() catClicked = new EventEmitter<number>();
   /** Emette [lat, lng] quando l'utente clicca sulla mappa in modalità pick */
   @Output() positionPicked = new EventEmitter<[number, number]>();
 
@@ -58,11 +51,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   private ngZone = inject(NgZone);
   private router = inject(Router);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private map: any = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private catMarkers: any[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private pickMarker: any = null;
 
   private readonly ITALY: [number, number] = [42.5, 12.5];
@@ -70,9 +60,6 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
-    
-    // Inizializza Leaflet fuori dalla zona Angular per evitare che gli eventi
-    // del mouse (drag, zoom) scatenino continui cicli di Change Detection bloccando la mappa.
     this.ngZone.runOutsideAngular(() => {
       setTimeout(() => {
         this._initMap();
@@ -82,8 +69,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.map) return;
-    if (changes['cats'])                   this._renderCatMarkers();
-    if (changes['lat'] || changes['lng'])  this._renderPickMarker();
+    if (changes['cats']) this._renderCatMarkers();
+    if (changes['lat'] || changes['lng']) this._renderPickMarker();
   }
 
   ngOnDestroy() {
@@ -96,12 +83,11 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   public refresh(): void {
     this.map?.invalidateSize();
   }
-  
 
-  // -- Inizializzazione ------------------------------------------------------
+
+  // Inizializzazione
 
   private _initMap() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const L = (window as any)['L'];
     if (!L) { console.error('[MapComponent] Leaflet non trovato. Controlla index.html.'); return; }
 
@@ -112,39 +98,37 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (this.mode === 'view-one' && this.lat != null && this.lng != null) {
       center = [this.lat, this.lng];
       zoom = 15;
-    } else if (this.mode === 'pick' && this.lat != null && this.lng != null) {
-      center = [this.lat, this.lng];
-      zoom = 14;
     }
 
-    // -- Inizializzazione mappa (guida: L.map('id').setView([lat,lng], zoom)) --
+    // Inizializzazione mappa (guida: L.map('id').setView([lat,lng], zoom))
     this.map = L.map(this.mapId).setView(center, zoom);
 
-    // -- Tile layer OpenStreetMap (guida ufficiale) ----------------------------
+    // Tile layer OpenStreetMap
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this.map);
 
-    // -- Contenuto in base alla modalità --------------------------------------
+    // Contenuto in base alla modalità 
     if (this.mode === 'view-all') this._renderCatMarkers();
     if (this.mode === 'view-one') this._renderSingleMarker();
     if (this.mode === 'pick') this._setupPickMode();
   }
 
-  // -- Marker gatti (come da Quick Start) -----------------------------------
-
+  // Marker gatti
   private _renderCatMarkers() {
     if (!this.map) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const L = (window as any)['L'];
 
     // Rimuovi marker esistenti
     this.catMarkers.forEach(m => m.remove());
     this.catMarkers = [];
 
-    const valid = this.cats.filter(c => c.latitude != null && c.longitude != null);
-    if (valid.length === 0) { this.map.setView(this.ITALY, this.ITALY_ZOOM); return; }
+    const valid = this.cats.filter(c =>
+      c.latitude != null && c.longitude != null);
+    if (valid.length === 0) {
+      this.map.setView(this.ITALY, this.ITALY_ZOOM);
+      return;
+    }
 
     valid.forEach(cat => {
       // Marker standard
@@ -155,16 +139,14 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       popupContent.style.textAlign = 'center';
       popupContent.innerHTML = `
         <b>${cat.name}</b><br>
-        <a href="javascript:void(0)" style="color: #7c5cf6; text-decoration: underline;">
+        <a style="color: #7c5cf6;">
           Vai alla pagina del gatto
         </a>
       `;
 
-      // Intercettiamo il click sul link per usare il Router di Angular (navigazione SPA istantanea)
       const link = popupContent.querySelector('a');
       if (link) {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
+        link.addEventListener('click', () => {
           this.ngZone.run(() => {
             this.router.navigate(['/cats', cat.id]);
           });
@@ -172,30 +154,21 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       }
 
       marker.bindPopup(popupContent);
-
       this.catMarkers.push(marker);
     });
-
-    // Adatta la vista per includere tutti i marker
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const group = (L as any).featureGroup(this.catMarkers);
-    this.map.fitBounds(group.getBounds().pad(0.25), { maxZoom: 13, animate: false });
   }
 
   private _renderSingleMarker() {
     if (!this.map || this.lat == null || this.lng == null) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const L = (window as any)['L'];
 
     // Marker standard
     L.marker([this.lat, this.lng]).addTo(this.map);
   }
 
-  // -- Modalità pick ---------------------------------------------------------
-
+  // Modalità pick 
   private _setupPickMode() {
     if (!this.map) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const L = (window as any)['L'];
 
     if (this.lat != null && this.lng != null) {
@@ -206,7 +179,6 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       });
     }
 
-    // Guida: map.on('click', fn) — click per posizionare il marker
     this.map.on('click', (e: any) => {
       const { lat, lng } = e.latlng;
       if (this.pickMarker) {

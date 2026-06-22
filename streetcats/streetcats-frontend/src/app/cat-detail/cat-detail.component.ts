@@ -30,7 +30,6 @@ export class CatDetail implements OnInit {
   // Comment form state
   newCommentText = '';
   isPostingComment = false;
-  commentError = '';
 
   // Delete state
   isDeleting = false;
@@ -41,7 +40,7 @@ export class CatDetail implements OnInit {
     if (id) {
       this.loadAll(id);
     } else {
-      this.error    = 'ID Gatto non valido.';
+      this.error = 'ID Gatto non valido.';
       this.isLoading = false;
     }
   }
@@ -63,73 +62,35 @@ export class CatDetail implements OnInit {
   loadComments(catId: number) {
     this.apiService.getCatComments(catId).subscribe({
       next: (c) => (this.comments = c),
-      error: () => {}
+      error: () => { }
     });
   }
 
   get isAuthenticated() {
-    if (this.authService.isAuthenticated()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  get currentUserEmail() {
-    const u = this.authService.currentUser();
-    if (u !== null) {
-      return u.email;
-    } else {
-      return '';
-    }
+    return this.authService.isAuthenticated();
   }
 
   get isOwnerOrAdmin() {
-    if (this.cat === null) {
-      return false;
-    }
+    if (!this.cat) return false;
     const u = this.authService.currentUser();
-    if (u === null) {
-      return false;
-    }
-    if (u.email === this.cat.UserEmail) {
-      return true;
-    }
-    if (u.role === 'admin') {
-      return true;
-    }
-    return false;
+    return u !== null && (u.email === this.cat.UserEmail || u.role === 'admin');
   }
 
   // Invio commento 
   submitComment() {
-    if (this.cat === null) {
-      return;
-    }
     const text = this.newCommentText.trim();
-    if (text === '' || this.isPostingComment) {
-      return;
-    }
+    if (!this.cat || !text || this.isPostingComment) return;
 
     this.isPostingComment = true;
-    this.commentError = '';
 
     this.apiService.addComment(this.cat.id, text).subscribe({
-      next: (comment) => {
-        this.comments.unshift({
-          ...comment,
-          UserEmail: this.currentUserEmail,
-          createdAt: new Date().toISOString()
-        });
+      next: () => {
+        this.loadComments(this.cat!.id);
         this.newCommentText = '';
         this.isPostingComment = false;
       },
       error: (err) => {
-        if (err.error && err.error.error) {
-          this.commentError = err.error.error;
-        } else {
-          this.commentError = 'Errore durante l\'invio del commento.';
-        }
+        alert(err.error?.error || "Errore durante l'invio del commento.");
         this.isPostingComment = false;
       }
     });
@@ -137,54 +98,13 @@ export class CatDetail implements OnInit {
 
   // Eliminazione gatto 
   deleteCat() {
-    if (this.cat === null) {
-      return;
-    }
+    if (!this.cat) return;
     this.isDeleting = true;
     this.apiService.deleteCat(this.cat.id).subscribe({
-      next: () => {
-        this.router.navigate(['/cats']);
-      },
-      error: () => {
-        this.isDeleting = false;
-      }
+      next: () => this.router.navigate(['/cats']),
+      error: () => this.isDeleting = false
     });
   }
 
-  //  Eliminazione commento 
-  canDeleteComment(comment: Comment): boolean {
-    if (this.isAuthenticated === false) {
-      return false;
-    }
-    const u = this.authService.currentUser();
-    if (u === null) {
-      return false;
-    }
-    if (u.email === comment.UserEmail) {
-      return true;
-    }
-    if (u.role === 'admin') {
-      return true;
-    }
-    return false;
-  }
-
-  deleteComment(comment: Comment) {
-    if (this.cat === null) {
-      return;
-    }
-    this.apiService.deleteComment(this.cat.id, comment.id).subscribe({
-      next: () => {
-        this.comments = this.comments.filter(c => c.id !== comment.id);
-      },
-      error: (err) => {
-        if (err.error && err.error.error) {
-          this.commentError = err.error.error;
-        } else {
-          this.commentError = 'Impossibile eliminare il commento.';
-        }
-      }
-    });
-  }
 }
 

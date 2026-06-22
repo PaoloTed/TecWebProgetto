@@ -31,7 +31,7 @@ export class CatList implements OnInit {
     this.apiService.getCats().subscribe({
       next: (data) => {
         this.cats = data;
-        
+
         // Calcola e salva l'array una sola volta, per evitare che la mappa 
         // si resetti ad ogni ciclo di change detection di Angular
         const validCats: MapCat[] = [];
@@ -57,14 +57,14 @@ export class CatList implements OnInit {
           }
         }
         this.catsWithCoords = validCats;
-        
+
         this.isLoading = false;
-        // Dopo che @if(catsWithCoords) renderizza la mappa, chiama refresh()
         setTimeout(() => {
           if (this.mapComp !== undefined) {
             this.mapComp.refresh();
           }
-        }, 0);
+        },
+          0);
         setTimeout(() => {
           if (this.mapComp !== undefined) {
             this.mapComp.refresh();

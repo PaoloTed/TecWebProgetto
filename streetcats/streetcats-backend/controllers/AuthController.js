@@ -13,7 +13,7 @@ export class AuthController {
         password: password
       }
     });
-    
+
     return found;
   }
 
@@ -23,7 +23,7 @@ export class AuthController {
       userName: userData.userName,
       password: userData.password, // La password viene passata già hashata
       email: userData.email,
-      role: 'user' // I nuovi utenti sono sempre 'user', non 'admin'
+      role: 'user' // I nuovi utenti sono sempre 'user'
     });
     return user.save();
   }

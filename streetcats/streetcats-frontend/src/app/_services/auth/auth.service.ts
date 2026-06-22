@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal, computed, effect, signal } from '@angular/core';
+import { Injectable, WritableSignal, computed, signal } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { AuthState } from './auth-state.type';
 import { User } from '../api/user.type';
@@ -19,24 +19,11 @@ export class AuthService {
   currentUser = computed(() => this.authState().user);
   isAuthenticated = computed(() => this.authState().isAuthenticated);
 
-  constructor() {
-    effect(() => {
-      const token = this.authState().token;
-      const user = this.authState().user;
-      if (token !== null) {
-        localStorage.setItem(this.tokenKey, token);
-      } else {
-        localStorage.removeItem(this.tokenKey);
-      }
-      if (user !== null) {
-        localStorage.setItem(this.currentUserKey, JSON.stringify(user));
-      } else {
-        localStorage.removeItem(this.currentUserKey);
-      }
-    });
-  }
+  constructor() {}
 
   setSession(token: string, user: User) {
+    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.currentUserKey, JSON.stringify(user));
     this.authState.set({
       user: user,
       token: token,
@@ -45,6 +32,8 @@ export class AuthService {
   }
 
   logout() {
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.currentUserKey);
     this.authState.set({
       user: null,
       token: null,

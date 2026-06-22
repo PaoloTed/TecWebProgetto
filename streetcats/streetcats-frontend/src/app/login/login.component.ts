@@ -42,11 +42,7 @@ export class Login {
       },
       error: (err) => {
         this.isLoading = false;
-        if (err.error && err.error.error) {
-          this.errorMessage = err.error.error;
-        } else {
-          this.errorMessage = 'Errore durante il login';
-        }
+        this.errorMessage = err.error?.error || 'Errore durante il login';
       }
     });
   }

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Cat } from './cat.type';
 import { Comment } from './comment.type';
-import { User, UserProfile } from './user.type';
+import { User } from './user.type';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,8 @@ export class ApiService {
     return this.http.post<{ message: string; token: string; user: User }>(`${this.baseUrl}/signup`, userData);
   }
 
-  getProfile(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.baseUrl}/profile`);
+  getProfile(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/profile`);
   }
 
   // Cats endpoints

@@ -5,86 +5,58 @@
     <p>Segnala un avvistamento o sfoglia i mici del quartiere.</p>
   </div>
   @if (authService.isAuthenticated()) {
-    <a routerLink="/cats/new" class="btn-accent btn-lg list-action-btn">
-      Nuova segnalazione
-    </a>
+  <a routerLink="/cats/new" class="btn-accent btn-lg list-action-btn">
+    Nuova segnalazione
+  </a>
   } @else {
-    <a routerLink="/login" class="btn-primary btn-lg list-action-btn">
-      Accedi per segnalare
-    </a>
+  <a routerLink="/login" class="btn-primary btn-lg list-action-btn">
+    Accedi per segnalare
+  </a>
   }
 </header>
 
 <!--  LOADING  -->
 @if (isLoading) {
-  <div class="loading-state">
-    <div class="spinner"></div>
-    <p>Caricamento gatti in corso…</p>
-  </div>
+<div class="loading-state">
+  <div class="spinner"></div>
+  <p>Caricamento gatti in corso…</p>
+</div>
 
 <!--  ERROR  -->
 } @else if (error) {
-  <div class="alert alert-error error-state">
-    <div>
-      <h3>Impossibile caricare i dati</h3>
-      <p class="error-msg">{{ error }}</p>
-    </div>
+<div class="alert alert-error error-state">
+  <div>
+    <h3>Impossibile caricare i dati</h3>
+    <p class="error-msg">{{ error }}</p>
   </div>
+</div>
 
 <!--  EMPTY  -->
 } @else if (cats.length === 0) {
-  <div class="card empty-state">
-    <h3>Ancora nessuna segnalazione</h3>
-    <p>Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
-    @if (authService.isAuthenticated()) {
-      <a routerLink="/cats/new" class="btn-primary">
-        Fai una segnalazione
-      </a>
-    } @else {
-      <a routerLink="/login" class="btn-primary">Accedi per segnalare</a>
-    }
-  </div>
-
+<div class="card empty-state">
+  <h3>Ancora nessuna segnalazione</h3>
+  <p>Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
+  @if (authService.isAuthenticated()) {
+  <a routerLink="/cats/new" class="btn-primary">
+    Fai una segnalazione
+  </a>
+  } @else {
+  <a routerLink="/login" class="btn-primary">Accedi per segnalare</a>
+  }
+</div>
 <!--  MAPPA + GRIGLIA  -->
 } @else {
 
-  <!-- Mappa interattiva -->
-  @if (catsWithCoords.length > 0) {
-    <div class="card map-container">
-      <app-map
-        mode="view-all"
-        [cats]="catsWithCoords"
-        height="480px"
-        (catClicked)="onCatClicked($event)">
-      </app-map>
-    </div>
-  }
+<!-- Mappa interattiva -->
+@if (catsWithCoords.length > 0) {
+<div class="card map-container">
+  <app-map mode="view-all" [cats]="catsWithCoords" height="480px" (catClicked)="onCatClicked($event)">
+  </app-map>
+</div>
+}
 
-  <!-- Elenco gatti semplificato (senza immagini) -->
-  <div class="cats-list">
-    @for (cat of cats; track cat.id) {
-      <article [routerLink]="['/cats', cat.id]" class="card card-interactive cat-card">
-        
-        <!-- Intestazione: Nome e Badge -->
-        <header>
-          <h2>{{ cat.name }}</h2>
-          
-          <div class="badges-row">
-            @if (cat.color) {
-              <span class="badge badge-slate">{{ cat.color }}</span>
-            }
-            @if (cat.size) {
-              <span class="badge badge-purple">{{ cat.size }}</span>
-            }
-          </div>
-        </header>
-
-        <!-- Descrizione -->
-        <p>
-          {{ cat.description || 'Nessuna descrizione disponibile.' }}
-        </p>
-
-      </article>
-    }
-  </div>
+<!-- Conteggio segnalazioni semplice -->
+<p class="reports-counter-simple">
+  Segnalazioni attive: <strong>{{ cats.length }}</strong>
+</p>
 }

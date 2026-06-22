@@ -1,5 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-footer',
@@ -7,14 +6,5 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
 })
-export class Footer implements OnInit {
-  private http = inject(HttpClient);
-  catFact: string = '';
-
-  ngOnInit() {
-    this.http.get<any>('https://catfact.ninja/fact').subscribe({
-      next: (res) => this.catFact = res.fact,
-      error: (err) => console.error('Errore cat fact', err)
-    });
-  }
+export class Footer {
 }

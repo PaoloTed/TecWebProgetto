@@ -109,30 +109,8 @@
       <hr class="divider">
       <div>
         <label for="description" class="section-label">Descrizione dettagliata</label>
-
-        <!-- Toolbar Markdown -->
-        <div class="md-toolbar">
-          <button type="button" class="md-toolbar-btn" (click)="bold()" title="Grassetto">B</button>
-          <button type="button" class="md-toolbar-btn" (click)="italic()" title="Corsivo">I</button>
-          <div class="md-toolbar-sep"></div>
-          <button type="button" class="md-toolbar-btn" (click)="link()" title="Inserisci link">Link</button>
-          <div class="md-toolbar-sep"></div>
-          <button type="button" class="md-toolbar-btn"
-                  [class.active]="showPreview"
-                  (click)="showPreview = !showPreview">
-            {{ showPreview ? 'Modifica' : 'Anteprima' }}
-          </button>
-        </div>
-
-        @if (!showPreview) {
-          <textarea #descArea id="description" formControlName="description" rows="5" class="input"
-                    placeholder="Segni particolari, comportamento… Puoi usare **grassetto**, _corsivo_ e [link](https://…)"></textarea>
-        } @else {
-          <div class="input md-body preview-area"
-               [innerHTML]="catForm.get('description')?.value || '_Nessuna descrizione_' | markdown">
-          </div>
-        }
-
+        <textarea id="description" formControlName="description" rows="5" class="input"
+                  placeholder="Segni particolari, comportamento… Puoi usare **grassetto**, _corsivo_ e [link](https://…)"></textarea>
         <p class="md-hint">Supporta Markdown: **grassetto**, _corsivo_, [testo](URL)</p>
       </div>
 

@@ -77,40 +77,14 @@
   margin-bottom: 30px;
 }
 
-.cats-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.cat-card {
-  padding: 20px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    h2 {
-      font-size: 20px;
-      color: white;
-      margin: 0;
-      font-weight: bold;
-    }
-    .badges-row {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-  }
-  p {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-    margin: 0;
+.reports-counter-simple {
+  margin-top: 15px;
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  strong {
+    color: var(--color-accent);
+    font-size: 18px;
+    font-weight: 700;
   }
 }
