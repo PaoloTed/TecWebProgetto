@@ -18,7 +18,6 @@ export class Profile implements OnInit {
   private router = inject(Router);
 
   user: User | null = null;
-  isLoading = true;
   error = '';
 
   ngOnInit() {
@@ -33,10 +32,8 @@ export class Profile implements OnInit {
     this.apiService.getProfile().subscribe({
       next: (data) => {
         this.user = data;
-        this.isLoading = false;
       },
       error: (err) => {
-        this.isLoading = false;
         this.error = err.error?.error || 'Impossibile caricare il profilo';
       }
     });

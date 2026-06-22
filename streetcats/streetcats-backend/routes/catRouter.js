@@ -6,7 +6,7 @@ import { upload } from "../middleware/upload.js";
 
 export const catRouter = express.Router();
 
-// GET /cats - Lista tutti i gatti
+// GET Lista tutti i gatti
 catRouter.get("/cats", async (req, res, next) => {
   try {
     const cats = await CatController.getAllCats();
@@ -16,7 +16,7 @@ catRouter.get("/cats", async (req, res, next) => {
   }
 });
 
-// GET /cats/:id - Dettaglio singolo gatto
+// GET Dettaglio singolo gatto
 catRouter.get("/cats/:id", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
@@ -30,7 +30,7 @@ catRouter.get("/cats/:id", async (req, res, next) => {
   }
 });
 
-// GET /cats/:id/comments - Commenti di un gatto
+// GET Commenti di un gatto
 catRouter.get("/cats/:id/comments", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
@@ -45,28 +45,28 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 });
 
 
-// POST /cats - Crea nuovo gatto (richiede autenticazione)
+// POST Crea nuovo gatto (richiede autenticazione)
 catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
     const { name, description, color, size, latitude, longitude } = req.body;
     if (name === undefined || name === null || name === "") {
       return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
     }
-    
+
     let photoUrl = req.body.photoUrl;
     if (req.file !== undefined && req.file !== null) {
       photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
     }
 
     const newCat = await CatController.createCat(
-      { 
-        name, 
-        description, 
-        color, 
-        size, 
-        photoUrl, 
-        latitude, 
-        longitude 
+      {
+        name,
+        description,
+        color,
+        size,
+        photoUrl,
+        latitude,
+        longitude
       },
       req.email
     );
@@ -74,7 +74,7 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
   } catch (err) { next(err); }
 });
 
-// PUT /cats/:id - Modifica gatto (richiede autenticazione + owner/admin)
+// PUT  Modifica gatto (richiede autenticazione + owner OR admin)
 catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
@@ -84,10 +84,10 @@ catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res,
     if (cat.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per modificare questo gatto" });
     }
-    
+
     const updateData = { ...req.body };
 
-    
+
     if (req.file) {
       updateData.photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
     }
@@ -97,7 +97,7 @@ catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res,
   } catch (err) { next(err); }
 });
 
-// DELETE /cats/:id - Elimina gatto (richiede autenticazione + owner OR admin)
+// DELETE Elimina gatto (richiede autenticazione + owner OR admin)
 catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
@@ -113,7 +113,7 @@ catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
 });
 
 
-// POST /cats/:id/comments - Aggiungi commento (richiede autenticazione)
+// POST Aggiungi commento (richiede autenticazione)
 catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   try {
     const { text } = req.body;

@@ -24,37 +24,28 @@ export class CatDetail implements OnInit {
 
   cat: Cat | null = null;
   comments: Comment[] = [];
-  isLoading = true;
   error = '';
 
   // Comment form state
   newCommentText = '';
-  isPostingComment = false;
-
-  // Delete state
-  isDeleting = false;
-  confirmDelete = false;
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
-      this.loadAll(id);
+      this.loadCatInfo(id);
     } else {
       this.error = 'ID Gatto non valido.';
-      this.isLoading = false;
     }
   }
 
-  loadAll(id: number) {
+  loadCatInfo(id: number) {
     this.apiService.getCatById(id).subscribe({
       next: (cat) => {
         this.cat = cat;
-        this.isLoading = false;
         this.loadComments(id);
       },
       error: () => {
         this.error = 'Impossibile caricare i dettagli del gatto.';
-        this.isLoading = false;
       }
     });
   }
@@ -79,19 +70,15 @@ export class CatDetail implements OnInit {
   // Invio commento 
   submitComment() {
     const text = this.newCommentText.trim();
-    if (!this.cat || !text || this.isPostingComment) return;
-
-    this.isPostingComment = true;
+    if (!this.cat || !text) return;
 
     this.apiService.addComment(this.cat.id, text).subscribe({
       next: () => {
         this.loadComments(this.cat!.id);
         this.newCommentText = '';
-        this.isPostingComment = false;
       },
       error: (err) => {
         alert(err.error?.error || "Errore durante l'invio del commento.");
-        this.isPostingComment = false;
       }
     });
   }
@@ -99,10 +86,9 @@ export class CatDetail implements OnInit {
   // Eliminazione gatto 
   deleteCat() {
     if (!this.cat) return;
-    this.isDeleting = true;
     this.apiService.deleteCat(this.cat.id).subscribe({
       next: () => this.router.navigate(['/cats']),
-      error: () => this.isDeleting = false
+      error: () => { }
     });
   }
 

@@ -1,9 +1,9 @@
 <!-- Page header -->
-<header class="profile-header">
+<header class="flex-between" style="gap: 25px; flex-wrap: wrap;">
   <div>
-    <h1>{{ user?.userName || 'Profilo' }}</h1>
+    <h1 style="font-size: 30px; margin-bottom: 5px;">{{ user?.userName || 'Profilo' }}</h1>
     @if (user) {
-    <div class="user-meta">
+    <div class="flex-center text-secondary" style="flex-wrap: wrap;">
       <span>{{ user.email }}</span>
       <span class="meta-dot"></span>
       <span>{{ user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
@@ -12,40 +12,31 @@
     }
   </div>
 </header>
-
-@if (isLoading) {
-<div class="loading-state">
-  <div class="spinner"></div>
-</div>
-
-} @else if (error) {
+@if (error) {
 <div class="alert alert-error error-state">{{ error }}</div>
 
 } @else if (user) {
-<div class="profile-content">
-
   <!-- Segnalazioni -->
   <section>
     <h2>Le mie segnalazioni ({{ user.stats?.cats ?? 0 }})</h2>
 
     @if (!user.recentCats || user.recentCats.length === 0) {
-    <p class="empty-msg">Non hai ancora fatto nessuna segnalazione.</p>
+    <p class="text-secondary">Non hai ancora fatto nessuna segnalazione.</p>
     } @else {
-    <div class="items-list">
+    <div class="flex-col">
       @for (cat of user.recentCats; track cat.id) {
-      <a [routerLink]="['/cats', cat.id]" class="card cat-item">
-        <div class="item-body">
-          <div class="item-header">
-            <span class="item-name">{{ cat.name }}</span>
-            @if (cat.color) {
-            <span class="badge badge-slate">{{ cat.color }}</span>
-            }
-          </div>
+      <a [routerLink]="['/cats', cat.id]" class="card flex-between">
+        <div>
+          <span class="text-bold">{{ cat.name }}</span>
+          @if (cat.color) {
+          <span class="badge badge-slate">{{ cat.color }}</span>
+          }
         </div>
-        <span class="item-date">
+        <span class="text-muted">
           {{ cat.createdAt | date:'d MMM yyyy' }}
         </span>
       </a>
+
       }
     </div>
     }
@@ -56,22 +47,22 @@
     <h2>I miei commenti recenti ({{ user.stats?.comments ?? 0 }})</h2>
 
     @if (!user.recentComments || user.recentComments.length === 0) {
-    <p class="empty-msg">Non hai ancora lasciato nessun commento.</p>
+    <p class="text-secondary">Non hai ancora lasciato nessun commento.</p>
     } @else {
-    <div class="items-list">
+    <div class="flex-col">
       @for (comment of user.recentComments; track comment.id) {
-      <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="card comment-item">
-        <header>
+      <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="card flex-col" style="gap: 5px;">
+        <header class="flex-between">
           @if (comment.cat) {
-          <span class="cat-name">
+          <span style="font-size: 10px; color: var(--color-primary); font-weight: bold;">
             {{ comment.cat.name }}
           </span>
           }
-          <span class="comment-date">
+          <span class="text-muted">
             {{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}
           </span>
         </header>
-        <p class="comment-text">
+        <p class="text-secondary">
           {{ comment.text }}
         </p>
       </a>
@@ -80,5 +71,4 @@
     }
   </section>
 
-</div>
 }

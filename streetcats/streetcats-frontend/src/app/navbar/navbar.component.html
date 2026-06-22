@@ -1,31 +1,31 @@
 <nav>
-  <div class="nav-container">
-
     <!-- Logo -->
-    <a routerLink="/" class="logo-link">
-      <span class="logo-bg">
+    <a routerLink="/" class="flex-center">
+      <span style="width: 30px; height: 30px;">
         <img src="/gattologo.webp" alt="Logo StreetCats">
       </span>
       <span class="logo-text">StreetCats</span>
     </a>
 
     <!-- Nav links + Actions -->
-    <div class="nav-links">
+    <div class="flex-center" style="gap: 4px;">
 
       <a routerLink="/cats" class="nav-link">
         Esplora gatti
       </a>
 
       @if (authService.isAuthenticated()) {
-        <a routerLink="/profile" class="nav-link">
-          Il mio profilo
-        </a>
-        <span class="nav-sep"></span>
-        <button (click)="logout()" class="btn-ghost btn-sm">Esci</button>
+      <a routerLink="/cats/new" class="nav-link">
+        Nuova segnalazione
+      </a>
+      <a routerLink="/profile" class="nav-link">
+        Il mio profilo
+      </a>
+      <span class="nav-sep"></span>
+      <button (click)="logout()" class="btn-logout" style="background: transparent; color: var(--color-danger); border: none; font-family: inherit; font-weight: 500; font-size: 15px; padding: 5px 15px; cursor: pointer;">Esci</button>
       } @else {
-        <span class="nav-sep"></span>
-        <a routerLink="/login" class="btn-primary btn-sm">Accedi</a>
+      <span class="nav-sep"></span>
+      <a routerLink="/login" class="btn-primary btn-sm">Accedi</a>
       }
     </div>
-  </div>
 </nav>

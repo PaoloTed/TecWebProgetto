@@ -1,73 +1,46 @@
-<div class="min-h-[80vh] flex items-center justify-center px-4">
-  <div class="w-full max-w-[420px]">
+<main class="auth-page">
+  <h1>Crea un account</h1>
+  <p class="auth-subtitle">Unisciti alla comunità e inizia a segnalare i gatti del quartiere</p>
 
-    <!-- Logo + heading -->
-    <div class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-white mb-1">Crea un account</h1>
-      <p class="text-sm" style="color: var(--color-text-secondary);">Unisciti alla comunità e inizia a segnalare i gatti del quartiere</p>
+  @if (errorMessage) {
+    <div class="alert">
+      <span>{{ errorMessage }}</span>
     </div>
+  }
 
-    <!-- Card -->
-    <div class="card p-8">
-
-      <!-- Error alert -->
-      @if (errorMessage) {
-        <div class="alert alert-error mb-6">
-          <span>{{ errorMessage }}</span>
-        </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <label>
+      Nome utente
+      <input type="text" formControlName="userName" placeholder="mario_rossi" autocomplete="username">
+      @if (form.get('userName')?.invalid && form.get('userName')?.touched) {
+        <span class="field-error">Minimo 3 caratteri, massimo 50.</span>
       }
+    </label>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+    <label>
+      Indirizzo email
+      <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
+      @if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <span class="field-error">Inserisci un indirizzo email valido.</span>
+      }
+    </label>
 
-        <!-- Username -->
-        <div class="flex flex-col gap-1.5">
-          <label for="userName" class="section-label">Nome utente</label>
-          <input id="userName" type="text" formControlName="userName" class="input"
-                 placeholder="mario_rossi" autocomplete="username">
-          @if (form.get('userName')?.invalid && form.get('userName')?.touched) {
-            <p class="text-xs text-[var(--color-danger)] mt-1">Minimo 3 caratteri, massimo 50.</p>
-          }
-        </div>
+    <label>
+      Password
+      <input type="password" formControlName="password" placeholder="Almeno 6 caratteri" autocomplete="new-password">
+      @if (form.get('password')?.invalid && form.get('password')?.touched) {
+        <span class="field-error">Minimo 6 caratteri.</span>
+      }
+    </label>
 
-        <!-- Email -->
-        <div class="flex flex-col gap-1.5">
-          <label for="email" class="section-label">Indirizzo email</label>
-          <input id="email" type="email" formControlName="email" class="input"
-                 placeholder="mario@example.com" autocomplete="email">
-          @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <p class="text-xs text-[var(--color-danger)] mt-1">Inserisci un indirizzo email valido.</p>
-          }
-        </div>
+    <hr>
 
-        <!-- Password -->
-        <div class="flex flex-col gap-1.5">
-          <label for="password" class="section-label">Password</label>
-          <input id="password" type="password" formControlName="password" class="input"
-                 placeholder="Almeno 6 caratteri" autocomplete="new-password">
-          @if (form.get('password')?.invalid && form.get('password')?.touched) {
-            <p class="text-xs text-[var(--color-danger)] mt-1">Minimo 6 caratteri.</p>
-          }
-        </div>
+    <button type="submit" class="btn-primary">
+      Crea l'account
+    </button>
+  </form>
 
-
-
-        <!-- Divider -->
-        <hr class="divider my-1">
-
-        <!-- Submit -->
-        <button type="submit" class="btn-primary btn-lg w-full">
-            Crea l'account
-        </button>
-
-      </form>
-    </div>
-
-    <!-- Footer -->
-    <p style="text-align: center; font-size: 15px; margin-top: 25px; color: var(--color-text-muted);">
-      Hai già un account?&nbsp;
-      <a routerLink="/login" style="color: var(--color-primary);"><b>Accedi</b></a>
-    </p>
-
-  </div>
-</div>
-
+  <p class="auth-footer">
+    Hai già un account? <a routerLink="/login">Accedi</a>
+  </p>
+</main>

@@ -1,46 +1,43 @@
-<div class="form-container">
 
   <!-- Header -->
-  <header>
+  <header style="margin-bottom: 30px;">
     @if (isEditMode) {
-      <h1>Modifica segnalazione</h1>
-      <p>Aggiorna le informazioni del gatto.</p>
+      <h1 style="font-size: 25px; margin-bottom: 10px;">Modifica segnalazione</h1>
+      <p class="text-secondary">Aggiorna le informazioni del gatto.</p>
     } @else {
-      <h1>Hai visto un micio?</h1>
-      <p>Compila il modulo con le informazioni che conosci — anche parziali vanno bene.</p>
+      <h1 style="font-size: 25px; margin-bottom: 10px;">Hai visto un micio?</h1>
+      <p class="text-secondary">Compila il modulo con le informazioni che conosci — anche parziali vanno bene.</p>
     }
   </header>
 
   @if (errorMessage) {
-    <div class="alert alert-error">
+    <div class="alert" style="margin-bottom: 25px;">
       <span>{{ errorMessage }}</span>
     </div>
   }
 
-  <form [formGroup]="catForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="catForm" (ngSubmit)="onSubmit()" class="flex-col" style="gap: 25px;">
 
     <!-- Sezione 1: Identificazione -->
-    <div class="card card-section">
-      <div class="section-title">
-        <h2>Identificazione</h2>
-      </div>
-      <hr class="divider">
+    <div class="card">
+      <h2>Identificazione</h2>
+      <hr>
 
       <div>
         <label for="name" class="section-label">
           Nome o soprannome <span class="required">*</span>
         </label>
-        <input id="name" formControlName="name" type="text" class="input" placeholder="Es. Zorro, Pallino…">
+        <input id="name" formControlName="name" type="text" placeholder="Es. Zorro, Pallino…">
       </div>
 
-      <div class="form-grid-2">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
         <div>
           <label for="color" class="section-label">Colore mantello</label>
-          <input id="color" formControlName="color" type="text" class="input" placeholder="Es. Grigio tigrato">
+          <input id="color" formControlName="color" type="text" placeholder="Es. Grigio tigrato">
         </div>
         <div>
           <label for="size" class="section-label">Taglia stimata</label>
-          <select id="size" formControlName="size" class="input">
+          <select id="size" formControlName="size">
             <option value="Piccolo">Piccolo</option>
             <option value="Medio">Medio</option>
             <option value="Grande">Grande</option>
@@ -49,36 +46,34 @@
       </div>
 
       <!-- Foto del gatto -->
-      <div class="photo-section">
+      <div>
         <label for="photo" class="section-label">Foto del gatto (opzionale)</label>
-        <div class="upload-controls">
-          <label for="photo" class="btn-ghost upload-btn">
+        <div class="flex-center" style="gap: 15px; flex-wrap: wrap;">
+          <label for="photo" class="btn-ghost flex-center" style="cursor: pointer; display: inline-flex;">
             Carica un'immagine
           </label>
           <input id="photo" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
           @if (selectedFile) {
-            <span class="filename">{{ selectedFile.name }}</span>
+            <span style="font-size: 15px; color: var(--color-text-muted);">{{ selectedFile.name }}</span>
           }
         </div>
         @if (previewUrl) {
-          <div class="preview-box">
-            <img [src]="previewUrl" alt="Anteprima foto">
+          <div style="margin-top: 15px; overflow: hidden; width: 120px; height: 120px; border: 1px solid var(--color-border);">
+            <img [src]="previewUrl" alt="Anteprima foto" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
         }
       </div>
     </div>
 
     <!-- Sezione 2: Luogo -->
-    <div class="card card-section">
-      <div class="section-title">
-        <h2>Luogo dell'avvistamento</h2>
-      </div>
-      <hr class="divider">
+    <div class="card">
+      <h2>Luogo dell'avvistamento</h2>
+      <hr>
 
       <!-- Mappa pick -->
       <div>
         <div class="section-label">Posizione sulla mappa</div>
-        <p class="help-text">
+        <p class="text-muted" style="margin-bottom: 10px;">
           Clicca sulla mappa per indicare il punto esatto dell'avvistamento. Puoi trascinare il marker per correggere.
         </p>
         <app-map
@@ -87,14 +82,14 @@
           [lng]="pickedLng"
           height="320px"
           (positionPicked)="onPositionPicked($event)"
-          class="pick-map">
+          style="overflow: hidden; border: 1px solid var(--color-border); display: block;">
         </app-map>
         @if (pickedLat != null && pickedLng != null) {
-          <div class="location-status">
+          <div class="text-muted" style="margin-top: 10px;">
             Posizione selezionata: {{ pickedLat | number:'1.4-4' }}, {{ pickedLng | number:'1.4-4' }}
           </div>
         } @else {
-          <div class="location-status">
+          <div class="text-muted" style="margin-top: 10px;">
             Nessuna posizione selezionata - verrà usata una posizione di default.
           </div>
         }
@@ -102,14 +97,12 @@
     </div>
 
     <!-- Sezione 3: Note -->
-    <div class="card card-section">
-      <div class="section-title">
-        <h2>Note e condizioni</h2>
-      </div>
-      <hr class="divider">
+    <div class="card">
+      <h2>Note e condizioni</h2>
+      <hr>
       <div>
         <label for="description" class="section-label">Descrizione dettagliata</label>
-        <textarea id="description" formControlName="description" rows="5" class="input"
+        <textarea id="description" formControlName="description" rows="5"
                   placeholder="Segni particolari, comportamento… Puoi usare **grassetto**, _corsivo_ e [link](https://…)"></textarea>
         <p class="md-hint">Supporta Markdown: **grassetto**, _corsivo_, [testo](URL)</p>
       </div>
@@ -117,14 +110,13 @@
     </div>
 
     <!-- Actions -->
-    <div class="form-actions">
+    <div class="flex-center">
       <a routerLink="/cats" class="btn-ghost">
         Annulla
       </a>
-      <button type="submit" [disabled]="catForm.invalid" class="btn-accent">
+      <button type="submit" [disabled]="catForm.invalid" class="btn-primary">
         Pubblica segnalazione
       </button>
     </div>
 
   </form>
-</div>

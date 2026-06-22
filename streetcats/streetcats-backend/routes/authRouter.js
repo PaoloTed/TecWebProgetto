@@ -6,7 +6,7 @@ import { createHash } from "crypto";
 
 export const authRouter = express.Router();
 
-// POST /auth - Gestisce il login degli utenti
+// POST Gestisce il login degli utenti
 authRouter.post("/auth", async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -46,7 +46,7 @@ authRouter.post("/auth", async (req, res, next) => {
   }
 });
 
-// POST /signup - Registrazione di un nuovo utente nel sistema
+// POST Registrazione di un utente
 authRouter.post("/signup", async (req, res, next) => {
   try {
     const { userName, password, email } = req.body;
@@ -87,7 +87,7 @@ authRouter.post("/signup", async (req, res, next) => {
     }
 
     // Crea l'utente
-    
+
     const newUser = await AuthController.saveUser({ userName, password, email });
 
     // Genera token per login automatico dopo la registrazione
@@ -113,7 +113,7 @@ authRouter.post("/signup", async (req, res, next) => {
   }
 });
 
-// GET /profile - Restituisce i dettagli del profilo dell'utente autenticato e le sue ultime attività
+// GET Restituisce i dettagli del profilo dell'utente autenticato e le sue ultime attività
 authRouter.get("/profile", requireAuth, async (req, res, next) => {
   try {
     if (req.email === undefined || req.email === null || req.email === "") {

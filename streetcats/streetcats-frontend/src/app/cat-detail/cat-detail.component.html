@@ -1,150 +1,98 @@
-<!-- Loading -->
-@if (isLoading) {
-  <div class="loading-state">
-    <div class="spinner"></div>
-    <p>Caricamento scheda gatto…</p>
-  </div>
-
 <!-- Error -->
-} @else if (error) {
-  <div class="alert alert-error error-state">
-    <div>
-      <h3>Gatto non trovato</h3>
-      <p class="error-details">{{ error }}</p>
-    </div>
-  </div>
+@if (error) {
+<div class="alert error-state">
+  <h3>Gatto non trovato</h3>
+  <p>{{ error }}</p>
+</div>
 
 <!-- Dettaglio -->
 } @else if (cat) {
 
-  <!-- CARD -->
-  <div class="detail-container">
+<!-- Layout a tre colonne -->
+<div class="detail-columns">
 
-    <!-- Layout a tre colonne per Nome/Descrizione, Mappa e Foto -->
-    <div class="detail-three-columns">
-      
-      <!-- Colonna 1: Nome, Badges, Descrizione -->
-      <div class="column-info">
-        
-        <!-- Intestazione -->
-        <header class="detail-header">
-          <h1>{{ cat.name }}</h1>
-          
-          <!-- Badges attributi -->
-          <div class="meta-row">
-            <span class="badge badge-slate">Colore: {{ cat.color }}</span>
-            <span class="badge badge-purple">Taglia: {{ cat.size }}</span>
-            <span class="reporter-info">
-              Segnalato da {{ cat.UserEmail }}
-            </span>
-          </div>
-        </header>
+  <!-- Colonna 1: Nome, Badges, Descrizione -->
+  <div class="flex-col" style="flex: 1; gap: 25px; min-width: 0;">
 
-        <!-- Descrizione -->
-        <div class="card description-card">
-          <h2>Descrizione</h2>
-          <div class="md-body" [innerHTML]="cat.description | markdown"></div>
-        </div>
+    <header class="detail-header">
+      <h1 style="font-size: 35px; margin: 10px 0;">{{ cat.name }}</h1>
+      <div class="flex-center" style="flex-wrap: wrap;">
+        <span class="badge badge-slate">Colore: {{ cat.color }}</span>
+        <span class="badge badge-purple">Taglia: {{ cat.size }}</span>
+        <span class="small-text">Segnalato da {{ cat.UserEmail }}</span>
       </div>
-
-      <!-- Colonna 2: Mappa  -->
-      <div class="column-map card">
-        <h2>Ultima Posizione</h2>
-        <app-map
-          mode="view-one"
-          [lat]="cat.latitude"
-          [lng]="cat.longitude"
-          class="detail-map">
-        </app-map>
-        <p class="coordinates-info">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{ cat.longitude | number:'1.4-4' }}</p>
-      </div>
-    
-
-      <!-- Colonna 3: Immagine  -->
-      <div class="column-photo card">
-        <h2>Foto</h2>
-        <div class="cat-img-container">
-          <img [src]="cat.photoUrl" alt="Foto del gatto">
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Azioni proprietario/admin -->
-    @if (isOwnerOrAdmin) {
-      <div class="owner-actions">
-        <div class="actions-group">
-          <a [routerLink]="['/cats', cat.id, 'edit']" class="btn-ghost edit-btn">
-            Modifica
-          </a>
-          <button type="button" (click)="deleteCat()" class="btn-danger-ghost btn-sm">
-            Elimina
-          </button>
-        </div>
-      </div>
-    }
-
-  </div>
-
-  <!-- COMMENTI -->
-  <div class="comments-section">
-    <header class="comments-section-header">
-      <h2>Commenti e avvistamenti</h2>
-      <span class="comments-count">{{ comments.length }}</span>
     </header>
 
-    <!-- Form nuovo commento  -->
-    @if (isAuthenticated) {
-      <div class="card new-comment-card">
-        <div class="new-comment-layout">
-
-          <div class="new-comment-form">
-            <textarea [(ngModel)]="newCommentText"
-                      placeholder="Hai avvistato questo gatto? Lascia un commento..."
-                      rows="4"
-                      class="input"
-                      [disabled]="isPostingComment"></textarea>
-
-            <div class="comment-actions">
-              <button type="button" (click)="submitComment()" class="btn-primary btn-sm">
-                Pubblica commento
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    } @else {
-      <div class="card login-prompt-card">
-        <p>Accedi per lasciare un commento o un avvistamento.</p>
-        <a routerLink="/login" class="btn-primary btn-sm">Accedi</a>
-      </div>
-    }
-
-    <!-- Lista commenti -->
-    @if (comments.length === 0) {
-      <div class="card empty-comments-card">
-        <h3>Ancora nessun commento</h3>
-        <p>Sii il primo a condividere un avvistamento!</p>
-      </div>
-    } @else {
-      <div class="comments-list">
-        @for (comment of comments; track comment.id) {
-          <div class="card comment-item">
-
-            <div class="comment-item-body">
-              <header>
-                <div class="comment-author-meta">
-                  <span class="author-email">{{ comment.UserEmail }}</span>
-                  <span class="comment-date">{{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}</span>
-                </div>
-
-              </header>
-              <p class="comment-text">{{ comment.text }}</p>
-            </div>
-          </div>
-        }
-      </div>
-    }
+    <div class="card">
+      <h2>Descrizione</h2>
+      <div class="md-body" [innerHTML]="cat.description | markdown"></div>
+    </div>
   </div>
+
+  <!-- Colonna 2: Mappa -->
+  <div class="col-side card">
+    <h2>Ultima Posizione</h2>
+    <app-map mode="view-one" [lat]="cat.latitude" [lng]="cat.longitude"></app-map>
+    <p class="small-text">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{ cat.longitude | number:'1.4-4' }}</p>
+  </div>
+
+  <!-- Colonna 3: Foto -->
+  <div class="col-side card">
+    <h2 style="font-size: 10px; color: var(--color-text-secondary); text-transform: uppercase; margin: 10px 0;">Foto</h2>
+    <div style="overflow: hidden; background: #0d1322; height: 450px;">
+      <img [src]="cat.photoUrl" alt="Foto del gatto" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+    </div>
+  </div>
+</div>
+
+<!-- Azioni proprietario -->
+@if (isOwnerOrAdmin) {
+<div class="flex-center" style="margin-top: 10px;">
+  <a [routerLink]="['/cats', cat.id, 'edit']" class="btn-ghost btn-sm">Modifica</a>
+  <button type="button" (click)="deleteCat()" class="btn-danger-ghost btn-sm">Elimina</button>
+</div>
+}
+
+<!-- COMMENTI -->
+<header class="comments-header">
+  <h2>Commenti e avvistamenti</h2>
+  <span class="small-text">{{ comments.length }}</span>
+</header>
+
+<!-- Form nuovo commento -->
+@if (isAuthenticated) {
+<div class="card" style="margin-bottom: 25px;">
+  <textarea [(ngModel)]="newCommentText" placeholder="Hai avvistato questo gatto? Lascia un commento..." rows="4" style="resize: none;"></textarea>
+  <div class="actions">
+    <button type="button" (click)="submitComment()" class="btn-primary btn-sm">
+      Pubblica commento
+    </button>
+  </div>
+</div>
+} @else {
+<div class="card flex-between" style="margin-bottom: 25px; gap: 10px;">
+  <p class="text-secondary">Accedi per lasciare un commento o un avvistamento.</p>
+  <a routerLink="/login" class="btn-primary btn-sm">Accedi</a>
+</div>
+}
+
+<!-- Lista commenti -->
+@if (comments.length === 0) {
+<div class="card" style="padding: 50px 30px; text-align: center;">
+  <h3 style="font-size: 15px;">Ancora nessun commento</h3>
+  <p class="text-secondary">Sii il primo a condividere un avvistamento!</p>
+</div>
+} @else {
+<div class="comments-list">
+  @for (comment of comments; track comment.id) {
+  <div class="card" style="margin-bottom: 10px;">
+    <header class="flex-between" style="gap: 10px; margin-bottom: 5px;">
+      <span class="text-bold">{{ comment.UserEmail }}</span>
+      <span class="small-text">{{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}</span>
+    </header>
+    <p class="text-secondary" style="white-space: pre-wrap;">{{ comment.text }}</p>
+  </div>
+  }
+</div>
+}
 }

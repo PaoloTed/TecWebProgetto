@@ -18,12 +18,11 @@ export class Login {
 
   loginForm: FormGroup;
   errorMessage = '';
-  isLoading = false;
 
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -32,7 +31,6 @@ export class Login {
       return;
     }
 
-    this.isLoading = true;
     this.errorMessage = '';
 
     this.apiService.login(this.loginForm.value).subscribe({
@@ -41,7 +39,6 @@ export class Login {
         this.router.navigate(['/']);
       },
       error: (err) => {
-        this.isLoading = false;
         this.errorMessage = err.error?.error || 'Errore durante il login';
       }
     });

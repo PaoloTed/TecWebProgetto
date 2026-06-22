@@ -18,7 +18,6 @@ export class CatForm implements OnInit {
   private route = inject(ActivatedRoute);
 
   catForm: FormGroup;
-  isLoading = false;
   errorMessage = '';
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -49,7 +48,6 @@ export class CatForm implements OnInit {
   }
 
   loadCatData(id: number) {
-    this.isLoading = true;
     this.apiService.getCatById(id).subscribe({
       next: (cat) => {
         this.catForm.patchValue({
@@ -63,11 +61,9 @@ export class CatForm implements OnInit {
         if (cat.photoUrl !== null) {
           this.previewUrl = cat.photoUrl;
         }
-        this.isLoading = false;
       },
       error: () => {
         this.errorMessage = 'Errore nel caricamento dei dati del gatto.';
-        this.isLoading = false;
       }
     });
   }
@@ -92,12 +88,11 @@ export class CatForm implements OnInit {
       return;
     }
 
-    this.isLoading = true;
     this.errorMessage = '';
 
     const formData = new FormData();
 
-    // Campi specifici della segnalazione del gatto
+    // Campi della segnalazione del gatto
     formData.append('name', this.catForm.value.name || '');
     formData.append('description', this.catForm.value.description || '');
     formData.append('color', this.catForm.value.color || '');
@@ -116,7 +111,6 @@ export class CatForm implements OnInit {
         },
         error: () => {
           this.errorMessage = 'Errore durante la modifica della segnalazione.';
-          this.isLoading = false;
         }
       });
     } else {
@@ -126,7 +120,6 @@ export class CatForm implements OnInit {
         },
         error: () => {
           this.errorMessage = 'Errore durante la creazione della segnalazione.';
-          this.isLoading = false;
         }
       });
     }

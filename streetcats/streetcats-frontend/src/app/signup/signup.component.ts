@@ -21,12 +21,10 @@ export class Signup {
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
-  isLoading = false;
   errorMessage = '';
 
   onSubmit() {
     if (this.form.invalid) return;
-    this.isLoading = true;
     this.errorMessage = '';
 
     const { userName, email, password } = this.form.value;
@@ -37,7 +35,6 @@ export class Signup {
       },
       error: (err) => {
         this.errorMessage = err.error?.error || 'Errore durante la registrazione.';
-        this.isLoading = false;
       }
     });
   }

@@ -4,7 +4,7 @@ import { requireAuth } from "../middleware/authorization.js";
 
 export const commentRouter = express.Router();
 
-// GET /comments/:id - Dettaglio singolo commento
+// GET  Dettaglio singolo commento
 commentRouter.get("/comments/:id", async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.id);
@@ -18,7 +18,7 @@ commentRouter.get("/comments/:id", async (req, res, next) => {
   }
 });
 
-// PUT /comments/:id - Modifica commento (richiede autenticazione + owner/admin)
+// PUT Modifica commento (richiede autenticazione + owner OR admin)
 commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
   try {
     const commentId = req.params.id;
@@ -46,7 +46,7 @@ commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
   }
 });
 
-// DELETE /comments/:id - Elimina commento (richiede autenticazione + owner/admin)
+// DELETE Elimina commento (richiede autenticazione + owner OR admin)
 commentRouter.delete("/comments/:id", requireAuth, async (req, res, next) => {
   try {
     const commentId = req.params.id;
@@ -68,7 +68,7 @@ commentRouter.delete("/comments/:id", requireAuth, async (req, res, next) => {
   }
 });
 
-// GET /users/:email/comments - Commenti di un utente
+// GET Commenti di un utente
 commentRouter.get("/users/:email/comments", async (req, res, next) => {
   try {
     const comments = await CommentController.getCommentsByUser(req.params.email);

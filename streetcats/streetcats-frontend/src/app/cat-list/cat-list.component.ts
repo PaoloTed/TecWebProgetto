@@ -20,7 +20,6 @@ export class CatList implements OnInit {
 
   cats: Cat[] = [];
   catsWithCoords: MapCat[] = [];
-  isLoading = true;
   error = '';
 
   ngOnInit() {
@@ -32,8 +31,6 @@ export class CatList implements OnInit {
       next: (data) => {
         this.cats = data;
 
-        // Calcola e salva l'array una sola volta, per evitare che la mappa 
-        // si resetti ad ogni ciclo di change detection di Angular
         const validCats: MapCat[] = [];
         for (let i = 0; i < this.cats.length; i++) {
           const c = this.cats[i];
@@ -57,23 +54,9 @@ export class CatList implements OnInit {
           }
         }
         this.catsWithCoords = validCats;
-
-        this.isLoading = false;
-        setTimeout(() => {
-          if (this.mapComp !== undefined) {
-            this.mapComp.refresh();
-          }
-        },
-          0);
-        setTimeout(() => {
-          if (this.mapComp !== undefined) {
-            this.mapComp.refresh();
-          }
-        }, 400);
       },
       error: () => {
         this.error = 'Errore nel caricamento dei gatti.';
-        this.isLoading = false;
       }
     });
   }

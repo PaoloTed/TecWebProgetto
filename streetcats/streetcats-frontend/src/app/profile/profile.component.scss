@@ -1,135 +1,20 @@
-.profile-header {
-  margin-bottom: 30px;
+:host {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 25px;
-  flex-wrap: wrap;
-  h1 {
-    font-size: 30px;
-    color: white;
-    margin: 0 0 5px;
-    font-weight: bold;
-  }
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
 }
 
-.user-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: 15px;
-  color: var(--color-text-secondary);
-}
 
 .meta-dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: var(--color-text-muted);
-  display: inline-block;
 }
 
-.loading-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 100px 0;
-}
-
-.error-state {
-  max-width: 580px;
-}
-
-.profile-content {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  max-width: 770px;
-
-  section {
-    h2 {
-      font-size: 20px;
-      color: white;
-      margin: 0 0 15px;
-      font-weight: bold;
-    }
-    .empty-msg {
-      font-size: 15px;
-      color: var(--color-text-secondary);
-      margin: 0;
-    }
-  }
-}
-
-.items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.cat-item {
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  cursor: pointer;
-  text-decoration: none;
-
-  .item-body {
-    min-width: 0;
-    .item-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
-      flex-wrap: wrap;
-      .item-name {
-        font-size: 15px;
-        color: white;
-        font-weight: bold;
-      }
-    }
-  }
-
-  .item-date {
-    font-size: 10px;
-    color: var(--color-text-muted);
-    flex-shrink: 0;
-  }
-}
-
-.comment-item {
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  cursor: pointer;
-  text-decoration: none;
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-
-    .cat-name {
-      font-size: 10px;
-      color: var(--color-primary);
-      font-weight: bold;
-    }
-
-    .comment-date {
-      font-size: 10px;
-      color: var(--color-text-muted);
-    }
-  }
-
-  .comment-text {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-    margin: 0;
-  }
+/* Contenuto */
+section h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
 }

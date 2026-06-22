@@ -1,90 +1,18 @@
-.list-header {
-  margin-bottom: 30px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  h1 {
-    font-size: 30px;
-    color: white;
-    line-height: 1.2;
-    margin: 0 0 5px;
-    font-weight: bold;
-    span {
-      color: var(--color-accent);
-    }
-  }
-  p {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-    margin: 0;
-  }
-  .list-action-btn {
-    flex-shrink: 0;
-  }
+/* Header della lista */
+header {
+  margin-bottom: 25px;
 }
 
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 130px 0;
-  gap: 15px;
-  p {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-  }
+header h1 {
+  font-size: 30px;
+  margin-bottom: 5px;
 }
 
-.error-state {
-  max-width: 580px;
-  h3 {
-    font-size: 15px;
-    margin: 0 0 2px;
-    font-weight: bold;
-  }
-  .error-msg {
-    font-size: 10px;
-    opacity: .8;
-    margin: 0;
-  }
+header h1 span {
+  color: var(--color-primary);
 }
 
-.empty-state {
-  text-align: center;
-  padding: 100px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  h3 {
-    font-size: 20px;
-    color: white;
-    margin: 0 0 10px;
-    font-weight: bold;
-  }
-  p {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-    max-width: 36ch;
-    margin: 0 0 30px;
-  }
-}
-
-.map-container {
-  overflow: hidden;
-  margin-bottom: 30px;
-}
-
-.reports-counter-simple {
-  margin-top: 15px;
+header p {
   font-size: 15px;
   color: var(--color-text-secondary);
-  text-align: center;
-  strong {
-    color: var(--color-accent);
-    font-size: 18px;
-    font-weight: 700;
-  }
 }

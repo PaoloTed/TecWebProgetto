@@ -1,6 +1,4 @@
-import { Injectable, WritableSignal, computed, signal } from '@angular/core';
-import { jwtDecode } from 'jwt-decode';
-import { AuthState } from './auth-state.type';
+import { Injectable } from '@angular/core';
 import { User } from '../api/user.type';
 
 @Injectable({
@@ -10,76 +8,52 @@ export class AuthService {
   private tokenKey = 'streetcats_token';
   private currentUserKey = 'streetcats_user';
 
-  authState: WritableSignal<AuthState> = signal<AuthState>({
-    user: this.getUserFromStorage(),
-    token: this.getTokenFromStorage(),
-    isAuthenticated: this.verifyToken(this.getTokenFromStorage())
-  });
+  private _token: string | null = null;
+  private _user: User | null = null;
 
-  currentUser = computed(() => this.authState().user);
-  isAuthenticated = computed(() => this.authState().isAuthenticated);
-
-  constructor() {}
+  constructor() {
+    this._token = localStorage.getItem(this.tokenKey);
+    const userStr = localStorage.getItem(this.currentUserKey);
+    if (userStr) {
+      try {
+        this._user = JSON.parse(userStr);
+      } catch (e) {
+        this._user = null;
+      }
+    }
+  }
 
   setSession(token: string, user: User) {
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.currentUserKey, JSON.stringify(user));
-    this.authState.set({
-      user: user,
-      token: token,
-      isAuthenticated: this.verifyToken(token)
-    });
+    this._token = token;
+    this._user = user;
   }
 
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.currentUserKey);
-    this.authState.set({
-      user: null,
-      token: null,
-      isAuthenticated: false
-    });
+    this._token = null;
+    this._user = null;
   }
 
   getToken(): string | null {
-    return this.authState().token;
+    return this._token;
+  }
+
+  currentUser(): User | null {
+    return this._user;
+  }
+
+  isAuthenticated(): boolean {
+    return this._token !== null && this._token !== '';
   }
 
   isUserAuthenticated(): boolean {
-    return this.verifyToken(this.getToken());
-  }
-
-  private getTokenFromStorage(): string | null {
-    return localStorage.getItem(this.tokenKey);
-  }
-
-  private getUserFromStorage(): User | null {
-    const userStr = localStorage.getItem(this.currentUserKey);
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
+    return this.isAuthenticated();
   }
 
   verifyToken(token: string | null): boolean {
-    if (token !== null) {
-      try {
-        const decodedToken = jwtDecode(token);
-        const expiration = decodedToken.exp;
-        if (expiration === undefined || Date.now() >= expiration * 1000) {
-          return false;
-        } else {
-          return true;
-        }
-      } catch (error) {
-        return false;
-      }
-    }
-    return false;
+    return token !== null && token !== '';
   }
 }
-
