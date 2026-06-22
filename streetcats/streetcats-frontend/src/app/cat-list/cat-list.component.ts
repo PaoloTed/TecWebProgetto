@@ -78,7 +78,7 @@ export class CatList implements OnInit {
     });
   }
 
-  /** Naviga alla pagina del gatto quando viene cliccato il marker sulla mappa */
+  // Naviga alla pagina del gatto quando viene cliccato il marker sulla mappa 
   onCatClicked(id: number) {
     this.router.navigate(['/cats', id]);
   }

@@ -31,7 +31,7 @@ export class CatForm implements OnInit {
   isEditMode = false;
   catId: number | null = null;
 
-  /** Coordinate selezionate dall'utente sulla mappa */
+  // Coordinate selezionate dall'utente sulla mappa 
   pickedLat: number | null = null;
   pickedLng: number | null = null;
 

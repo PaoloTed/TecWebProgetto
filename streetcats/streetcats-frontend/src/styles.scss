@@ -4,17 +4,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --color-background:       #090d16; /* Single dark background color */
-  --color-border:           #162030; /* Very subtle line color */
-  --color-primary:          #7c5cf6;
-  --color-primary-hover:    #6d48f5;
-  --color-accent:           #f97316;
-  --color-accent-hover:     #ea580c;
-  --color-success:          #10b981;
-  --color-danger:           #f43f5e;
-  --color-text-main:        #f1f5f9;
-  --color-text-secondary:   #94a3b8;
-  --color-text-muted:       #475569;
+  --color-background: #090d16; /* Single dark background color */
+  --color-border: #162030; /* Very subtle line color */
+  --color-primary: #7c5cf6;
+  --color-primary-hover: #6d48f5;
+  --color-accent: #f97316;
+  --color-accent-hover: #ea580c;
+  --color-success: #10b981;
+  --color-danger: #f43f5e;
+  --color-text-main: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #475569;
 }
 
 html, body {
@@ -114,9 +114,9 @@ textarea.input { resize: vertical; }
   white-space: nowrap;
 }
 .badge-purple { background: rgba(124,92,246,.12); color: #a78bfa; }
-.badge-orange  { background: rgba(249,115,22,.12);  color: #fb923c; }
-.badge-green   { background: rgba(16,185,129,.12);  color: #34d399; }
-.badge-slate   { background: rgba(148,163,184,.08);  color: #94a3b8; }
+.badge-orange { background: rgba(249,115,22,.12);  color: #fb923c; }
+.badge-green { background: rgba(16,185,129,.12);  color: #34d399; }
+.badge-slate { background: rgba(148,163,184,.08);  color: #94a3b8; }
 
 .divider {
   border: none;
@@ -162,10 +162,10 @@ textarea.input { resize: vertical; }
   color: var(--color-text-secondary);
   word-break: break-word;
 }
-.md-body p   { margin: 0 0 0.6em; }
+.md-body p { margin: 0 0 0.6em; }
 .md-body p:last-child { margin-bottom: 0; }
 .md-body strong { font-weight: 700; color: var(--color-text-main); }
-.md-body em     { font-style: italic; color: #c4b5fd; }
+.md-body em { font-style: italic; color: #c4b5fd; }
 .md-body a {
   color: #7c5cf6;
   text-decoration: underline;
