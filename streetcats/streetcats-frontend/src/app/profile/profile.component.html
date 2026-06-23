@@ -1,38 +1,45 @@
-<!-- Page header -->
-<header class="flex-between" style="gap: 25px; flex-wrap: wrap;">
-  <div>
-    <h1 style="font-size: 30px; margin-bottom: 5px;">{{ user?.userName || 'Profilo' }}</h1>
-    @if (user) {
-    <div class="flex-center text-secondary" style="flex-wrap: wrap;">
-      <span>{{ user.email }}</span>
-      <span class="meta-dot"></span>
-      <span>{{ user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
-      <span class="meta-dot"></span>
+<div style="display: flex; flex-direction: column; width: 100%;">
+  <!-- Page header -->
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 25px; flex-wrap: wrap;">
+    <div>
+      <h1 style="font-size: 30px; margin-bottom: 5px;">{{ 'Profilo di: ' + user?.userName || 'Profilo' }}</h1>
+      @if (user) {
+      <div
+        style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--color-text-secondary); flex-wrap: wrap;">
+        <span>{{ user.email }}</span>
+        <span class="meta-dot"></span>
+        <span>{{ 'Ruolo: ' + user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
+        <span class="meta-dot"></span>
+      </div>
+      }
     </div>
-    }
-  </div>
-</header>
-@if (error) {
-<div class="alert alert-error error-state">{{ error }}</div>
+  </header>
+  @if (error) {
+  <div
+    style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: rgba(244, 63, 94, .1); color: #fda4af; max-width: 580px;">
+    {{ error }}</div>
 
-} @else if (user) {
+  } @else if (user) {
   <!-- Segnalazioni -->
   <section>
-    <h2>Le mie segnalazioni ({{ user.stats?.cats ?? 0 }})</h2>
+    <h2 style="font-size: 20px;">Le mie segnalazioni: {{ user.stats?.cats ?? 0 }}</h2>
 
     @if (!user.recentCats || user.recentCats.length === 0) {
-    <p class="text-secondary">Non hai ancora fatto nessuna segnalazione.</p>
+    <p style="font-size: 15px; color: var(--color-text-secondary);">Non hai ancora fatto nessuna segnalazione.</p>
     } @else {
-    <div class="flex-col">
+    <div style="display: flex; flex-direction: column; gap: 15px;">
       @for (cat of user.recentCats; track cat.id) {
-      <a [routerLink]="['/cats', cat.id]" class="card flex-between">
+      <a [routerLink]="['/cats', cat.id]"
+        style="background: var(--color-background); border: 1px font-size: 13pxor-border); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
         <div>
-          <span class="text-bold">{{ cat.name }}</span>
+          <span style="font-size: 15px; font-weight: bold;">{{ cat.name }}</span>
           @if (cat.color) {
-          <span class="badge badge-slate">{{ cat.color }}</span>
+          <span
+            style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 600; background: rgba(148, 163, 184, .08); color: #94a3b8;">{{
+            cat.color }}</span>
           }
         </div>
-        <span class="text-muted">
+        <span style="font-size: 13px; color: var(--color-text-muted);">
           {{ cat.createdAt | date:'d MMM yyyy' }}
         </span>
       </a>
@@ -44,25 +51,26 @@
 
   <!-- Commenti -->
   <section>
-    <h2>I miei commenti recenti ({{ user.stats?.comments ?? 0 }})</h2>
+    <h2 style="font-size: 20px;">I miei commenti recenti: {{ user.stats?.comments ?? 0 }}</h2>
 
     @if (!user.recentComments || user.recentComments.length === 0) {
-    <p class="text-secondary">Non hai ancora lasciato nessun commento.</p>
+    <p style="font-size: 15px; color: var(--color-text-secondary);">Non hai ancora lasciato nessun commento.</p>
     } @else {
-    <div class="flex-col">
+    <div style="display: flex; flex-direction: column; gap: 15px;">
       @for (comment of user.recentComments; track comment.id) {
-      <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']" class="card flex-col" style="gap: 5px;">
-        <header class="flex-between">
+      <a [routerLink]="comment.cat ? ['/cats', comment.cat.id] : ['/cats']"
+        style="background: var(--color-background); border: 1px solid var(--color-border); padding: 20px; display: flex; flex-direction: column; gap: 5px;">
+        <header style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
           @if (comment.cat) {
-          <span style="font-size: 10px; color: var(--color-primary); font-weight: bold;">
+          <span style="font-size: 13px; color: var(--color-primary); font-weight: bold;">
             {{ comment.cat.name }}
           </span>
           }
-          <span class="text-muted">
+          <span style="font-size: 13px; color: var(--color-text-muted);">
             {{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}
           </span>
         </header>
-        <p class="text-secondary">
+        <p style="font-size: 15px; color: var(--color-text-secondary);">
           {{ comment.text }}
         </p>
       </a>
@@ -70,5 +78,5 @@
     </div>
     }
   </section>
-
-}
+  }
+</div>

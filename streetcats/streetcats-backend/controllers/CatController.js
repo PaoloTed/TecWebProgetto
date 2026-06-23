@@ -1,4 +1,4 @@
-import { Cat } from "../models/Database.js";
+import { Cat, Comment } from "../models/Database.js";
 
 // Controller per la gestione dei gatti CRUD
 export class CatController {
@@ -56,6 +56,7 @@ export class CatController {
       return null;
     }
 
+    await Comment.destroy({ where: { CatId: id } });
     await cat.destroy();
     return cat;
   }

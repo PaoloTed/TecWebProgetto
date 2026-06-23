@@ -1,46 +1,58 @@
-<main class="auth-page">
-  <h1>Crea un account</h1>
-  <p class="auth-subtitle">Unisciti alla comunità e inizia a segnalare i gatti del quartiere</p>
+<main style="display: block; width: 100%;">
+  <h1 style="font-size: 24px; margin-bottom: 5px;">Crea un account</h1>
+  <p style="color: var(--color-text-secondary); font-size: 14px; margin-bottom: 30px;">Unisciti alla comunita e inizia a
+    segnalare i gatti del quartiere</p>
 
   @if (errorMessage) {
-    <div class="alert">
-      <span>{{ errorMessage }}</span>
-    </div>
+  <div
+    style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: rgba(244, 63, 94, .1); color: #fda4af;">
+    <span>{{ errorMessage }}</span>
+  </div>
   }
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <label>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 20px;">
+    <label
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
       Nome utente
       <input type="text" formControlName="userName" placeholder="mario_rossi" autocomplete="username">
       @if (form.get('userName')?.invalid && form.get('userName')?.touched) {
-        <span class="field-error">Minimo 3 caratteri, massimo 50.</span>
+      <span style="font-size: 12px; color: var(--color-danger); margin-top: 4px; display: block;">Minimo 3 caratteri,
+        massimo 50.</span>
       }
     </label>
 
-    <label>
+    <label
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
       Indirizzo email
       <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
       @if (form.get('email')?.invalid && form.get('email')?.touched) {
-        <span class="field-error">Inserisci un indirizzo email valido.</span>
+      <span style="font-size: 12px; color: var(--color-danger); margin-top: 4px; display: block;">Inserisci un indirizzo
+        email valido.</span>
       }
     </label>
 
-    <label>
+    <label
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
       Password
       <input type="password" formControlName="password" placeholder="Almeno 6 caratteri" autocomplete="new-password">
       @if (form.get('password')?.invalid && form.get('password')?.touched) {
-        <span class="field-error">Minimo 6 caratteri.</span>
+      <span style="font-size: 12px; color: var(--color-danger); margin-top: 4px; display: block;">Minimo 6
+        caratteri.</span>
       }
     </label>
 
     <hr>
 
-    <button type="submit" class="btn-primary">
+    <button type="submit"
+      style="align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: #fff;">
       Crea l'account
     </button>
   </form>
 
-  <p class="auth-footer">
-    Hai già un account? <a routerLink="/login">Accedi</a>
+  <p style="font-size: 15px; margin-top: 25px; color: var(--color-text-muted);">
+    Hai gia un account? <a routerLink="/login" style="color: var(--color-primary); font-weight: bold;">Accedi</a>
   </p>
+</main>
+uterLink="/login">Accedi</a>
+</p>
 </main>

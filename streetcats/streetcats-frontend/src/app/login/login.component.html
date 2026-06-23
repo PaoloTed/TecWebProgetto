@@ -1,32 +1,37 @@
-<main class="auth-page">
-  <h1>Bentornato su StreetCats</h1>
-  <p class="auth-subtitle">Inserisci le tue credenziali per continuare</p>
+<main style="display: block; width: 100%;">
+  <h1 style="font-size: 24px; margin-bottom: 5px;">Bentornato su StreetCats</h1>
+  <p style="color: var(--color-text-secondary); font-size: 15px; margin-bottom: 30px;">Inserisci le tue credenziali per
+    continuare</p>
 
   @if (errorMessage) {
-    <div class="alert">
-      <span>{{ errorMessage }}</span>
-    </div>
+  <div
+    style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: rgba(244, 63, 94, .1); color: #fda4af;">
+    <span>{{ errorMessage }}</span>
+  </div>
   }
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <label>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 20px;">
+    <label
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
       Indirizzo email
       <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
     </label>
 
-    <label>
+    <label
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
       Password
-      <input type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password">
+      <input type="password" formControlName="password" placeholder="******" autocomplete="current-password">
     </label>
 
     <hr>
 
-    <button type="submit" [disabled]="loginForm.invalid" class="btn-primary">
+    <button type="submit" [disabled]="loginForm.invalid"
+      style="align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: #fff;">
       Accedi all'account
     </button>
   </form>
 
-  <p class="auth-footer">
-    Non hai un account? <a routerLink="/signup">Registrati</a>
+  <p style="font-size: 15px; margin-top: 25px; color: var(--color-text-muted);">
+    Non hai un account? <a routerLink="/signup" style="color: var(--color-primary); font-weight: bold;">Registrati</a>
   </p>
 </main>

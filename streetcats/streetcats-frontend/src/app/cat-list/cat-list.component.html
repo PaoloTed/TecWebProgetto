@@ -7,37 +7,21 @@
 
 <!--  ERROR  -->
 @if (error) {
-<div class="alert alert-error error-state">
+<div
+  style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: rgba(244,63,94,.1); color: #fda4af; max-width: 580px;">
   <h3>Impossibile caricare i dati</h3>
-  <p class="error-msg">{{ error }}</p>
+  <p>{{ error }}</p>
 </div>
+}
 
-<!--  NO CATS  -->
-} @else if (cats.length === 0) {
-<div class="card flex-col" style="text-align: center; padding: 100px 30px; align-items: center;">
-  <h3 style="font-size: 20px; margin-bottom: 10px;">Ancora nessuna segnalazione</h3>
-  <p class="text-secondary" style="max-width: 36ch; margin-bottom: 30px;">Sii il primo a segnalare un avvistamento e aiuta la comunità.</p>
-  @if (authService.isAuthenticated()) {
-  <a routerLink="/cats/new" class="btn-primary">
-    Fai una segnalazione
-  </a>
-  } @else {
-  <a routerLink="/login" class="btn-primary">Accedi per segnalare</a>
-  }
-</div>
-<!--  MAPPA  e CONTEGGIo  -->
-} @else {
 
 <!-- Mappa  -->
-@if (catsWithCoords.length > 0) {
-<div class="card" style="overflow: hidden; margin-bottom: 30px;">
+<div style=" background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
   <app-map mode="view-all" [cats]="catsWithCoords" height="480px" (catClicked)="onCatClicked($event)">
   </app-map>
 </div>
-}
 
 <!-- Conteggio segnalazioni -->
-<p class="text-secondary" style="margin-top: 15px; text-align: center;">
+<p style="text-align: center; font-size: 15px; color: var(--color-text-secondary);">
   Segnalazioni attive: <strong style="color: var(--color-primary); font-size: 18px;">{{ cats.length }}</strong>
 </p>
-}

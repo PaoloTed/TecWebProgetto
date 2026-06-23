@@ -1,31 +1,35 @@
-<nav>
-    <!-- Logo -->
-    <a routerLink="/" class="flex-center">
-      <span style="width: 30px; height: 30px;">
-        <img src="/gattologo.webp" alt="Logo StreetCats">
-      </span>
-      <span class="logo-text">StreetCats</span>
+<nav
+  style="display: flex; justify-content: space-between; align-items: center; padding: 0 25px; height: 60px; border-bottom: 1px solid var(--color-border); background: var(--color-background);">
+  <!-- Logo -->
+  <a routerLink="/" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+    <span style="width: 30px; height: 30px; background: var(--color-primary);">
+      <img src="/gattologo.webp">
+    </span>
+    <span style="font-size: 15px; color: white">StreetCats</span>
+  </a>
+
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <a routerLink="/cats"
+      style="padding: 5px 15px; font-size: 15px; color: var(--color-text-secondary); cursor: pointer;">
+      Esplora gatti
     </a>
 
-    <!-- Nav links + Actions -->
-    <div class="flex-center" style="gap: 4px;">
-
-      <a routerLink="/cats" class="nav-link">
-        Esplora gatti
-      </a>
-
-      @if (authService.isAuthenticated()) {
-      <a routerLink="/cats/new" class="nav-link">
-        Nuova segnalazione
-      </a>
-      <a routerLink="/profile" class="nav-link">
-        Il mio profilo
-      </a>
-      <span class="nav-sep"></span>
-      <button (click)="logout()" class="btn-logout" style="background: transparent; color: var(--color-danger); border: none; font-family: inherit; font-weight: 500; font-size: 15px; padding: 5px 15px; cursor: pointer;">Esci</button>
-      } @else {
-      <span class="nav-sep"></span>
-      <a routerLink="/login" class="btn-primary btn-sm">Accedi</a>
-      }
-    </div>
+    @if (authService.isAuthenticated()) {
+    <a routerLink="/cats/new"
+      style="padding: 5px 15px; font-size: 15px; color: var(--color-text-secondary); cursor: pointer;">
+      Nuova segnalazione
+    </a>
+    <a routerLink="/profile"
+      style="padding: 5px 15px; font-size: 15px; color: var(--color-text-secondary); cursor: pointer;">
+      Il mio profilo
+    </a>
+    <span style="height: 20px; background: var(--color-border);"></span>
+    <button (click)="logout()"
+      style="background: transparent; border: none; color: var(--color-danger); font-family: inherit; cursor: pointer;">Esci</button>
+    } @else {
+    <span style="height: 20px; background: var(--color-border);"></span>
+    <a routerLink="/login"
+      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; background: var(--color-primary); cursor: pointer;">Accedi</a>
+    }
+  </div>
 </nav>
