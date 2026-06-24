@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../_services/api/api.service';
 import { AuthService } from '../_services/auth/auth.service';
@@ -16,7 +16,6 @@ export class CatList implements OnInit {
   private router = inject(Router);
   public authService = inject(AuthService);
 
-  @ViewChild(MapComponent) mapComp?: MapComponent;
 
   cats: Cat[] = [];
   catsWithCoords: MapCat[] = [];
@@ -31,29 +30,16 @@ export class CatList implements OnInit {
       next: (data) => {
         this.cats = data;
 
-        const validCats: MapCat[] = [];
-        for (let i = 0; i < this.cats.length; i++) {
-          const c = this.cats[i];
-          if (c.latitude !== null && c.longitude !== null) {
-            let catColor: string | undefined = undefined;
-            if (c.color !== null) {
-              catColor = c.color;
-            }
-            let catPhotoUrl: string | undefined = undefined;
-            if (c.photoUrl !== null) {
-              catPhotoUrl = c.photoUrl;
-            }
-            validCats.push({
-              id: c.id,
-              name: c.name,
-              latitude: c.latitude,
-              longitude: c.longitude,
-              color: catColor,
-              photoUrl: catPhotoUrl
-            });
-          }
-        }
-        this.catsWithCoords = validCats;
+        this.catsWithCoords = this.cats
+          .filter(c => c.latitude != null && c.longitude != null)
+          .map(c => ({
+            id: c.id,
+            name: c.name,
+            latitude: c.latitude!,
+            longitude: c.longitude!,
+            color: c.color ?? undefined,
+            photoUrl: c.photoUrl ?? undefined
+          }));
       },
       error: () => {
         this.error = 'Errore nel caricamento dei gatti.';

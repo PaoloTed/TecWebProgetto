@@ -48,12 +48,4 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this._token !== null && this._token !== '';
   }
-
-  isUserAuthenticated(): boolean {
-    return this.isAuthenticated();
-  }
-
-  verifyToken(token: string | null): boolean {
-    return token !== null && token !== '';
-  }
 }
