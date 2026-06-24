@@ -5,7 +5,7 @@
 
   @if (errorMessage) {
   <div
-    style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: rgba(244, 63, 94, .1); color: #fda4af;">
+    style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: var(--color-danger-bg); color: var(--color-danger-text);">
     <span>{{ errorMessage }}</span>
   </div>
   }
@@ -26,7 +26,7 @@
     <hr>
 
     <button type="submit" [disabled]="loginForm.invalid"
-      style="align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: #fff;">
+      style="align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: var(--color-white);">
       Accedi all'account
     </button>
   </form>

@@ -28,7 +28,7 @@ commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
       return next({ status: 404, message: "Commento non trovato" });
     }
 
-    // Verifica permessi: solo owner o admin
+    // Verifica permessi owner o admin
     if (comment.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per modificare questo commento" });
     }
@@ -56,7 +56,7 @@ commentRouter.delete("/comments/:id", requireAuth, async (req, res, next) => {
       return next({ status: 404, message: "Commento non trovato" });
     }
 
-    // Verifica permessi: solo owner o admin
+    // Verifica permessi owner o admin
     if (comment.UserEmail !== req.email && req.role !== 'admin') {
       return next({ status: 403, message: "Non hai i permessi per eliminare questo commento" });
     }

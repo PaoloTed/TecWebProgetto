@@ -1,7 +1,7 @@
 <!-- Error -->
 @if (error) {
 <div
-  style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: rgba(244,63,94,.1); color: #fda4af; max-width: 580px;">
+  style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: var(--color-danger-bg); color: var(--color-danger-text); max-width: 580px;">
   <h3>Gatto non trovato</h3>
   <p>{{ error }}</p>
 </div>
@@ -19,10 +19,10 @@
       <h1 style="font-size: 35px;">{{ 'Nome: ' + cat.name }}</h1>
       <div style="flex-wrap: wrap; display: flex; align-items: center; gap: 10px;">
         <span
-          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 600; background: rgba(148,163,184,.08); color: #94a3b8;">Colore:
+          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 600; color: var(--color-text-secondary);">Colore:
           {{ cat.color }}</span>
         <span
-          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 600; background: rgba(124,92,246,.12); color: #a78bfa;">Taglia:
+          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 600; color: var(--color-primary-light);">Taglia:
           {{ cat.size }}</span>
         <span style="font-size: 13px; color: var(--color-text-muted);">Segnalato da {{ cat.UserEmail }}</span>
       </div>
@@ -46,7 +46,7 @@
   <!-- Colonna 3: Foto -->
   <div style="flex: 1; background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
     <h2>Foto</h2>
-    <div style="background: #0d1322; height: 300px;">
+    <div style="background: var(--color-image-placeholder); height: 300px;">
       <img [src]="cat.photoUrl" style="width: 100%; height: 100%; object-fit: cover; display: block;">
     </div>
   </div>
@@ -56,9 +56,9 @@
 @if (isOwnerOrAdmin) {
 <div style="display: flex; align-items: center; gap: 10px;">
   <a [routerLink]="['/cats', cat.id, 'edit']"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: rgba(255, 255, 255, 0.05); color: var(--color-text-main);">Modifica</a>
+    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-btn-secondary); color: var(--color-text-main);">Modifica</a>
   <button type="button" (click)="deleteCat()"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: rgba(244, 63, 94, 0.1); color: var(--color-danger);">Elimina</button>
+    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-danger-bg); color: var(--color-danger);">Elimina</button>
 </div>
 }
 
@@ -74,7 +74,7 @@
     style="resize: none;"></textarea>
   <div>
     <button type="button" (click)="submitComment()"
-      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: #fff;">
+      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: var(--color-white);">
       Pubblica commento
     </button>
   </div>
@@ -84,7 +84,7 @@
   style="background: var(--color-background); border: 1px solid var(--color-border); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
   <p style="font-size: 15px; color: var(--color-text-secondary);">Accedi per lasciare un commento o un avvistamento.</p>
   <a routerLink="/login"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: #fff;">Accedi</a>
+    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: var(--color-white);">Accedi</a>
 </div>
 }
 

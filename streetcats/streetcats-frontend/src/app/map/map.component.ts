@@ -126,7 +126,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       marker.bindPopup(`
         <div style="text-align: center; font-family: sans-serif;">
           <b>${cat.name}</b><br>
-          <a href="/cats/${cat.id}" style="color: #7c5cf6; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 5px;">
+          <a href="/cats/${cat.id}" style="color: var(--color-primary); font-weight: bold; text-decoration: none; display: inline-block; margin-top: 5px;">
             Vai alla pagina del gatto
           </a>
         </div>

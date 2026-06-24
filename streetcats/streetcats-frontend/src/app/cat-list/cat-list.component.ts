@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ApiService } from '../_services/api/api.service';
 import { AuthService } from '../_services/auth/auth.service';
 import { MapComponent, MapCat } from '../map/map.component';
@@ -7,7 +7,7 @@ import { Cat } from '../_services/api/cat.type';
 
 @Component({
   selector: 'app-cat-list',
-  imports: [RouterLink, MapComponent],
+  imports: [MapComponent],
   templateUrl: './cat-list.component.html',
   styleUrl: './cat-list.component.scss'
 })

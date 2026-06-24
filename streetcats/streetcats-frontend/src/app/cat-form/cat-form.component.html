@@ -11,7 +11,7 @@
 
 @if (errorMessage) {
 <div
-  style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: rgba(244,63,94,.1); color: #fda4af;">
+  style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: var(--color-danger-bg); color: var(--color-danger-text);">
   <span>{{ errorMessage }}</span>
 </div>
 }
@@ -57,7 +57,7 @@
         del gatto (opzionale)</label>
       <div style="flex-wrap: wrap; display: flex; align-items: center; gap: 10px;">
         <label for="photo"
-          style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: rgba(255, 255, 255, 0.05); color: var(--color-text-main); display: flex; align-items: center; gap: 10px;">
+          style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-btn-secondary); color: var(--color-text-main); display: flex; align-items: center; gap: 10px;">
           Carica un'immagine
         </label>
         <input id="photo" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
@@ -119,11 +119,11 @@
 
   <div style="display: flex; align-items: center; gap: 10px;">
     <a routerLink="/cats"
-      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: rgba(255, 255, 255, 0.05); color: var(--color-text-main);">
+      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-btn-secondary); color: var(--color-text-main);">
       Annulla
     </a>
     <button type="submit" [disabled]="catForm.invalid"
-      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: #fff;">
+      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: var(--color-white);">
       Pubblica segnalazione
     </button>
   </div>
