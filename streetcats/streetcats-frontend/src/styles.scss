@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
 :root {
   --color-background: #090d16;
   --color-border: #162030;
@@ -14,14 +12,12 @@
 
 html,
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: sans-serif;
   background-color: var(--color-background);
   color: var(--color-text-main);
-  margin: 0;
-  min-height: 100vh;
 }
 
-/* Input nativi */
+// Input nativi
 input:not([type="file"]),
 select,
 textarea {
@@ -32,8 +28,7 @@ textarea {
   padding: 10px 15px;
   color: var(--color-text-main);
   font-size: 15px;
-  font-family: inherit;
-  outline: none;
+  font-family: sans-serif;
 }
 
 input:not([type="file"])::placeholder,
@@ -53,13 +48,13 @@ select option {
 }
 
 
-/* Elementi di utilita (Separatori) */
+// Elementi di utilita (Separatori)
 hr {
   border: none;
   border-top: 1px solid var(--color-border);
 }
 
-/* Leaflet fix */
+// Leaflet fix
 app-map,
 app-map>div {
   display: block !important;

@@ -2,7 +2,7 @@ import { User } from "../models/Database.js";
 import Jwt from "jsonwebtoken";
 import 'dotenv/config.js';
 
-// Controller per la gestione dell'autenticazione (login, registrazione e token JWT)
+// Controller per la gestione dell'autenticazione login, registrazione e token JWT
 export class AuthController {
 
   // Verifica le credenziali dell'utente (email e password)

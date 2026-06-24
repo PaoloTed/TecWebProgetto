@@ -36,9 +36,9 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() height = '400px';
 
   // Dati verso il contenitore della mappa
-  /** Emette l'id del gatto quando l'utente clicca su un marker */
+  // Emette l'id del gatto quando l'utente clicca su un marker
   @Output() catClicked = new EventEmitter<number>();
-  /** Emette [lat, lng] quando l'utente clicca sulla mappa in modalità pick */
+  // Emette [lat, lng] quando l'utente clicca sulla mappa in modalità pick
   @Output() positionPicked = new EventEmitter<[number, number]>();
 
   readonly mapId = 'map-' + Math.floor(Math.random() * 1000000).toString(36);
@@ -67,7 +67,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.map = null;
   }
 
-  /** Forza il ridisegno della mappa */
+  // Forza il ridisegno della mappa
   public refresh(): void {
     this.map?.invalidateSize();
   }

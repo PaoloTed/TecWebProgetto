@@ -6,6 +6,16 @@ import { ApiService } from '../_services/api/api.service';
 import { Router } from '@angular/router';
 import { User } from '../_services/api/user.type';
 
+// Interfaccia per i dati extra restituiti da GET /profile
+interface UserProfileData extends User {
+  stats: {
+    cats: number;
+    comments: number;
+  };
+  recentCats: any[];
+  recentComments: any[];
+}
+
 @Component({
   selector: 'app-profile',
   imports: [RouterLink, DatePipe],
@@ -17,7 +27,7 @@ export class Profile implements OnInit {
   private apiService = inject(ApiService);
   private router = inject(Router);
 
-  user: User | null = null;
+  user: UserProfileData | null = null;
   error = '';
 
   ngOnInit() {
