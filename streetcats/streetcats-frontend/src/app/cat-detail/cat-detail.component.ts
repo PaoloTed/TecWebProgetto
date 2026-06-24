@@ -26,7 +26,6 @@ export class CatDetail implements OnInit {
   comments: Comment[] = [];
   error = '';
 
-  // Comment form state
   newCommentText = '';
 
   ngOnInit() {
