@@ -43,10 +43,10 @@ test.describe('Streetcats Tests', () => {
 
   test('5. Signup con Successo', async ({ page }) => {
     await page.goto('/signup');
-    const randomUser = `testuser_${Date.now()}`;
+    const randomUser = 'testuser_' + Date.now();
 
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
-    await page.getByPlaceholder('mario@example.com').fill(`${randomUser}@example.com`);
+    await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
 
     await page.getByRole('button', { name: "Crea l'account" }).click();
@@ -70,10 +70,10 @@ test.describe('Streetcats Tests', () => {
   test('7. Login con Successo', async ({ page }) => {
     // login
     await page.goto('/login');
-    const randomUser = `testuser_${Date.now()}`;
+    const randomUser = 'testuser_' + Date.now();
 
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
-    await page.getByPlaceholder('mario@example.com').fill(`${randomUser}@example.com`);
+    await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
     await page.getByRole('button', { name: "Accedi all'account" }).click();
 
@@ -83,10 +83,10 @@ test.describe('Streetcats Tests', () => {
 
   test('8. Accesso al Profilo', async ({ page }) => {
     await page.goto('/login');
-    const randomUser = `testuser_${Date.now()}`;
+    const randomUser = 'testuser_' + Date.now();
 
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
-    await page.getByPlaceholder('mario@example.com').fill(`${randomUser}@example.com`);
+    await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
     await page.getByRole('button', { name: "Accedi all'account" }).click();
 
@@ -95,15 +95,15 @@ test.describe('Streetcats Tests', () => {
     await expect(page).toHaveURL(/.*profile/);
 
     // Verifica che l'email appaia in pagina
-    await expect(page.getByText(`${randomUser}@example.com`)).toBeVisible();
+    await expect(page.getByText(randomUser + '@example.com')).toBeVisible();
   });
 
   test('9. Logout', async ({ page }) => {
     await page.goto('/login');
-    const randomUser = `testuser_${Date.now()}`;
+    const randomUser = 'testuser_' + Date.now();
 
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
-    await page.getByPlaceholder('mario@example.com').fill(`${randomUser}@example.com`);
+    await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
     await page.getByRole('button', { name: "Accedi all'account" }).click();
 
@@ -122,10 +122,10 @@ test.describe('Streetcats Tests', () => {
 
     // aggiungiamo un gatto di test
     await page.goto('/signup');
-    const randomUser = `testuser_${Date.now()}`;
+    const randomUser = 'testuser_' + Date.now();
 
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
-    await page.getByPlaceholder('mario@example.com').fill(`${randomUser}@example.com`);
+    await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
     await page.getByRole('button', { name: "Crea l'account" }).click();
     await expect(page).toHaveURL(/.*cats/);

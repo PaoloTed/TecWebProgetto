@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relazione Progetto – Tecnologie Web</title>
+  <style>
+    @page { size: A4; margin: 2.5cm; }
+
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      color: #000;
+      background: #fff;
+      margin: 0;
+      padding: 2.5cm;
+      max-width: 21cm;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 16pt;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 6pt;
+    }
+
+    h2 {
+      font-size: 13pt;
+      font-weight: bold;
+      margin-top: 22pt;
+      margin-bottom: 4pt;
+      border-bottom: 1px solid #000;
+      padding-bottom: 2pt;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 11pt;
+      color: #333;
+      margin-bottom: 24pt;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #000;
+      margin: 8pt 0 16pt 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8pt;
+      font-size: 12pt;
+    }
+
+    table td {
+      padding: 5pt 8pt;
+      vertical-align: top;
+    }
+
+    table td:first-child {
+      font-weight: bold;
+      width: 38%;
+    }
+
+    table tr:nth-child(odd) td {
+      background: #f5f5f5;
+    }
+
+    ul {
+      margin: 4pt 0 0 18pt;
+      padding: 0;
+    }
+
+    ul li {
+      margin-bottom: 3pt;
+    }
+
+    .footer {
+      margin-top: 40pt;
+      font-size: 10pt;
+      text-align: right;
+      color: #555;
+    }
+
+    @media print {
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Progetto di Tecnologie Web</h1>
+  <div class="subtitle">Anno Accademico 2024/2025</div>
+
+  <hr />
+
+  <h2>Dati dello Studente</h2>
+  <table>
+    <tr>
+      <td>Nome e Cognome</td>
+      <td>Paolo Tedesco</td>
+    </tr>
+    <tr>
+      <td>Matricola</td>
+      <td>N86004408</td>
+    </tr>
+    <tr>
+      <td>Traccia scelta</td>
+      <td>4.A – WebTech's StreetCats</td>
+    </tr>
+  </table>
+
+  <h2>Tecnologie Utilizzate</h2>
+  <table>
+    <tr>
+      <td>Back-end</td>
+      <td>
+        <ul>
+          <li>Node.js con Express (REST API)</li>
+          <li>Sequelize ORM</li>
+          <li>SQLite3</li>
+          <li>JSON Web Token (JWT) per l'autenticazione</li>
+          <li>Multer per la gestione degli upload</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Front-end</td>
+      <td>
+        <ul>
+          <li>Angular 21 (TypeScript)</li>
+          <li>Leaflet.js per la mappa interattiva</li>
+          <li>Tailwind CSS</li>
+          <li>Marked per il rendering Markdown</li>
+          <li>Playwright per i test end-to-end</li>
+        </ul>
+      </td>
+    </tr>
+  </table>
+
+  <div class="footer">Giugno 2025</div>
+
+</body>
+</html>

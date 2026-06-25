@@ -3,17 +3,12 @@ import { createModel as createUserModel } from "./User.js";
 import { createModel as createCatModel } from "./Cat.js";
 import { createModel as createCommentModel } from "./Comment.js";
 
-import 'dotenv/config.js'; // Legge il file .env e rende disponibili le variabili in process.env
-
-let dbStorage = './database.sqlite';
-if (process.env.DB_CONNECTION_URI !== undefined && process.env.DB_CONNECTION_URI !== null && process.env.DB_CONNECTION_URI !== "") {
-  dbStorage = process.env.DB_CONNECTION_URI;
-}
+import 'dotenv/config.js'; // Legge il file .env e rende disponibili le variabili in .env
 
 // Configurazione del database SQLite 
 export const database = new Sequelize({
   dialect: 'sqlite',
-  storage: dbStorage,
+  storage: process.env.DB_CONNECTION_URI || './database.sqlite',
   logging: false
 });
 
@@ -27,15 +22,15 @@ export const { User } = database.models;
 export const { Cat } = database.models;
 export const { Comment } = database.models;
 
-// Un utente può registrare molti gatti
+// Un utente puo registrare molti gatti
 User.Cats = User.hasMany(Cat);
 Cat.User = Cat.belongsTo(User);
 
-// Un utente può scrivere molti commenti
+// Un utente puo scrivere molti commenti
 User.Comments = User.hasMany(Comment);
 Comment.User = Comment.belongsTo(User);
 
-// Un gatto può avere molti commenti
+// Un gatto puo avere molti commenti
 Cat.Comments = Cat.hasMany(Comment);
 Comment.Cat = Comment.belongsTo(Cat);
 

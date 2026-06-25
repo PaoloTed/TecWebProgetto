@@ -1,7 +1,7 @@
 import express from "express";
 import { CatController } from "../controllers/CatController.js";
 import { CommentController } from "../controllers/CommentController.js";
-import { requireAuth } from "../middleware/authorization.js";
+import { requireAuth, requireCatOwnerOrAdmin } from "../middleware/authorization.js";
 import { upload } from "../middleware/upload.js";
 
 export const catRouter = express.Router();
@@ -48,14 +48,19 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 // POST Crea nuovo gatto (richiede autenticazione)
 catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
-    const { name, description, color, size, latitude, longitude } = req.body;
+    const name = req.body.name;
+    const description = req.body.description;
+    const color = req.body.color;
+    const size = req.body.size;
+    const latitude = req.body.latitude;
+    const longitude = req.body.longitude;
     if (name === undefined || name === null || name === "") {
       return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
     }
 
     let photoUrl = req.body.photoUrl;
     if (req.file !== undefined && req.file !== null) {
-      photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+      photoUrl = 'http://localhost:3000/uploads/' + req.file.filename;
     }
 
     const newCat = await CatController.createCat(
@@ -74,39 +79,22 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
   } catch (err) { next(err); }
 });
 
-// PUT  Modifica gatto (richiede autenticazione + owner OR admin)
-catRouter.put("/cats/:id", requireAuth, upload.single('photo'), async (req, res, next) => {
+// PUT  Modifica gatto richiede autenticazione e permessi (controllati dal middleware)
+catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('photo'), async (req, res, next) => {
   try {
-    const cat = await CatController.findById(req.params.id);
-    if (cat === null) {
-      return next({ status: 404, message: "Gatto non trovato" });
-    }
-    if (cat.UserEmail !== req.email && req.role !== 'admin') {
-      return next({ status: 403, message: "Non hai i permessi per modificare questo gatto" });
-    }
-
-    const updateData = { ...req.body };
-
-
+    // se è stata caricata una nuova foto, aggiunge l'url al campo photoUrl
     if (req.file) {
-      updateData.photoUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+      req.body.photoUrl = 'http://localhost:3000/uploads/' + req.file.filename;
     }
 
-    const updatedCat = await CatController.updateCat(req.params.id, updateData);
+    const updatedCat = await CatController.updateCat(req.params.id, req.body);
     res.json(updatedCat);
   } catch (err) { next(err); }
 });
 
-// DELETE Elimina gatto (richiede autenticazione + owner OR admin)
-catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
+// DELETE Elimina gatto richiede autenticazione e permessi (controllati dal middleware)
+catRouter.delete("/cats/:id", requireAuth, requireCatOwnerOrAdmin, async (req, res, next) => {
   try {
-    const cat = await CatController.findById(req.params.id);
-    if (cat === null) {
-      return next({ status: 404, message: "Gatto non trovato" });
-    }
-    if (cat.UserEmail !== req.email && req.role !== 'admin') {
-      return next({ status: 403, message: "Non hai i permessi per eliminare questo gatto" });
-    }
     const deletedCat = await CatController.deleteCat(req.params.id);
     res.json({ message: "Gatto eliminato", cat: deletedCat });
   } catch (err) { next(err); }
@@ -116,7 +104,7 @@ catRouter.delete("/cats/:id", requireAuth, async (req, res, next) => {
 // POST Aggiungi commento (richiede autenticazione)
 catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   try {
-    const { text } = req.body;
+    const text = req.body.text;
     if (text === undefined || text === null || text.trim().length === 0) {
       return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
     }

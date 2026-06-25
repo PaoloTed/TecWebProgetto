@@ -30,14 +30,11 @@ export class AuthController {
 
   // Genera un token JWT per l'utente
   static issueToken(email, role = 'user') {
-    let expires = '365d';
-    if (process.env.JWT_EXPIRES_IN !== undefined && process.env.JWT_EXPIRES_IN !== null) {
-      expires = process.env.JWT_EXPIRES_IN;
-    }
     return Jwt.sign(
       { email: email, role: role },
+      // Recupera la secret key dal file .env
       process.env.TOKEN_SECRET,
-      { expiresIn: expires }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '365d' }
     );
   }
 
@@ -54,20 +51,12 @@ export class AuthController {
   // Verifica se un utente esiste già tramite username
   static async userExists(userName) {
     const user = await User.findOne({ where: { userName } });
-    if (user !== null) {
-      return true;
-    } else {
-      return false;
-    }
+    return user !== null;
   }
 
   // Verifica se un'email è già registrata
   static async emailExists(email) {
     const user = await User.findByPk(email);
-    if (user !== null) {
-      return true;
-    } else {
-      return false;
-    }
+    return user !== null;
   }
 }

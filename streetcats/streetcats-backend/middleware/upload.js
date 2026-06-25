@@ -30,6 +30,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Crea l'istanza multer con un limite di dimensione di 5MB per immagine
+// Export rende disponibile la funzione di upload ad altri file 
 export const upload = multer({
   storage: storage,
   limits: {

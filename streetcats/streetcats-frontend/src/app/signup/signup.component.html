@@ -12,7 +12,7 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 20px;">
     <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--color-text-muted);">
       Nome utente
       <input type="text" formControlName="userName" placeholder="mario_rossi" autocomplete="username">
       @if (form.get('userName')?.invalid && form.get('userName')?.touched) {
@@ -22,7 +22,7 @@
     </label>
 
     <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--color-text-muted);">
       Indirizzo email
       <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
       @if (form.get('email')?.invalid && form.get('email')?.touched) {
@@ -32,7 +32,7 @@
     </label>
 
     <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--color-text-muted);">
       Password
       <input type="password" formControlName="password" placeholder="Almeno 6 caratteri" autocomplete="new-password">
       @if (form.get('password')?.invalid && form.get('password')?.touched) {

@@ -21,10 +21,8 @@ export interface MapCat {
 
 @Component({
   selector: 'app-map',
-  template: `
-    <div [id]="mapId" [style.height]="height" style="width:100%;"></div>
-  `,
-  styles: [`:host { display: block; width: 100%; }`]
+  template: '<div [id]="mapId" [style.height]="height" style="width:100%;"></div>',
+  styles: [':host { display: block; width: 100%; }']
 })
 export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
@@ -123,14 +121,14 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
       const marker = L.marker([cat.latitude, cat.longitude]).addTo(this.map);
 
       // Popup semplice con reindirizzamento
-      marker.bindPopup(`
-        <div style="text-align: center; font-family: sans-serif;">
-          <b>${cat.name}</b><br>
-          <a href="/cats/${cat.id}" style="color: var(--color-primary); font-weight: bold; text-decoration: none; display: inline-block; margin-top: 5px;">
-            Vai alla pagina del gatto
-          </a>
-        </div>
-      `);
+      marker.bindPopup(
+        '<div style="text-align: center; font-family: sans-serif;">' +
+          '<b>' + cat.name + '</b><br>' +
+          '<a href="/cats/' + cat.id + '" style="color: var(--color-primary); font-weight: bold; text-decoration: none; display: inline-block; margin-top: 5px;">' +
+            'Vai alla pagina del gatto' +
+          '</a>' +
+        '</div>'
+      );
       this.catMarkers.push(marker);
     });
   }

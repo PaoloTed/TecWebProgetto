@@ -1,6 +1,7 @@
 import express from "express";
 import { AuthController } from "../controllers/AuthController.js";
-import { Cat, Comment } from "../models/Database.js";
+import { CatController } from "../controllers/CatController.js";
+import { CommentController } from "../controllers/CommentController.js";
 import { requireAuth } from "../middleware/authorization.js";
 import { createHash } from "crypto";
 
@@ -9,7 +10,8 @@ export const authRouter = express.Router();
 // POST Gestisce il login degli utenti
 authRouter.post("/auth", async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email;
+    const password = req.body.password;
 
     // Validazione input
     if (!email || !password) {
@@ -49,7 +51,9 @@ authRouter.post("/auth", async (req, res, next) => {
 // POST Registrazione di un utente
 authRouter.post("/signup", async (req, res, next) => {
   try {
-    const { userName, password, email } = req.body;
+    const userName = req.body.userName;
+    const password = req.body.password;
+    const email = req.body.email;
 
     // Validazione input
     if (!userName || !password || !email) {
@@ -116,29 +120,19 @@ authRouter.post("/signup", async (req, res, next) => {
 // GET Restituisce i dettagli del profilo dell'utente autenticato e le sue ultime attività
 authRouter.get("/profile", requireAuth, async (req, res, next) => {
   try {
-    if (req.email === undefined || req.email === null || req.email === "") {
-      return res.status(401).json({ error: "Non autenticato" });
-    }
 
+    // Controllo perche se un profilo viene cancellato non esistera piu
+    // il JWT risultera valido ma non si trovera l'email nel database
     const user = await AuthController.findUserByEmail(req.email);
     if (user === null) {
       return res.status(404).json({ error: "Utente non trovato" });
     }
 
-    // Ultime 10 segnalazioni
-    const cats = await Cat.findAll({
-      where: { UserEmail: req.email },
-      order: [['createdAt', 'DESC']],
-      limit: 10
-    });
+    // Segnalazioni effettuate dall'utente ordinate per data decrescente
+    const cats = await CatController.getCatsByUser(req.email);
 
-    // Ultimi 10 commenti con informazioni sul gatto associato
-    const comments = await Comment.findAll({
-      where: { UserEmail: req.email },
-      include: [{ model: Cat, attributes: ['id', 'name'] }],
-      order: [['createdAt', 'DESC']],
-      limit: 10
-    });
+    // Commenti effettuati dall'utente con nome del gatto associato ordinati per data decrescente
+    const comments = await CommentController.getCommentsByUser(req.email);
 
     res.json({
       userName: user.userName,

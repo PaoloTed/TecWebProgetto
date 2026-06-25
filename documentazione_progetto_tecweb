@@ -1,0 +1,1928 @@
+# 📄 Documentazione Completa del Progetto StreetCats
+
+> **Progetto**: StreetCats — Piattaforma web per la segnalazione e il monitoraggio di gatti di strada
+> **Corso**: Tecnologie Web — Terzo Anno, Università
+> **Architettura**: Applicazione full-stack con architettura client-server separata
+
+---
+
+## 1. Panoramica Generale
+
+StreetCats è un'applicazione web che consente agli utenti di:
+- **Segnalare** gatti di strada avvistati, con foto, posizione su mappa e descrizione
+- **Esplorare** le segnalazioni su una mappa interattiva
+- **Commentare** le segnalazioni di altri utenti
+- **Gestire** il proprio profilo con le attività recenti
+
+L'applicazione è composta da due progetti indipendenti che comunicano via API REST:
+
+| Componente | Tecnologia | Porta |
+|---|---|---|
+| **Backend** (API Server) | Node.js + Express | `localhost:3000` |
+| **Frontend** (SPA) | Angular 21 | `localhost:4200` |
+
+---
+
+## 2. Struttura delle Cartelle
+
+```
+streetcats/
+├── streetcats-backend/          # Server API REST
+│   ├── .env                     # Variabili d'ambiente (segreti, porta)
+│   ├── index.js                 # Entry point del server Express
+│   ├── package.json             # Dipendenze Node.js
+│   ├── database.sqlite          # Database SQLite (file locale)
+│   ├── controllers/             # Logica di business
+│   │   ├── AuthController.js    # Autenticazione e JWT
+│   │   ├── CatController.js     # CRUD gatti
+│   │   └── CommentController.js # CRUD commenti
+│   ├── models/                  # Modelli Sequelize (ORM)
+│   │   ├── Database.js          # Configurazione DB + relazioni
+│   │   ├── User.js              # Modello utente
+│   │   ├── Cat.js               # Modello gatto
+│   │   └── Comment.js           # Modello commento
+│   ├── middleware/              # Middleware Express
+│   │   ├── authorization.js     # Verifica token JWT
+│   │   └── upload.js            # Upload immagini (Multer)
+│   ├── routes/                  # Definizione endpoint API
+│   │   ├── authRouter.js        # Rotte login, signup, profilo
+│   │   ├── catRouter.js         # Rotte CRUD gatti + commenti gatto
+│   │   └── commentRouter.js     # Rotte CRUD commenti standalone
+│   ├── public/
+│   │   └── uploads/             # Cartella immagini caricate dagli utenti
+│   └── tests/                   # File di test HTTP e script
+│       ├── api.http             # Test rotta base
+│       ├── cats.http            # Test endpoint gatti
+│       ├── comments.http        # Test endpoint commenti
+│       ├── login.http           # Test login
+│       ├── signup.http          # Test registrazione
+│       ├── profile.http         # Test profilo
+│       └── testAPI.js           # Script di test automatico
+│
+└── streetcats-frontend/         # Applicazione Angular SPA
+    └── src/
+        ├── index.html           # Pagina HTML host (carica Leaflet da CDN)
+        ├── main.ts              # Bootstrap dell'applicazione Angular
+        ├── styles.scss          # Stili globali (variabili CSS, reset)
+        └── app/
+            ├── app.ts           # Componente root (AppComponent)
+            ├── app.html         # Template root (navbar + router-outlet + footer)
+            ├── app.scss         # Stili del componente root
+            ├── app.config.ts    # Configurazione providers Angular
+            ├── app.routes.ts    # Definizione rotte SPA
+            │
+            ├── _guards/         # Route Guards
+            │   ├── auth/
+            │   │   └── auth.guard.ts      # Blocca utenti NON autenticati
+            │   └── no-auth/
+            │       └── no-auth.guard.ts   # Blocca utenti GIÀ autenticati
+            │
+            ├── _interceptors/   # Interceptor HTTP
+            │   └── auth/
+            │       └── auth.interceptor.ts # Aggiunge header Authorization
+            │
+            ├── _pipes/          # Pipe personalizzate
+            │   └── markdown/
+            │       └── markdown.pipe.ts   # Converte Markdown → HTML
+            │
+            ├── _services/       # Servizi condivisi
+            │   ├── api/
+            │   │   ├── api.service.ts     # Client HTTP per le API
+            │   │   ├── cat.type.ts        # Interfaccia TypeScript Cat
+            │   │   ├── comment.type.ts    # Interfaccia TypeScript Comment
+            │   │   └── user.type.ts       # Interfaccia TypeScript User
+            │   └── auth/
+            │       ├── auth.service.ts    # Gestione sessione (localStorage)
+            │       └── auth-state.type.ts # Interfaccia AuthState
+            │
+            ├── navbar/          # Barra di navigazione
+            ├── footer/          # Footer dell'applicazione
+            ├── cat-list/        # Pagina lista gatti + mappa
+            ├── cat-detail/      # Pagina dettaglio gatto + commenti
+            ├── cat-form/        # Form creazione/modifica gatto
+            ├── login/           # Pagina di login
+            ├── signup/          # Pagina di registrazione
+            ├── profile/         # Pagina profilo utente
+            └── map/             # Componente mappa Leaflet riusabile
+```
+
+---
+
+## 3. Tecnologie e Librerie Utilizzate
+
+### 3.1 Backend
+
+| Tecnologia | Versione | Ruolo |
+|---|---|---|
+| **Node.js** | — | Runtime JavaScript lato server |
+| **Express** | 4.18.2 | Framework web per la creazione di API REST |
+| **Sequelize** | 6.35.1 | ORM (Object-Relational Mapping) per interagire con il database tramite modelli JavaScript anziché query SQL dirette |
+| **SQLite3** | 5.1.6 | Database relazionale leggero, salvato in un singolo file (`database.sqlite`) |
+| **jsonwebtoken (JWT)** | 9.0.2 | Generazione e verifica dei token di autenticazione |
+| **cors** | 2.8.5 | Middleware per abilitare le richieste Cross-Origin (il frontend su porta 4200 deve comunicare con il backend su porta 3000) |
+| **morgan** | 1.10.0 | Middleware per il logging automatico delle richieste HTTP nella console |
+| **multer** | 2.1.1 | Middleware per la gestione dell'upload di file (immagini dei gatti) |
+| **dotenv** | 16.3.1 | Carica le variabili d'ambiente dal file `.env` in `process.env` |
+| **nodemon** | 3.0.2 | (Dev) Riavvia automaticamente il server ad ogni modifica dei file |
+
+### 3.2 Frontend
+
+| Tecnologia | Versione | Ruolo |
+|---|---|---|
+| **Angular** | 21.0.0 | Framework frontend per la creazione di Single Page Application (SPA) |
+| **TypeScript** | 5.9.2 | Linguaggio tipizzato che compila in JavaScript, utilizzato da Angular |
+| **RxJS** | 7.8.0 | Libreria per la programmazione reattiva, usata per le chiamate HTTP asincrone (`Observable`) |
+| **Leaflet** | 1.9.4 | Libreria JavaScript per mappe interattive, caricata da CDN via `index.html` |
+| **marked** | 18.0.2 | Parser Markdown → HTML, usato per renderizzare le descrizioni dei gatti |
+| **TailwindCSS** | 4.1.18 | (Dev) Framework CSS utility-first, importato in `styles.scss` |
+| **zone.js** | 0.16.1 | Libreria che gestisce il change detection di Angular |
+
+### 3.3 Risorse Esterne (CDN)
+
+Caricate direttamente nell'`index.html`:
+
+- **Leaflet CSS**: `https://unpkg.com/leaflet@1.9.4/dist/leaflet.css` — Stili per la mappa
+- **Leaflet JS**: `https://unpkg.com/leaflet@1.9.4/dist/leaflet.js` — Logica della mappa
+- **OpenStreetMap Tiles**: `https://tile.openstreetmap.org/{z}/{x}/{y}.png` — Tiles (immagini delle mappe) fornite gratuitamente da OpenStreetMap
+
+---
+
+## 4. Backend — Dettaglio Completo
+
+### 4.1 Entry Point — `index.js`
+
+Il file principale del server. Si occupa di:
+1. Creare l'applicazione Express con `express()`
+2. Registrare i middleware globali (`morgan`, `cors`, `express.json`)
+3. Servire la cartella `public/uploads` come statica per le immagini
+4. Montare i tre router (`authRouter`, `catRouter`, `commentRouter`)
+5. Definire un gestore globale degli errori
+6. Avviare il server sulla porta configurata (default: 3000)
+
+**Pipeline dei middleware** — Ogni richiesta HTTP che arriva al server attraversa questa catena nell'ordine esatto:
+
+```
+Richiesta HTTP in arrivo
+    │
+    ├─ 1. morgan('dev')         → Logga metodo, URL, status, tempo di risposta nella console
+    ├─ 2. cors()                → Aggiunge gli header CORS (Access-Control-Allow-Origin, ecc.)
+    ├─ 3. express.json()        → Parsa il body JSON delle richieste e lo mette in req.body
+    ├─ 4. express.static()      → Se il path corrisponde a /uploads/*, serve il file statico
+    ├─ 5. Router matching       → Smista la richiesta al router corretto (auth, cat, comment)
+    │     │
+    │     └─ [Se rotta protetta] → requireAuth → Verifica JWT → Aggiunge req.email e req.role
+    │           │
+    │           └─ [Se upload] → multer → Parsa il file multipart e lo salva su disco
+    │
+    └─ 6. Error handler         → Cattura errori e restituisce JSON con code + description
+```
+
+### 4.2 Variabili d'ambiente — `.env`
+
+| Variabile | Valore | Descrizione |
+|---|---|---|
+| `TOKEN_SECRET` | `V3RY_S3CR37_T0K3N` | Chiave segreta per la firma dei token JWT |
+| `JWT_EXPIRES_IN` | `365d` | Durata di validità dei token (365 giorni) |
+| `PORT` | `3000` | Porta su cui il server ascolta |
+
+**Come funziona dotenv**: La libreria `dotenv` legge il file `.env` al momento dell'importazione (`import 'dotenv/config.js'`) e popola l'oggetto globale `process.env` con le coppie chiave-valore definite nel file. In questo modo i segreti non sono hardcodati nel codice sorgente.
+
+### 4.3 Database e Modelli
+
+#### `Database.js` — Configurazione e Relazioni
+
+Questo file è il cuore dell'accesso ai dati. Si occupa di:
+- Creare l'istanza Sequelize con dialetto SQLite
+- Inizializzare i tre modelli (User, Cat, Comment)
+- Definire le **relazioni tra le tabelle**
+- Sincronizzare lo schema (crea le tabelle se non esistono)
+
+**Come funziona Sequelize** — Sequelize è un ORM (Object-Relational Mapping) che permette di lavorare con il database usando oggetti JavaScript invece di query SQL. Ogni modello (User, Cat, Comment) corrisponde a una tabella nel database. Le operazioni CRUD diventano chiamate a metodi come `findAll()`, `findByPk()`, `build()`, `save()`, `destroy()`.
+
+**Pattern di inizializzazione**:
+```javascript
+// 1. Si crea la connessione Sequelize
+const database = new Sequelize({ dialect: 'sqlite', storage: './database.sqlite' });
+
+// 2. Si definiscono i modelli (ogni modello = una tabella)
+createUserModel(database);   // Crea la tabella Users
+createCatModel(database);    // Crea la tabella Cats
+createCommentModel(database); // Crea la tabella Comments
+
+// 3. Si estraggono i modelli dall'istanza database
+const { User } = database.models;
+const { Cat } = database.models;
+const { Comment } = database.models;
+
+// 4. Si definiscono le relazioni tra le tabelle
+User.hasMany(Cat);       // Un utente ha molti gatti → aggiunge UserEmail a Cat
+Cat.belongsTo(User);     // Un gatto appartiene a un utente
+
+// 5. Si sincronizza lo schema (crea le tabelle se non esistono)
+database.sync();
+```
+
+**Relazioni definite:**
+
+```mermaid
+erDiagram
+    User ||--o{ Cat : "registra"
+    User ||--o{ Comment : "scrive"
+    Cat ||--o{ Comment : "riceve"
+
+    User {
+        string email PK
+        string userName UK
+        string password
+        enum role "user | admin"
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Cat {
+        int id PK
+        string name
+        text description
+        string color
+        enum size "piccolo | medio | grande"
+        string photoUrl
+        float latitude
+        float longitude
+        string UserEmail FK
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Comment {
+        int id PK
+        text text
+        string UserEmail FK
+        int CatId FK
+        datetime createdAt
+        datetime updatedAt
+    }
+```
+
+**Spiegazione delle relazioni**:
+- `User.hasMany(Cat)` + `Cat.belongsTo(User)` → Sequelize aggiunge automaticamente la colonna `UserEmail` (Foreign Key) alla tabella Cat. `hasMany` definisce il lato "uno" della relazione (un utente ha molti gatti), mentre `belongsTo` definisce il lato "molti" (ogni gatto appartiene a un utente).
+- `User.hasMany(Comment)` + `Comment.belongsTo(User)` → Aggiunge `UserEmail` a Comment.
+- `Cat.hasMany(Comment)` + `Comment.belongsTo(Cat)` → Aggiunge `CatId` a Comment.
+
+Queste relazioni permettono le **query con include** (Eager Loading), ad esempio:
+```javascript
+// Ottieni i commenti con lo username dell'autore incluso
+Comment.findAll({
+  include: [{ model: User, attributes: ['userName'] }]
+});
+// Risultato: ogni commento avrà un campo User: { userName: 'mario' }
+```
+
+**`database.sync()`** — Questo metodo confronta i modelli definiti in memoria con le tabelle esistenti nel file `database.sqlite`. Se una tabella non esiste, la crea. Se esiste già, non la modifica (non distrugge dati). Questo avviene in modo asincrono al primo avvio del server.
+
+#### `User.js` — Modello Utente
+
+| Campo | Tipo | Note |
+|---|---|---|
+| `email` | STRING | **Chiave primaria**, validazione `isEmail` |
+| `userName` | STRING | Unico, lunghezza 3-50 caratteri |
+| `password` | STRING | Salvata come hash **SHA-256** |
+| `role` | ENUM | `'user'` (default) oppure `'admin'` |
+
+> [!IMPORTANT]
+> La password viene hashata nella rotta di registrazione/login usando `crypto.createHash("sha256").update(password).digest("hex")` prima di essere confrontata o salvata nel database. Non viene mai salvata in chiaro.
+
+**Validazioni Sequelize nel modello User**:
+- `isEmail: true` → Sequelize verifica che il formato dell'email sia valido prima di salvare nel database
+- `len: [3, 50]` → Verifica che lo username abbia tra 3 e 50 caratteri
+- `unique: true` → Garantisce a livello di database che non ci siano duplicati per userName
+- `primaryKey: true` su email → L'email è usata come chiave primaria (non un id auto-incremento)
+
+**Campi automatici di Sequelize**: `createdAt` e `updatedAt` sono aggiunti automaticamente da Sequelize a ogni modello. `createdAt` viene impostato alla data di creazione del record, `updatedAt` viene aggiornato ad ogni modifica del record.
+
+#### `Cat.js` — Modello Gatto
+
+| Campo | Tipo | Note |
+|---|---|---|
+| `id` | INTEGER | Chiave primaria, auto-incremento |
+| `name` | STRING | Obbligatorio, 1-100 caratteri |
+| `description` | TEXT | Opzionale, supporta Markdown |
+| `color` | STRING | Opzionale (colore del mantello) |
+| `size` | ENUM | `'piccolo'`, `'medio'`, `'grande'` |
+| `photoUrl` | STRING | URL dell'immagine caricata |
+| `latitude` | FLOAT | Latitudine (-90 a 90) |
+| `longitude` | FLOAT | Longitudine (-180 a 180) |
+| `UserEmail` | STRING (FK) | Email dell'utente che ha creato la segnalazione (aggiunto automaticamente da Sequelize tramite la relazione `belongsTo`) |
+
+#### `Comment.js` — Modello Commento
+
+| Campo | Tipo | Note |
+|---|---|---|
+| `id` | INTEGER | Chiave primaria, auto-incremento |
+| `text` | TEXT | Obbligatorio, 1-2000 caratteri |
+| `UserEmail` | STRING (FK) | Email dell'autore del commento (FK aggiunta da relazione) |
+| `CatId` | INTEGER (FK) | ID del gatto a cui è associato (FK aggiunta da relazione) |
+
+### 4.4 Controller
+
+I controller sono **classi con metodi statici** che incapsulano tutta la logica di accesso al database. I router non interagiscono mai direttamente con i modelli Sequelize, ma delegano sempre ai controller. Questo segue il pattern **MVC (Model-View-Controller)** dove:
+- **Model** → I modelli Sequelize (User, Cat, Comment)
+- **Controller** → AuthController, CatController, CommentController
+- **View** → Le risposte JSON inviate al client (in un'API REST non c'è una view HTML lato server)
+
+#### `AuthController.js`
+
+Classe statica che gestisce l'autenticazione:
+
+| Metodo | Descrizione |
+|---|---|
+| `checkCredentials(email, password)` | Cerca un utente con email e password hashata corrispondenti. Usa `User.findOne({ where: { email, password } })`. Restituisce l'oggetto utente se trovato, `null` altrimenti |
+| `saveUser(userData)` | Crea un nuovo utente nel database con `User.build()` + `user.save()`. Il ruolo è sempre `'user'` per i nuovi registrati |
+| `issueToken(email, role)` | Genera un token JWT firmato con `TOKEN_SECRET`. Il payload contiene `{ email, role }` e il token scade dopo il tempo definito in `JWT_EXPIRES_IN` |
+| `isTokenValid(token, callback)` | Verifica validità e scadenza di un token JWT usando `Jwt.verify()`. Chiama il callback con `(err, decodedToken)` |
+| `findUserByEmail(email)` | Cerca un utente per chiave primaria (email) usando `User.findByPk(email)` |
+| `userExists(userName)` | Verifica se un username è già in uso con `User.findOne({ where: { userName } })`. Restituisce `true` o `false` |
+| `emailExists(email)` | Verifica se un'email è già registrata con `User.findByPk(email)`. Restituisce `true` o `false` |
+
+**Differenza `build()` vs `create()`**: Il controller usa `User.build(data)` seguito da `user.save()`. `build()` crea l'oggetto in memoria senza salvarlo nel database, `save()` esegue l'INSERT SQL. In alternativa si potrebbe usare `User.create(data)` che fa entrambe le operazioni in un colpo solo. Il vantaggio di `build()` + `save()` è che si può manipolare l'oggetto prima di salvarlo.
+
+#### `CatController.js`
+
+| Metodo | Descrizione |
+|---|---|
+| `getAllCats()` | Restituisce tutti i gatti, ordinati dal più recente (`order: [['createdAt', 'DESC']]`) |
+| `getCatsByUser(email)` | Restituisce i gatti di un utente specifico (filtra per `UserEmail`) |
+| `findById(id)` | Trova un gatto per ID con `Cat.findByPk(id)` |
+| `createCat(catData, email)` | Crea un nuovo gatto associandolo all'utente. Imposta `UserEmail: email` nell'oggetto Cat |
+| `updateCat(id, updatedData)` | Aggiorna i dati di un gatto usando `cat.set(updatedData)` + `cat.save()`. `set()` aggiorna i campi in memoria, `save()` esegue l'UPDATE SQL |
+| `deleteCat(id)` | Elimina un gatto e tutti i suoi commenti (**cascade delete manuale**): prima `Comment.destroy({ where: { CatId: id } })`, poi `cat.destroy()` |
+
+> [!NOTE]
+> **Cascade delete manuale**: La cancellazione dei commenti associati al gatto è gestita esplicitamente nel controller (`Comment.destroy({ where: { CatId: id } })`) anziché delegare al database con `ON DELETE CASCADE`. Questo approccio garantisce il controllo programmatico dell'operazione.
+
+#### `CommentController.js`
+
+| Metodo | Descrizione |
+|---|---|
+| `getCommentsByCat(catId)` | Commenti di un gatto, include lo `userName` dell'autore usando **Eager Loading**: `include: [{ model: User, attributes: ['userName'] }]` |
+| `getCommentsByUser(email)` | Commenti di un utente, include `id` e `name` del gatto: `include: [{ model: Cat, attributes: ['id', 'name'] }]` |
+| `findById(id)` | Trova un commento per ID con `Comment.findByPk(id)` |
+| `createComment(data, catId, email)` | Crea un commento per un gatto specifico. Prima verifica che il gatto esista con `Cat.findByPk(catId)`, se non esiste lancia `new Error('Gatto non trovato')` |
+| `updateComment(id, data)` | Modifica il testo di un commento con `comment.set({ text: data.text })` + `comment.save()` |
+| `deleteComment(id)` | Elimina un commento con `comment.destroy()` |
+
+**Eager Loading** — Quando Sequelize esegue una query con `include`, genera una JOIN SQL. Ad esempio:
+```javascript
+Comment.findAll({
+  where: { CatId: catId },
+  include: [{ model: User, attributes: ['userName'] }]
+});
+```
+Genera qualcosa di simile a:
+```sql
+SELECT Comment.*, User.userName
+FROM Comments AS Comment
+LEFT JOIN Users AS User ON Comment.UserEmail = User.email
+WHERE Comment.CatId = ?
+ORDER BY Comment.createdAt DESC
+```
+Il risultato è che ogni oggetto commento avrà un campo annidato `User: { userName: '...' }`.
+
+### 4.5 Middleware
+
+#### `authorization.js` — Autenticazione JWT
+
+Middleware `requireAuth` che:
+1. Estrae il token dall'header `Authorization: Bearer <token>`
+2. Se mancante → risponde con **401 Unauthorized**
+3. Verifica il token con `AuthController.isTokenValid()`
+4. Se valido → inserisce `req.email` e `req.role` nell'oggetto request per l'uso nei controller successivi
+5. Se scaduto/invalido → risponde con **401 Unauthorized**
+
+**Come funziona un middleware Express**: Un middleware è una funzione con firma `(req, res, next)`. Se chiama `next()`, passa il controllo al middleware/handler successivo nella catena. Se chiama `next({ status: 401, message: '...' })`, passa l'errore al gestore globale degli errori. Se chiama `res.json()` o `res.status().json()`, termina la catena e invia la risposta al client.
+
+```
+Richiesta con header Authorization
+    │
+    ├── Estrai token da "Bearer <token>"
+    │       │
+    │       ├── Token assente? → next({ status: 401 }) → Errore al client
+    │       │
+    │       └── Token presente → Verifica con jwt.verify()
+    │               │
+    │               ├── Token invalido/scaduto? → next({ status: 401 })
+    │               │
+    │               └── Token valido → req.email = decodedToken.email
+    │                                  req.role = decodedToken.role
+    │                                  next() → Prosegue alla rotta
+```
+
+#### `upload.js` — Upload Immagini con Multer
+
+Configurazione:
+- **Destinazione**: `public/uploads/` (crea la cartella automaticamente se non esiste usando `fs.mkdirSync` con `recursive: true`)
+- **Naming**: `timestamp-nomeoriginale` per evitare conflitti (es. `1719266400000-foto_gatto.jpg`)
+- **Filtro**: Accetta solo file con `mimetype` che inizia per `image/` (es. `image/jpeg`, `image/png`)
+- **Limite**: Massimo **5 MB** per immagine (`5 * 1024 * 1024` bytes)
+
+**Come funziona Multer**: Multer è un middleware Express per gestire richieste `multipart/form-data` (il formato usato per l'upload di file). Quando il frontend invia un `FormData` contenente un file, Multer:
+1. Parsa il body della richiesta multipart
+2. Salva il file su disco nella cartella configurata
+3. Popola `req.file` con le informazioni del file (nome, path, dimensione, mimetype)
+4. I campi testuali del FormData vengono messi in `req.body` come al solito
+
+```javascript
+// Esempio: req.file dopo un upload
+req.file = {
+  fieldname: 'photo',           // Nome del campo nel FormData
+  originalname: 'gatto.jpg',    // Nome originale del file
+  filename: '1719266400000-gatto.jpg', // Nome salvato su disco
+  path: 'public/uploads/1719266400000-gatto.jpg',
+  size: 204800,                 // Dimensione in bytes
+  mimetype: 'image/jpeg'
+}
+```
+
+### 4.6 Rotte API REST
+
+#### `authRouter.js`
+
+| Metodo | Endpoint | Auth | Descrizione |
+|---|---|---|---|
+| `POST` | `/auth` | ❌ | Login: verifica credenziali e restituisce token JWT |
+| `POST` | `/signup` | ❌ | Registrazione: crea utente e restituisce token JWT (login automatico) |
+| `GET` | `/profile` | ✅ | Profilo utente autenticato con ultime 10 segnalazioni e 10 commenti |
+
+**Logica dettagliata della rotta POST `/auth` (login)**:
+1. Estrae `email` e `password` da `req.body`
+2. Verifica che entrambi siano presenti → altrimenti **400 Bad Request**
+3. Hasha la password con SHA-256: `createHash("sha256").update(password).digest("hex")`
+4. Cerca un utente nel DB con email e password hashata corrispondenti
+5. Se trovato → genera JWT con `AuthController.issueToken(email, role)` e risponde con `{ message, token, user }`
+6. Se non trovato → **401 Unauthorized** con messaggio "Credenziali non valide"
+
+**Logica dettagliata della rotta POST `/signup` (registrazione)**:
+1. Estrae `userName`, `password`, `email` da `req.body`
+2. Validazione campi obbligatori → **400** se mancanti
+3. Validazione lunghezza username (3-50 caratteri) → **400** se fuori range
+4. Validazione lunghezza password (minimo 6 caratteri) → **400** se troppo corta
+5. Verifica unicità username → **400** se già in uso
+6. Verifica unicità email → **400** se già registrata
+7. Hasha la password con SHA-256
+8. Crea l'utente nel DB con `AuthController.saveUser()`
+9. Genera token JWT per login automatico
+10. Risponde con **201 Created** e `{ message, token, user }`
+11. Gestione errori Sequelize: se la validazione del modello fallisce, restituisce **400** con i messaggi di errore
+
+**Logica dettagliata della rotta GET `/profile`**:
+1. Il middleware `requireAuth` verifica il JWT e inserisce `req.email`
+2. Cerca l'utente per email con `AuthController.findUserByEmail()`
+3. Carica le ultime 10 segnalazioni con `Cat.findAll({ where: { UserEmail }, limit: 10, order: [['createdAt', 'DESC']] })`
+4. Carica gli ultimi 10 commenti con Eager Loading del gatto associato
+5. Risponde con oggetto completo: `{ userName, email, role, createdAt, stats: { cats, comments }, recentCats, recentComments }`
+
+#### `catRouter.js`
+
+| Metodo | Endpoint | Auth | Descrizione |
+|---|---|---|---|
+| `GET` | `/cats` | ❌ | Lista tutti i gatti |
+| `GET` | `/cats/:id` | ❌ | Dettaglio singolo gatto |
+| `GET` | `/cats/:id/comments` | ❌ | Lista commenti di un gatto |
+| `POST` | `/cats` | ✅ | Crea nuovo gatto (supporta upload foto via `multipart/form-data`) |
+| `PUT` | `/cats/:id` | ✅ + owner/admin | Modifica gatto |
+| `DELETE` | `/cats/:id` | ✅ + owner/admin | Elimina gatto (e tutti i suoi commenti) |
+| `POST` | `/cats/:id/comments` | ✅ | Aggiungi commento ad un gatto |
+| `DELETE` | `/cats/:catId/comments/:commentId` | ✅ + owner/admin | Elimina un commento specifico |
+
+**Catena middleware della rotta POST `/cats`**:
+```
+POST /cats
+    │
+    ├── 1. requireAuth          → Verifica JWT, inserisce req.email e req.role
+    ├── 2. upload.single('photo') → Multer parsa il file, lo salva in public/uploads/
+    └── 3. Handler              → Logica di business:
+            │
+            ├── Valida che 'name' sia presente
+            ├── Se req.file esiste → photoUrl = 'http://localhost:3000/uploads/{filename}'
+            ├── CatController.createCat(catData, req.email)
+            └── Risponde con 201 + oggetto gatto creato
+```
+
+**Logica di autorizzazione nelle rotte PUT e DELETE**: Le rotte di modifica e eliminazione eseguono un doppio controllo:
+1. `requireAuth` → Verifica che l'utente sia autenticato
+2. Nel handler → Verifica che l'utente sia il **proprietario** della risorsa (`cat.UserEmail === req.email`) **oppure** un **admin** (`req.role === 'admin'`). Se nessuna delle due condizioni è vera → **403 Forbidden**
+
+#### `commentRouter.js`
+
+| Metodo | Endpoint | Auth | Descrizione |
+|---|---|---|---|
+| `GET` | `/comments/:id` | ❌ | Dettaglio singolo commento |
+| `PUT` | `/comments/:id` | ✅ + owner/admin | Modifica commento |
+| `DELETE` | `/comments/:id` | ✅ + owner/admin | Elimina commento |
+| `GET` | `/users/:email/comments` | ❌ | Commenti di un utente specifico |
+
+> [!NOTE]
+> Le rotte protette verificano i **permessi**: solo il proprietario della risorsa o un utente con `role: 'admin'` può modificare o eliminare.
+
+### 4.7 Gestione Globale degli Errori
+
+Il gestore globale degli errori è l'ultimo middleware registrato in `index.js`:
+
+```javascript
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  let status = err.status || 500;
+  let message = err.message || "An error occurred";
+  res.status(status).json({ code: status, description: message });
+});
+```
+
+Questo middleware ha **4 parametri** (anziché 3): `(err, req, res, next)`. Express riconosce automaticamente i middleware con 4 parametri come **error handler**. Quando un qualsiasi middleware o route handler chiama `next({ status: 404, message: "..." })`, Express salta tutti i middleware normali e va direttamente al gestore degli errori.
+
+---
+
+## 5. Frontend — Dettaglio Completo
+
+### 5.1 Bootstrap dell'Applicazione Angular
+
+#### `main.ts` — Punto di ingresso
+
+```typescript
+bootstrapApplication(App, appConfig)
+  .catch((err) => console.error(err));
+```
+
+Questa funzione avvia l'intera applicazione Angular:
+1. **Crea l'istanza** del componente root (`App`)
+2. **Registra i provider** definiti in `appConfig` (router, HttpClient, interceptor, animazioni)
+3. **Inserisce il componente** nel DOM, cercando il selettore `<app-root>` nell'`index.html`
+4. **Attiva zone.js** per il change detection
+
+Angular 21 usa il **Standalone Component pattern** (introdotto in Angular 14+): i componenti non hanno bisogno di un `NgModule`, ma dichiarano le proprie dipendenze direttamente nell'array `imports` del decoratore `@Component`.
+
+#### `app.config.ts` — Configurazione Provider
+
+Registra i **provider** globali dell'applicazione Angular:
+
+```typescript
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideAnimations(),
+    provideHttpClient(withInterceptors([authInterceptor]))
+  ]
+};
+```
+
+| Provider | Descrizione dettagliata |
+|---|---|
+| `provideZoneChangeDetection({ eventCoalescing: true })` | Configura il sistema di Change Detection basato su zone.js. L'opzione `eventCoalescing: true` ottimizza le prestazioni raggruppando più eventi DOM in un singolo ciclo di change detection anziché eseguirne uno per ogni evento |
+| `provideRouter(routes)` | Registra il sistema di routing con la lista delle rotte definite in `app.routes.ts`. Permette la navigazione SPA senza ricaricare la pagina |
+| `provideAnimations()` | Abilita il modulo animazioni di Angular, necessario per le transizioni e gli effetti visivi |
+| `provideHttpClient(withInterceptors([authInterceptor]))` | Registra `HttpClient` come servizio iniettabile e configura l'`authInterceptor` per intercettare tutte le richieste HTTP in uscita |
+
+#### `app.routes.ts` — Rotte dell'Applicazione
+
+| Path | Componente | Guard | Descrizione |
+|---|---|---|---|
+| `/` | — | — | Redirect a `/cats` |
+| `/cats` | `CatList` | — | Lista gatti con mappa |
+| `/cats/new` | `CatForm` | `authGuard` | Form nuova segnalazione |
+| `/cats/:id` | `CatDetail` | — | Dettaglio gatto |
+| `/cats/:id/edit` | `CatForm` | `authGuard` | Form modifica gatto |
+| `/login` | `Login` | `noAuthGuard` | Pagina login |
+| `/signup` | `Signup` | `noAuthGuard` | Pagina registrazione |
+| `/profile` | `Profile` | `authGuard` | Profilo utente |
+| `**` | — | — | Redirect a `/cats` (wildcard 404) |
+
+**Come funziona il routing Angular**: Quando l'utente naviga a un URL (ad esempio `/cats/5`), il Router di Angular:
+1. Confronta l'URL con le rotte definite in ordine (la prima che corrisponde vince)
+2. Esegue i **Route Guards** associati (es. `authGuard`)
+3. Se i guard restituiscono `true`, crea un'istanza del componente associato
+4. Inserisce il componente nel `<router-outlet>` del template padre
+5. Il componente precedente viene distrutto (ciclo di vita `ngOnDestroy`)
+
+**Parametri di rotta** (`:id`): Il `:id` nella rotta `/cats/:id` è un **parametro dinamico**. Il componente `CatDetail` può leggere questo valore tramite `ActivatedRoute.snapshot.paramMap.get('id')`. Esempio: per l'URL `/cats/42`, il parametro `id` sarà `"42"`.
+
+**Rotta wildcard** (`**`): La rotta `{ path: '**', redirectTo: '/cats' }` cattura tutti gli URL che non corrispondono a nessuna rotta definita. Funziona come una pagina 404 con redirect automatico alla home.
+
+#### `app.ts` + `app.html` — Componente Root
+
+Il layout principale dell'applicazione. Ha una struttura a colonna verticale:
+```
+┌─────────────────────────┐
+│      <app-navbar>       │  ← Barra di navigazione
+├─────────────────────────┤
+│                         │
+│     <router-outlet>     │  ← Contenuto dinamico delle pagine
+│                         │
+├─────────────────────────┤
+│      <app-footer>       │  ← Footer
+└─────────────────────────┘
+```
+
+**`<router-outlet>`** è una direttiva speciale di Angular che funge da **placeholder**. Il Router di Angular inserisce dinamicamente il componente corrispondente alla rotta corrente dentro questo placeholder. Navbar e Footer sono **sempre visibili** perché sono fuori dal `<router-outlet>`.
+
+**Standalone Component pattern nel componente root**:
+```typescript
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, Navbar, Footer],  // Dipendenze dichiarate qui
+  templateUrl: './app.html',
+  styleUrl: './app.scss'
+})
+export class App { }
+```
+L'array `imports` nel decoratore `@Component` dichiara quali altri componenti/direttive sono usati nel template. Senza questa dichiarazione, Angular non saprebbe renderizzare `<app-navbar>`, `<router-outlet>` e `<app-footer>`.
+
+### 5.2 Concetti Fondamentali di Angular usati nel Progetto
+
+#### 5.2.1 Dependency Injection (DI) e `inject()`
+
+La **Dependency Injection** è il meccanismo con cui Angular fornisce automaticamente le istanze dei servizi ai componenti che ne hanno bisogno. Invece di creare manualmente un oggetto (`new ApiService()`), il componente dichiara una dipendenza e Angular la "inietta" automaticamente.
+
+In StreetCats si usa la funzione `inject()` (introdotta in Angular 14) al posto dell'iniezione tramite costruttore:
+
+```typescript
+// Metodo moderno con inject() — usato in StreetCats
+export class CatDetail {
+  private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+}
+
+// Metodo classico con costruttore — equivalente ma più verboso
+export class CatDetail {
+  constructor(
+    private apiService: ApiService,
+    private authService: AuthService,
+    private router: Router
+  ) { }
+}
+```
+
+Entrambi i metodi sono equivalenti: Angular cerca un provider registrato per la classe richiesta (es. `ApiService`) e restituisce l'istanza singleton. I servizi con `providedIn: 'root'` hanno una **singola istanza** per tutta l'applicazione (pattern Singleton).
+
+#### 5.2.2 Observable e RxJS — Programmazione Reattiva
+
+**Cos'è un Observable**: Un `Observable` è un oggetto che rappresenta un **flusso di dati asincroni** nel tempo. A differenza di una `Promise` (che rappresenta un singolo valore futuro), un Observable può emettere zero, uno o più valori nel tempo.
+
+In StreetCats, gli Observable sono usati principalmente per le **chiamate HTTP**. L'`HttpClient` di Angular restituisce sempre un Observable (non una Promise).
+
+**Come funziona il pattern Observable/Subscribe**:
+
+```typescript
+// 1. Il servizio DEFINISCE l'Observable (non esegue ancora nulla)
+getCats(): Observable<Cat[]> {
+  return this.http.get<Cat[]>(`${this.baseUrl}/cats`);
+  // ↑ Questo non fa NESSUNA richiesta HTTP. Crea solo la "ricetta".
+}
+
+// 2. Il componente si ISCRIVE (subscribe) all'Observable → ORA parte la richiesta
+this.apiService.getCats().subscribe({
+  next: (data) => {
+    // Chiamato quando i dati arrivano con successo
+    this.cats = data;
+  },
+  error: (err) => {
+    // Chiamato se la richiesta HTTP fallisce
+    this.error = 'Errore nel caricamento';
+  }
+  // complete: () => { } — Opzionale, chiamato quando l'Observable termina
+});
+```
+
+**Concetti chiave degli Observable usati nel progetto**:
+
+1. **Lazy Evaluation (Valutazione Pigra)**: L'Observable non fa nulla finché qualcuno non si iscrive con `.subscribe()`. Questo è fondamentale: chiamare `this.http.get('/cats')` da solo NON esegue alcuna richiesta. La richiesta parte SOLO quando si chiama `.subscribe()`.
+
+2. **Observer Pattern**: Il metodo `.subscribe()` accetta un oggetto Observer con tre callback:
+   - `next(value)` — Chiamato ogni volta che l'Observable emette un valore (per le richieste HTTP, emette un solo valore: la risposta)
+   - `error(err)` — Chiamato se si verifica un errore (es. errore di rete, 404, 500)
+   - `complete()` — Chiamato quando l'Observable termina (per le HTTP, dopo aver emesso la risposta)
+
+3. **Observable "freddi" vs "caldi"**: Le richieste HTTP di Angular producono Observable "freddi" (Cold Observable): ogni nuova sottoscrizione crea una nuova richiesta HTTP indipendente. Se 3 componenti fanno `.subscribe()` allo stesso Observable HTTP, vengono eseguite 3 richieste separate.
+
+4. **Tipizzazione generica**: `Observable<Cat[]>` indica che l'Observable emetterà un array di tipo `Cat`. Questo fornisce **type safety** a tempo di compilazione: TypeScript conosce la struttura dei dati e offre autocompletamento.
+
+**Tutti gli usi degli Observable in StreetCats**:
+
+| Componente | Metodo chiamato | Observable restituito | Cosa succede nel `subscribe()` |
+|---|---|---|---|
+| `CatList` | `apiService.getCats()` | `Observable<Cat[]>` | Popola `this.cats` e `this.catsWithCoords` per la mappa |
+| `CatDetail` | `apiService.getCatById(id)` | `Observable<Cat>` | Assegna `this.cat` e poi chiama `loadComments()` |
+| `CatDetail` | `apiService.getCatComments(catId)` | `Observable<Comment[]>` | Popola `this.comments` |
+| `CatDetail` | `apiService.addComment(catId, text)` | `Observable<Comment>` | Ricarica i commenti e pulisce il campo testo |
+| `CatDetail` | `apiService.deleteCat(catId)` | `Observable<any>` | Naviga a `/cats` dopo l'eliminazione |
+| `CatForm` | `apiService.getCatById(id)` | `Observable<Cat>` | Pre-popola il form in modalità modifica |
+| `CatForm` | `apiService.createCat(formData)` | `Observable<Cat>` | Naviga al dettaglio del gatto creato |
+| `CatForm` | `apiService.updateCat(id, formData)` | `Observable<Cat>` | Naviga al dettaglio del gatto modificato |
+| `Login` | `apiService.login(credentials)` | `Observable<{token, user}>` | Salva la sessione e naviga alla home |
+| `Signup` | `apiService.signup(userData)` | `Observable<{token, user}>` | Salva la sessione e naviga alla lista gatti |
+| `Profile` | `apiService.getProfile()` | `Observable<any>` | Popola `this.user` con i dati del profilo |
+
+#### 5.2.3 `@Input()` e `@Output()` — Comunicazione tra Componenti
+
+Angular usa i decoratori `@Input()` e `@Output()` per la comunicazione tra componenti **padre** e **figlio**:
+
+- **`@Input()`** — Permette a un componente padre di **passare dati al componente figlio**. Il flusso dei dati è **dall'alto verso il basso** (padre → figlio).
+- **`@Output()`** — Permette a un componente figlio di **emettere eventi verso il componente padre**. Il flusso è **dal basso verso l'alto** (figlio → padre), tramite `EventEmitter`.
+
+**Esempio concreto nel progetto — MapComponent**:
+
+Il `MapComponent` è usato in tre componenti diversi (`CatList`, `CatDetail`, `CatForm`) e la comunicazione avviene così:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Componente Padre (es. CatList)                                │
+│                                                                 │
+│  Template:                                                      │
+│  <app-map                                                       │
+│     [mode]="'view-all'"        ← @Input: passa la modalità     │
+│     [cats]="catsWithCoords"    ← @Input: passa i dati          │
+│     [height]="'500px'"         ← @Input: passa l'altezza       │
+│     (catClicked)="onCatClicked($event)"  ← @Output: riceve ID │
+│  ></app-map>                                                    │
+│                                                                 │
+│  Classe:                                                        │
+│  onCatClicked(id: number) {                                     │
+│    this.router.navigate(['/cats', id]);                          │
+│  }                                                              │
+└─────────────────────────────────────────────────────────────────┘
+                           ↕
+┌─────────────────────────────────────────────────────────────────┐
+│  Componente Figlio (MapComponent)                               │
+│                                                                 │
+│  @Input() mode: 'view-all' | 'view-one' | 'pick' = 'view-all'; │
+│  @Input() cats: MapCat[] = [];                                  │
+│  @Input() lat: number | null = null;                            │
+│  @Input() lng: number | null = null;                            │
+│  @Input() height = '400px';                                     │
+│                                                                 │
+│  @Output() catClicked = new EventEmitter<number>();             │
+│  @Output() positionPicked = new EventEmitter<[number, number]>();│
+│                                                                 │
+│  // Quando l'utente clicca un marker:                           │
+│  // this.catClicked.emit(cat.id);  ← Emette l'evento verso     │
+│  //                                    il componente padre      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Sintassi nel template**:
+- `[property]="value"` → **Property binding** (padre → figlio), corrisponde a `@Input()`
+- `(event)="handler($event)"` → **Event binding** (figlio → padre), corrisponde a `@Output()`
+- `$event` → Il valore emesso dall'`EventEmitter`
+
+**Tutti i `@Input()` del MapComponent**:
+
+| Input | Tipo | Default | Descrizione |
+|---|---|---|---|
+| `mode` | `'view-all' \| 'view-one' \| 'pick'` | `'view-all'` | Determina il comportamento della mappa |
+| `cats` | `MapCat[]` | `[]` | Array di gatti da mostrare come marker (usato in `view-all`) |
+| `lat` | `number \| null` | `null` | Latitudine per un singolo marker (usato in `view-one` e `pick`) |
+| `lng` | `number \| null` | `null` | Longitudine per un singolo marker |
+| `height` | `string` | `'400px'` | Altezza CSS del contenitore della mappa |
+
+**Tutti i `@Output()` del MapComponent**:
+
+| Output | Tipo emesso | Descrizione |
+|---|---|---|
+| `catClicked` | `number` | Emette l'ID del gatto quando l'utente clicca su un marker |
+| `positionPicked` | `[number, number]` | Emette `[latitudine, longitudine]` quando l'utente clicca sulla mappa in modalità `pick` |
+
+**EventEmitter in profondità**: `EventEmitter<T>` è una classe Angular che estende `Subject` di RxJS. Quando si chiama `this.catClicked.emit(42)`, l'EventEmitter notifica tutti i listener registrati tramite event binding `(catClicked)="..."`. È di fatto un Observable specializzato per la comunicazione componente-padre.
+
+#### 5.2.4 Lifecycle Hooks — Ciclo di Vita dei Componenti
+
+I Lifecycle Hooks sono metodi speciali che Angular chiama automaticamente in momenti precisi del ciclo di vita di un componente. I hook utilizzati in StreetCats sono:
+
+| Hook | Quando viene chiamato | Uso nel progetto |
+|---|---|---|
+| **`constructor`** | Quando Angular crea l'istanza della classe (prima di tutto) | Inizializzazione dei FormGroup in `Login`, `CatForm` |
+| **`ngOnInit`** | Una volta, dopo che Angular ha impostato tutti gli `@Input()` | Caricamento dati dal backend (gatti, profilo, dettaglio) |
+| **`ngAfterViewInit`** | Una volta, dopo che Angular ha renderizzato il template | Inizializzazione della mappa Leaflet in `MapComponent` |
+| **`ngOnChanges`** | Ogni volta che un `@Input()` cambia valore | Aggiornamento dei marker sulla mappa quando cambiano i dati |
+| **`ngOnDestroy`** | Quando il componente viene rimosso dal DOM | Pulizia della mappa Leaflet (`map.remove()`) |
+
+**Ordine di esecuzione**:
+```
+1. constructor()        → Creazione istanza (inject delle dipendenze)
+2. ngOnChanges()        → Prima impostazione degli @Input()
+3. ngOnInit()           → Inizializzazione del componente
+4. ngAfterViewInit()    → Il template è stato renderizzato nel DOM
+   ... (il componente è attivo) ...
+5. ngOnChanges()        → Ogni volta che un @Input() cambia
+   ... (il componente è attivo) ...
+6. ngOnDestroy()        → Il componente sta per essere distrutto
+```
+
+**Perché usare `ngOnInit` invece del `constructor`?**: Nel costruttore, gli `@Input()` non sono ancora stati impostati. Se si vuole usare un valore passato come input (es. un ID dalla rotta), bisogna farlo in `ngOnInit`. Inoltre, operazioni asincrone come le chiamate HTTP non dovrebbero essere nel costruttore, per convenzione Angular.
+
+**Esempio nel progetto — MapComponent**:
+```typescript
+export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
+
+  ngAfterViewInit() {
+    this._initMap();  // La mappa viene creata DOPO che il <div> esiste nel DOM
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this.map) return;  // Se la mappa non è ancora stata creata, ignora
+    if (changes['cats']) this._renderCatMarkers();     // Se i gatti cambiano, aggiorna i marker
+    if (changes['lat'] || changes['lng']) this._renderPickMarker(); // Se le coordinate cambiano
+  }
+
+  ngOnDestroy() {
+    this.map?.remove();  // Rimuove la mappa da Leaflet per evitare memory leak
+    this.map = null;
+  }
+}
+```
+
+Il parametro `SimpleChanges` di `ngOnChanges` è un dizionario che contiene solo le proprietà `@Input()` che sono effettivamente cambiate. Ogni entry ha `previousValue`, `currentValue` e `firstChange` (boolean).
+
+#### 5.2.5 Change Detection — Come Angular Aggiorna la Vista
+
+Il **Change Detection** è il meccanismo con cui Angular rileva le modifiche ai dati e aggiorna automaticamente il DOM.
+
+**Come funziona**:
+1. **zone.js** intercetta tutti gli eventi asincroni (click, timer, richieste HTTP, Promise)
+2. Dopo ogni evento, Angular esegue un ciclo di Change Detection
+3. Per ogni componente, Angular confronta i valori attuali delle proprietà con i valori precedenti
+4. Se un valore è cambiato, Angular aggiorna il DOM
+
+**Nell'applicazione StreetCats**: Quando un Observable HTTP emette un valore nel callback `next`, zone.js rileva che un'operazione asincrona è terminata e triggera il Change Detection. Angular vede che `this.cats` è cambiato e aggiorna automaticamente il template.
+
+```typescript
+// Quando i dati arrivano dal server...
+this.apiService.getCats().subscribe({
+  next: (data) => {
+    this.cats = data;  // Angular rileva questo cambiamento e aggiorna la vista
+  }
+});
+```
+
+L'opzione `eventCoalescing: true` nel provider `provideZoneChangeDetection()` ottimizza le prestazioni: se più eventi vengono emessi in rapida successione (es. un click che causa più microtask), Angular raggruppa tutto in un singolo ciclo di Change Detection.
+
+### 5.3 Servizi (`_services/`)
+
+#### `ApiService` — Client HTTP
+
+Servizio `providedIn: 'root'` che centralizza tutte le chiamate HTTP al backend (`http://localhost:3000`). Usa `HttpClient` di Angular e restituisce `Observable`.
+
+**`providedIn: 'root'`** significa che questo servizio è registrato come **Singleton** a livello di applicazione root. Angular crea una sola istanza di `ApiService` e la condivide con tutti i componenti che la richiedono tramite `inject()`. Questo è fondamentale perché garantisce che tutti i componenti usino lo stesso client HTTP con le stesse configurazioni.
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private http = inject(HttpClient);       // Iniettato automaticamente da Angular
+  private baseUrl = 'http://localhost:3000'; // URL base del backend
+
+  // Ogni metodo restituisce un Observable<T> tipizzato
+  getCats(): Observable<Cat[]> {
+    return this.http.get<Cat[]>(`${this.baseUrl}/cats`);
+    //                  ↑ Generic type: dice a TypeScript che la risposta è Cat[]
+  }
+}
+```
+
+**Tipizzazione delle risposte HTTP**: Ogni metodo usa un **generic type** (`<Cat[]>`, `<Comment>`, ecc.) per specificare il tipo della risposta. `this.http.get<Cat[]>()` non cambia il comportamento a runtime (JavaScript non ha generics), ma fornisce a TypeScript le informazioni sui tipi per l'autocompletamento e il type checking.
+
+| Metodo | Tipo HTTP | Endpoint | Observable restituito | Descrizione |
+|---|---|---|---|---|
+| `login(credentials)` | POST | `/auth` | `Observable<{ message, token, user }>` | Login utente |
+| `signup(userData)` | POST | `/signup` | `Observable<{ message, token, user }>` | Registrazione utente |
+| `getProfile()` | GET | `/profile` | `Observable<any>` | Profilo utente autenticato |
+| `getCats()` | GET | `/cats` | `Observable<Cat[]>` | Lista tutti i gatti |
+| `getCatById(id)` | GET | `/cats/:id` | `Observable<Cat>` | Dettaglio singolo gatto |
+| `createCat(catData)` | POST | `/cats` | `Observable<Cat>` | Crea gatto (accetta FormData) |
+| `updateCat(id, catData)` | PUT | `/cats/:id` | `Observable<Cat>` | Modifica gatto (accetta FormData) |
+| `deleteCat(catId)` | DELETE | `/cats/:id` | `Observable<any>` | Elimina gatto |
+| `getCatComments(catId)` | GET | `/cats/:id/comments` | `Observable<Comment[]>` | Commenti del gatto |
+| `addComment(catId, text)` | POST | `/cats/:id/comments` | `Observable<Comment>` | Aggiungi commento |
+| `deleteComment(catId, commentId)` | DELETE | `/cats/:catId/comments/:commentId` | `Observable<any>` | Elimina commento |
+
+#### `AuthService` — Gestione Sessione
+
+Servizio `providedIn: 'root'` che gestisce lo stato di autenticazione dell'utente lato client:
+
+- **Persistenza**: Salva token e dati utente nel `localStorage` del browser (chiavi: `streetcats_token`, `streetcats_user`)
+- **Costruttore**: Al caricamento dell'app, ripristina la sessione da localStorage (se presente)
+- **Singleton**: Essendo `providedIn: 'root'`, esiste una sola istanza. Tutti i componenti vedono lo stesso stato di autenticazione.
+
+**Funzionamento dettagliato**:
+
+```typescript
+export class AuthService {
+  private tokenKey = 'streetcats_token';      // Chiave nel localStorage per il token
+  private currentUserKey = 'streetcats_user'; // Chiave nel localStorage per i dati utente
+
+  private _token: string | null = null;       // Token JWT in memoria
+  private _user: User | null = null;          // Dati utente in memoria
+
+  constructor() {
+    // Ripristino sessione dal localStorage al caricamento dell'app
+    this._token = localStorage.getItem(this.tokenKey);
+    const userStr = localStorage.getItem(this.currentUserKey);
+    if (userStr) {
+      try {
+        this._user = JSON.parse(userStr);  // Deserializza i dati utente da JSON
+      } catch (e) {
+        this._user = null;  // Se il JSON è corrotto, ignora
+      }
+    }
+  }
+}
+```
+
+**Metodi principali**:
+
+| Metodo | Descrizione dettagliata |
+|---|---|
+| `setSession(token, user)` | Salva il token e i dati utente sia in `localStorage` (per la persistenza tra ricaricamenti) sia nelle proprietà private (per l'accesso rapido in memoria). Chiamato dopo login e signup |
+| `logout()` | Rimuove token e utente da `localStorage` e azzera le proprietà private. Il componente Navbar chiama questo metodo |
+| `getToken()` | Restituisce il token JWT corrente (usato dall'interceptor) |
+| `currentUser()` | Restituisce l'oggetto `User` corrente (usato da Navbar e CatDetail per mostrare/nascondere elementi) |
+| `isAuthenticated()` | Restituisce `true` se il token esiste e non è stringa vuota. Usato dai Route Guards e dai componenti |
+
+**Perché `localStorage`?**: Il `localStorage` è un API del browser che persiste i dati anche dopo la chiusura della finestra. Questo permette all'utente di restare "loggato" anche dopo aver chiuso e riaperto il browser. A differenza di `sessionStorage`, che viene cancellato alla chiusura della tab, `localStorage` persiste indefinitamente.
+
+#### Interfacce TypeScript
+
+Le interfacce definiscono la **forma dei dati** scambiati tra frontend e backend. Non generano codice JavaScript a runtime, ma forniscono **type safety** a tempo di compilazione.
+
+```typescript
+// cat.type.ts
+export interface Cat {
+  id: number;
+  name: string;
+  description: string | null;   // Il tipo union "string | null" indica che può essere assente
+  color: string | null;
+  size: string | null;
+  photoUrl: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  UserEmail: string;
+  createdAt: string;
+  updatedAt?: string;           // Il "?" indica che è opzionale (potrebbe non essere presente)
+}
+```
+
+Le interfacce corrispondono esattamente alla struttura dei modelli Sequelize del backend. Quando il backend risponde con un JSON, TypeScript verifica che la risposta corrisponda all'interfaccia dichiarata nel generic type della chiamata HTTP.
+
+### 5.4 Interceptor
+
+#### `authInterceptor`
+
+Interceptor **funzionale** (Angular 15+) che intercetta **ogni richiesta HTTP** in uscita e, se l'utente è autenticato, aggiunge automaticamente l'header:
+```
+Authorization: Bearer <token>
+```
+
+```typescript
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const token = authService.getToken();
+
+  if (token !== null) {
+    // req.clone() crea una COPIA della richiesta con le modifiche
+    req = req.clone({
+      setHeaders: {
+        Authorization: 'Bearer ' + token
+      }
+    });
+  }
+
+  return next(req);  // Passa la richiesta (modificata o no) al prossimo interceptor/handler
+};
+```
+
+**Concetti chiave**:
+
+1. **Immutabilità delle richieste**: In Angular, gli oggetti `HttpRequest` sono **immutabili**. Non si può fare `req.headers.set(...)` direttamente. Bisogna usare `req.clone()` per creare una copia modificata. Questo design previene bug legati alla modifica accidentale di richieste condivise.
+
+2. **`HttpInterceptorFn`**: In Angular moderno, gli interceptor sono semplici funzioni (non classi che implementano `HttpInterceptor`). Ricevono `(req: HttpRequest, next: HttpHandlerFn)` e restituiscono un `Observable<HttpEvent>`.
+
+3. **Catena di interceptor**: Se ci fossero più interceptor, verrebbero eseguiti in ordine. `next(req)` passa la richiesta al prossimo interceptor nella catena, o al vero handler HTTP se non ce ne sono altri.
+
+4. **Registrazione**: L'interceptor è registrato in `app.config.ts` tramite `provideHttpClient(withInterceptors([authInterceptor]))`. Da questo momento, **ogni** chiamata `this.http.get/post/put/delete` passerà automaticamente attraverso l'interceptor.
+
+```
+Componente chiama apiService.getCats()
+    │
+    ├── HttpClient crea la richiesta
+    │
+    ├── authInterceptor intercetta la richiesta
+    │       │
+    │       ├── Token presente? → Clona la richiesta aggiungendo Authorization header
+    │       └── Token assente? → Passa la richiesta originale
+    │
+    └── La richiesta viene inviata al backend
+```
+
+### 5.5 Route Guards
+
+I Route Guards sono funzioni che **proteggono le rotte** dell'applicazione. Vengono eseguiti dal Router di Angular prima di caricare un componente. Se il guard restituisce `true`, la navigazione procede. Se restituisce `false` o un `UrlTree`, la navigazione viene bloccata o reindirizzata.
+
+#### `authGuard` — Protezione rotte autenticate
+
+```typescript
+export const authGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated()) {
+    return true;  // Autenticato → Accesso consentito
+  }
+
+  return router.parseUrl('/login');  // Non autenticato → Redirect a /login
+};
+```
+
+**Rotte protette**: `/cats/new`, `/cats/:id/edit`, `/profile`
+
+**`CanActivateFn`**: È il tipo per i guard funzionali di Angular. Riceve i parametri `route` (informazioni sulla rotta) e `state` (stato del router). Può restituire `boolean`, `UrlTree`, `Observable<boolean>` o `Promise<boolean>`.
+
+**`router.parseUrl('/login')`**: Anziché restituire `false` (che blocca la navigazione senza fare nulla), restituisce un `UrlTree` che dice al Router "naviga a /login". Questo è il modo idiomatico di fare un redirect da un guard.
+
+#### `noAuthGuard` — Protezione rotte non autenticate
+
+```typescript
+export const noAuthGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (!authService.isAuthenticated()) {
+    return true;  // NON autenticato → Accesso consentito
+  }
+
+  return router.parseUrl('/profile');  // Già autenticato → Redirect a /profile
+};
+```
+
+**Rotte protette**: `/login`, `/signup`
+
+Questo guard fa l'opposto di `authGuard`: impedisce a un utente già loggato di accedere alle pagine di login e registrazione (sarebbe inutile e confusivo). Se un utente autenticato prova a navigare a `/login`, viene reindirizzato a `/profile`.
+
+### 5.6 Pipe Personalizzate
+
+#### `MarkdownPipe`
+
+Pipe standalone che converte il testo Markdown in HTML sicuro:
+
+```typescript
+@Pipe({ name: 'markdown', standalone: true })
+export class MarkdownPipe implements PipeTransform {
+  private sanitizer = inject(DomSanitizer);
+
+  transform(value: string | null | undefined): SafeHtml {
+    if (!value) return '';
+    const html = marked.parse(value, { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+}
+```
+
+**Come funziona una Pipe in Angular**:
+1. Nel template: `{{ cat.description | markdown }}` → Angular chiama `transform(cat.description)`
+2. Il risultato viene usato nel binding `[innerHTML]="cat.description | markdown"`
+
+**Pipeline di trasformazione**:
+```
+"**grassetto** e *corsivo*"   → Input Markdown
+        ↓ marked.parse()
+"<strong>grassetto</strong> e <em>corsivo</em>"  → HTML generato
+        ↓ bypassSecurityTrustHtml()
+SafeHtml object                → HTML sicuro per Angular
+        ↓ [innerHTML]
+Rendering nel DOM              → Testo formattato visibile
+```
+
+**`bypassSecurityTrustHtml()`**: Angular di default impedisce l'inserimento di HTML arbitrario per prevenire attacchi **XSS (Cross-Site Scripting)**. `bypassSecurityTrustHtml()` dice ad Angular "ho verificato che questo HTML è sicuro, puoi renderizzarlo". In produzione si dovrebbe anche sanitizzare l'input per rimuovere tag pericolosi come `<script>`.
+
+**`standalone: true`**: Le pipe standalone possono essere importate direttamente nell'array `imports` di un componente senza bisogno di un NgModule.
+
+### 5.7 Componente Mappa — `MapComponent`
+
+Componente riusabile che wrappa **Leaflet** (caricato globalmente da CDN). Supporta tre modalità operative:
+
+| Modalità | Dove usata | Comportamento |
+|---|---|---|
+| `view-all` | Lista gatti | Mostra tutti i gatti come marker sulla mappa. Click su marker → popup con link al dettaglio |
+| `view-one` | Dettaglio gatto | Mostra un singolo marker alla posizione del gatto, zoom ravvicinato (15) |
+| `pick` | Form gatto | L'utente clicca sulla mappa per selezionare/spostare la posizione. Marker trascinabile |
+
+**Interazione con Leaflet**:
+
+Leaflet viene caricato globalmente da CDN nell'`index.html`, quindi è disponibile come proprietà dell'oggetto `window`. Il componente lo recupera con `(window as any)['L']`:
+
+```typescript
+private _initMap() {
+  const L = (window as any)['L'];  // Accesso a Leaflet globale
+  if (!L) {
+    console.error('[MapComponent] Leaflet non trovato.');
+    return;
+  }
+
+  // Inizializzazione mappa con Leaflet
+  this.map = L.map(this.mapId).setView(center, zoom);
+
+  // Aggiunge il tile layer di OpenStreetMap
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(this.map);
+}
+```
+
+**Perché `ngAfterViewInit` e non `ngOnInit`?**: La mappa ha bisogno di un `<div>` nel DOM con un ID specifico (`this.mapId`). In `ngOnInit`, il template potrebbe non essere ancora stato renderizzato nel DOM, quindi Leaflet non troverebbe il contenitore. `ngAfterViewInit` garantisce che il DOM sia pronto.
+
+**ID univoco per il contenitore**: Ogni istanza di `MapComponent` genera un ID casuale (`map-` + stringa random). Questo è essenziale quando più mappe coesistono nella stessa pagina (es. nella pagina di dettaglio c'è la mappa nella scheda e potenzialmente una nell'anteprima).
+
+**Modalità `pick` — Interazione con l'utente**:
+
+```typescript
+private _setupPickMode() {
+  // Se ci sono già coordinate, crea un marker trascinabile
+  if (this.lat != null && this.lng != null) {
+    this.pickMarker = L.marker([this.lat, this.lng], { draggable: true }).addTo(this.map);
+    this.pickMarker.on('dragend', () => {
+      const pos = this.pickMarker.getLatLng();
+      this.positionPicked.emit([pos.lat, pos.lng]);  // Emette le nuove coordinate
+    });
+  }
+
+  // Click sulla mappa → crea/sposta il marker
+  this.map.on('click', (e: any) => {
+    const { lat, lng } = e.latlng;
+    if (this.pickMarker) {
+      this.pickMarker.setLatLng([lat, lng]);  // Sposta il marker esistente
+    } else {
+      this.pickMarker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+      // Registra l'evento dragend anche sul nuovo marker
+    }
+    this.positionPicked.emit([lat, lng]);  // Notifica il padre con le coordinate
+  });
+}
+```
+
+La mappa è centrata sull'**Italia** (lat: 40, lng: 10, zoom: 5) come default.
+
+### 5.8 Pagine dell'Applicazione — Dettaglio Completo
+
+#### Navbar — Barra di navigazione
+
+Il componente `Navbar` inietta `AuthService` come **public** (`authService = inject(AuthService)`) per poterlo usare direttamente nel template con le condizioni:
+
+```html
+<!-- Se autenticato: mostra profilo, nuova segnalazione, esci -->
+@if (authService.isAuthenticated()) {
+  <a routerLink="/cats/new">Nuova segnalazione</a>
+  <a routerLink="/profile">Il mio profilo</a>
+  <button (click)="logout()">Esci</button>
+}
+
+<!-- Se non autenticato: mostra bottone accedi -->
+@if (!authService.isAuthenticated()) {
+  <a routerLink="/login">Accedi</a>
+}
+```
+
+Il metodo `logout()` chiama `authService.logout()` (rimuove i dati da localStorage) e poi naviga a `/cats`.
+
+#### CatList — Lista gatti (`/cats`)
+
+Questo componente:
+1. Implementa `OnInit` → chiama `loadCats()` nel hook `ngOnInit()`
+2. `loadCats()` si iscrive a `apiService.getCats()` che restituisce `Observable<Cat[]>`
+3. Nel callback `next`, popola `this.cats` (lista completa) e `this.catsWithCoords` (solo gatti con coordinate, per la mappa)
+4. Passa `catsWithCoords` al `MapComponent` tramite `@Input()`
+
+**Trasformazione dei dati per la mappa**:
+```typescript
+this.catsWithCoords = this.cats
+  .filter(c => c.latitude != null && c.longitude != null)  // Filtra gatti senza coordinate
+  .map(c => ({
+    id: c.id,
+    name: c.name,
+    latitude: c.latitude!,     // "!" è il non-null assertion operator di TypeScript
+    longitude: c.longitude!,
+    color: c.color ?? undefined,  // "??" è l'operatore nullish coalescing
+    photoUrl: c.photoUrl ?? undefined
+  }));
+```
+
+**Operatori TypeScript usati**:
+- `!` (non-null assertion): Dice a TypeScript "so che questo valore non è null". Usato dopo il `filter` che ha già verificato che le coordinate non sono null.
+- `??` (nullish coalescing): Restituisce il valore destro se il sinistro è `null` o `undefined`. `color ?? undefined` converte `null` in `undefined` per conformarsi all'interfaccia `MapCat`.
+
+#### CatDetail — Dettaglio gatto (`/cats/:id`)
+
+Layout a **tre colonne** di uguale larghezza:
+1. **Descrizione**: Nome, badges (colore, taglia), autore, descrizione in Markdown
+2. **Mappa**: Posizione del gatto con marker su mappa Leaflet
+3. **Foto**: Immagine del gatto
+
+Sotto il layout a colonne:
+- Pulsanti "Modifica" e "Elimina" (visibili solo all'autore o admin)
+- Sezione commenti con form per aggiungere commenti (se autenticato)
+- Lista dei commenti esistenti
+
+**Proprietà calcolate (getter)**:
+```typescript
+// Verifica se l'utente corrente è il proprietario del gatto o un admin
+get isOwnerOrAdmin() {
+  if (!this.cat) return false;
+  const u = this.authService.currentUser();
+  return u !== null && (u.email === this.cat.UserEmail || u.role === 'admin');
+}
+```
+
+I getter TypeScript (`get nomeProp()`) sono accessibili nel template come proprietà normali (`isOwnerOrAdmin` senza parentesi). Angular li ricalcola ad ogni ciclo di change detection.
+
+#### CatForm — Creazione/Modifica gatto (`/cats/new`, `/cats/:id/edit`)
+
+Questo componente usa i **Reactive Forms** di Angular:
+
+**Reactive Forms in dettaglio**:
+```typescript
+constructor() {
+  this.catForm = this.fb.group({
+    name: ['', Validators.required],    // Valore iniziale: '', validazione: obbligatorio
+    description: [''],                   // Valore iniziale: '', nessuna validazione
+    color: [''],
+    size: ['']
+  });
+}
+```
+
+`FormBuilder.group()` crea un `FormGroup` — un gruppo di controlli form collegati. Ogni campo è un `FormControl` con un valore iniziale e opzionali validatori. Il form è "reattivo" perché il suo stato è rappresentato come un **modello dati immutabile** nella classe TypeScript, non come proprietà del DOM.
+
+**Differenza tra Reactive Forms e Template-driven Forms**:
+- **Template-driven** (usato nella sezione commenti di CatDetail): Usa `[(ngModel)]` nel template. Più semplice ma meno controllabile.
+- **Reactive** (usato in CatForm, Login, Signup): Usa `FormGroup` e `FormControl` nella classe TypeScript. Più verboso ma offre validazione complessa, accesso programmatico allo stato del form, e testabilità.
+
+**Modalità creazione vs modifica**: Il componente rileva la modalità basandosi sulla presenza del parametro `:id` nella rotta:
+
+```typescript
+ngOnInit() {
+  const idParam = this.route.snapshot.paramMap.get('id');
+  if (idParam !== null) {
+    this.isEditMode = true;
+    this.catId = Number(idParam);
+    this.loadCatData(this.catId);  // Carica i dati esistenti e pre-popola il form
+  }
+}
+```
+
+Se l'URL è `/cats/new` → `idParam` è `null` → modalità creazione.
+Se l'URL è `/cats/5/edit` → `idParam` è `"5"` → modalità modifica → carica i dati del gatto 5 e pre-popola il form con `patchValue()`.
+
+**`patchValue()` vs `setValue()`**: `patchValue()` aggiorna solo i campi specificati, lasciando gli altri invariati. `setValue()` richiede di specificare TUTTI i campi del form, altrimenti lancia un errore.
+
+**Gestione upload dell'immagine**:
+```typescript
+onFileSelected(event: any) {
+  const file = event.target.files?.[0];  // Prende il primo file selezionato
+  if (file) {
+    this.selectedFile = file;                     // Salva il File object
+    this.previewUrl = URL.createObjectURL(file);  // Crea un URL temporaneo per l'anteprima
+  }
+}
+```
+
+`URL.createObjectURL(file)` crea un URL locale temporaneo (es. `blob:http://localhost:4200/abc-123`) che il browser può usare per mostrare l'anteprima dell'immagine senza caricarla sul server.
+
+**Invio del form**:
+```typescript
+onSubmit() {
+  if (this.catForm.invalid) return;  // Non invia se il form non è valido
+
+  const formData = new FormData();  // Crea un oggetto multipart per l'upload
+  formData.append('name', this.catForm.value.name || '');
+  formData.append('description', this.catForm.value.description || '');
+  // ... altri campi
+  if (this.selectedFile !== null) {
+    formData.append('photo', this.selectedFile);  // Aggiunge il file
+  }
+
+  // Invia al backend
+  if (this.isEditMode) {
+    this.apiService.updateCat(this.catId, formData).subscribe({...});
+  } else {
+    this.apiService.createCat(formData).subscribe({...});
+  }
+}
+```
+
+`FormData` è un API del browser che permette di costruire coppie chiave/valore per l'invio come `multipart/form-data`. È l'unico modo per inviare file tramite HTTP. Angular lo rileva automaticamente e NON imposta il `Content-Type` header (il browser lo fa da solo con il boundary multipart corretto).
+
+#### Login — Pagina login (`/login`)
+
+Form con email e password. Usa Reactive Forms.
+
+```typescript
+constructor() {
+  this.loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
+}
+```
+
+**Validatori multipli**: Un campo può avere più validatori in un array. `Validators.required` verifica che il campo non sia vuoto, `Validators.email` verifica il formato email, `Validators.minLength(6)` verifica la lunghezza minima.
+
+**Flusso del submit**:
+1. L'utente compila il form e clicca "Login"
+2. `onSubmit()` verifica `this.loginForm.invalid` → se il form non è valido, non fa nulla
+3. Chiama `apiService.login(this.loginForm.value)` passando `{ email, password }`
+4. L'`authInterceptor` NON aggiunge l'header Authorization (perché `authService.getToken()` è null — l'utente non è ancora loggato)
+5. Il backend verifica le credenziali e restituisce `{ token, user }`
+6. `authService.setSession(token, user)` salva i dati in localStorage e in memoria
+7. `router.navigate(['/'])` naviga alla home (che fa redirect a `/cats`)
+
+#### Signup — Pagina registrazione (`/signup`)
+
+Form con username, email e password con validazioni più stringenti:
+
+```typescript
+form = inject(FormBuilder).group({
+  userName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+  email: ['', [Validators.required, Validators.email]],
+  password: ['', [Validators.required, Validators.minLength(6)]]
+});
+```
+
+Dopo la registrazione esegue il **login automatico**: il backend restituisce il token insieme alla conferma, il frontend lo salva con `authService.setSession()` e naviga a `/cats`.
+
+**Destrutturazione nel submit**:
+```typescript
+const { userName, email, password } = this.form.value;
+// Equivale a:
+// const userName = this.form.value.userName;
+// const email = this.form.value.email;
+// const password = this.form.value.password;
+```
+
+#### Profile — Profilo utente (`/profile`)
+
+```typescript
+export class Profile implements OnInit {
+  user: UserProfileData | null = null;
+
+  ngOnInit() {
+    if (this.authService.isAuthenticated() === false) {
+      this.router.navigate(['/login']);  // Doppio check (il guard già protegge)
+      return;
+    }
+    this.fetchProfile();
+  }
+
+  fetchProfile() {
+    this.apiService.getProfile().subscribe({
+      next: (data) => { this.user = data; },
+      error: (err) => { this.error = err.error?.error || 'Impossibile caricare il profilo'; }
+    });
+  }
+}
+```
+
+**Interfaccia estesa per il profilo**:
+```typescript
+interface UserProfileData extends User {
+  stats: { cats: number; comments: number; };
+  recentCats: any[];
+  recentComments: any[];
+}
+```
+
+`extends User` significa che `UserProfileData` ha tutti i campi di `User` (userName, email, role, createdAt) **più** i campi aggiuntivi stats, recentCats e recentComments che il backend restituisce nella risposta di `GET /profile`.
+
+#### Footer — Footer dell'applicazione
+
+Footer semplice con logo e testo "Progetto TecWeb 2025".
+
+---
+
+## 6. Flussi di Funzionamento Completi
+
+### 6.1 Flusso di Autenticazione (Login)
+
+```mermaid
+sequenceDiagram
+    participant U as Utente (Browser)
+    participant F as Frontend Angular
+    participant I as authInterceptor
+    participant B as Backend Express
+
+    U->>F: Compila form login (email, password)
+    F->>F: Validazione Reactive Forms (email valida, password ≥ 6 char)
+    F->>F: loginForm.invalid? → Se sì, blocca invio
+
+    F->>I: apiService.login({ email, password })
+    I->>I: Token assente? → Non aggiunge header
+    I->>B: POST /auth { email, password }
+
+    B->>B: Middleware morgan → Log della richiesta
+    B->>B: Middleware cors → Aggiunge header CORS
+    B->>B: express.json() → Parsa il body JSON
+    B->>B: Validazione: email e password presenti?
+    B->>B: Hash SHA-256 della password
+    B->>B: AuthController.checkCredentials(email, hashedPwd)
+    B->>B: User.findOne({ where: { email, password } })
+
+    alt Credenziali valide
+        B->>B: AuthController.issueToken(email, role)
+        B->>B: Jwt.sign({ email, role }, TOKEN_SECRET, { expiresIn: '365d' })
+        B-->>F: 200 OK { message, token, user: { userName, email, role } }
+        F->>F: AuthService.setSession(token, user)
+        F->>F: localStorage.setItem('streetcats_token', token)
+        F->>F: localStorage.setItem('streetcats_user', JSON.stringify(user))
+        F->>F: Router.navigate(['/'])  → Redirect a /cats
+        F-->>U: Pagina lista gatti + navbar aggiornata
+    else Credenziali non valide
+        B-->>F: 401 Unauthorized { error: "Credenziali non valide" }
+        F->>F: errorMessage = err.error.error
+        F-->>U: Mostra messaggio di errore nel form
+    end
+```
+
+### 6.2 Flusso di Registrazione (Signup)
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant F as Frontend Angular
+    participant B as Backend Express
+    participant DB as SQLite
+
+    U->>F: Compila form (userName, email, password)
+    F->>F: Validazione client-side (username 3-50, email valida, pwd ≥ 6)
+    F->>B: POST /signup { userName, email, password }
+
+    B->>B: Validazione server-side (campi obbligatori, lunghezze)
+    B->>DB: User.findOne({ where: { userName } })
+    DB-->>B: null (username libero) o User (già in uso)
+
+    alt Username già in uso
+        B-->>F: 400 { error: "Username già in uso" }
+        F-->>U: Mostra errore
+    else Username libero
+        B->>DB: User.findByPk(email)
+        DB-->>B: null (email libera) o User (già registrata)
+
+        alt Email già registrata
+            B-->>F: 400 { error: "Email già registrata" }
+            F-->>U: Mostra errore
+        else Email libera
+            B->>B: Hash SHA-256 della password
+            B->>DB: User.build({ userName, password: hash, email }).save()
+            DB-->>B: Nuovo utente creato
+            B->>B: Jwt.sign({ email, role: 'user' }, TOKEN_SECRET)
+            B-->>F: 201 Created { message, token, user }
+            F->>F: AuthService.setSession(token, user)
+            F->>F: Router.navigate(['/cats'])
+            F-->>U: Utente loggato, redirect alla home
+        end
+    end
+```
+
+### 6.3 Flusso di Caricamento di un Gatto (Creazione Segnalazione)
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant F as Frontend (CatForm)
+    participant M as MapComponent
+    participant I as authInterceptor
+    participant B as Backend Express
+    participant MU as Multer
+    participant FS as File System
+    participant DB as SQLite
+
+    U->>F: Naviga a /cats/new
+    F->>F: authGuard verifica isAuthenticated() → OK
+    F->>F: ngOnInit() → isEditMode = false (nessun :id nella rotta)
+
+    U->>F: Compila nome, colore, taglia, descrizione
+    U->>F: Seleziona immagine dal file picker
+    F->>F: onFileSelected() → selectedFile = File object
+    F->>F: URL.createObjectURL(file) → Mostra anteprima
+
+    U->>M: Clicca sulla mappa per posizionare il gatto
+    M->>M: Crea/sposta marker trascinabile
+    M-->>F: @Output positionPicked.emit([lat, lng])
+    F->>F: onPositionPicked() → pickedLat = lat, pickedLng = lng
+
+    U->>F: Clicca "Pubblica Segnalazione"
+    F->>F: catForm.invalid? → Verifica validazione (name è obbligatorio)
+
+    F->>F: Costruisce FormData con tutti i campi
+    Note over F: FormData contiene: name, description, color,<br/>size, latitude, longitude, photo (file binario)
+
+    F->>I: apiService.createCat(formData) → Observable
+    I->>I: Token presente → Clona richiesta con Authorization header
+    I->>B: POST /cats (multipart/form-data)
+
+    B->>B: requireAuth → Verifica JWT → req.email, req.role
+    B->>MU: upload.single('photo') → Multer parsa il multipart
+    MU->>MU: Verifica mimetype inizia con 'image/'
+    MU->>MU: Verifica dimensione ≤ 5MB
+    MU->>FS: Salva file in public/uploads/timestamp-nome.jpg
+    MU-->>B: req.file = { filename, path, ... }, req.body = { name, ... }
+
+    B->>B: Validazione: name presente?
+    B->>B: photoUrl = 'http://localhost:3000/uploads/' + req.file.filename
+    B->>DB: Cat.build({ name, description, ..., photoUrl, UserEmail: req.email }).save()
+    DB-->>B: Nuovo gatto con id auto-generato
+
+    B-->>F: 201 Created { id, name, description, ..., photoUrl }
+    F->>F: router.navigate(['/cats', res.id])
+    F-->>U: Redirect alla pagina dettaglio del gatto appena creato
+```
+
+### 6.4 Flusso di Modifica di un Gatto
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant F as Frontend (CatForm)
+    participant B as Backend
+
+    U->>F: Naviga a /cats/5/edit
+    F->>F: authGuard → OK
+    F->>F: ngOnInit() → isEditMode = true, catId = 5
+    F->>B: GET /cats/5 (loadCatData)
+    B-->>F: { id: 5, name: "Micio", description: "...", latitude: 41.9, ... }
+    F->>F: catForm.patchValue({ name, description, color, size })
+    F->>F: pickedLat = cat.latitude, pickedLng = cat.longitude
+    F->>F: previewUrl = cat.photoUrl (mostra foto attuale)
+
+    U->>F: Modifica i campi desiderati
+    U->>F: Clicca "Salva Modifiche"
+
+    F->>F: Costruisce FormData
+    F->>B: PUT /cats/5 (multipart/form-data) con Authorization header
+
+    B->>B: requireAuth → req.email, req.role
+    B->>B: Cat.findByPk(5) → Verifica che esista
+    B->>B: cat.UserEmail === req.email || req.role === 'admin'?
+
+    alt Permesso negato
+        B-->>F: 403 Forbidden
+        F-->>U: Mostra errore
+    else Permesso concesso
+        B->>B: Se nuovo file → photoUrl = nuovo URL
+        B->>B: cat.set(updateData) + cat.save()
+        B-->>F: 200 OK { gatto aggiornato }
+        F->>F: router.navigate(['/cats', 5])
+        F-->>U: Redirect al dettaglio aggiornato
+    end
+```
+
+### 6.5 Flusso di Aggiunta di un Commento
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant F as Frontend (CatDetail)
+    participant I as authInterceptor
+    participant B as Backend
+    participant DB as SQLite
+
+    Note over U,F: L'utente è nella pagina dettaglio di un gatto (es. /cats/5)
+
+    U->>F: Scrive il testo del commento nel textarea
+    F->>F: ngModel bidirectional binding → newCommentText = "Che bel gatto!"
+
+    U->>F: Clicca "Invia"
+    F->>F: submitComment()
+    F->>F: text = newCommentText.trim()
+    F->>F: Verifica: cat esiste? text non vuoto?
+
+    F->>I: apiService.addComment(5, "Che bel gatto!")
+    I->>I: Token presente → Aggiunge Authorization header
+    I->>B: POST /cats/5/comments { text: "Che bel gatto!" }
+
+    B->>B: requireAuth → req.email = "user@test.com"
+    B->>B: Validazione: text presente e ≤ 2000 caratteri?
+    B->>DB: Cat.findByPk(5) → Verifica che il gatto esista
+    B->>DB: Comment.build({ text, CatId: 5, UserEmail: req.email }).save()
+    DB-->>B: Nuovo commento { id: 12, text: "Che bel gatto!", ... }
+
+    B-->>F: 201 Created { commento creato }
+
+    F->>F: loadComments(5) → Ricarica TUTTI i commenti
+    F->>B: GET /cats/5/comments
+    B->>DB: Comment.findAll({ where: { CatId: 5 }, include: User })
+    DB-->>B: [ { id: 12, text: "...", User: { userName: "mario" } }, ... ]
+    B-->>F: [ array di commenti aggiornato ]
+
+    F->>F: this.comments = data
+    F->>F: this.newCommentText = '' → Pulisce il textarea
+    F-->>U: Lista commenti aggiornata con il nuovo commento in cima
+```
+
+### 6.6 Flusso di Eliminazione di un Gatto
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant F as Frontend (CatDetail)
+    participant B as Backend
+    participant DB as SQLite
+
+    U->>F: Clicca "Elimina" nella pagina dettaglio gatto 5
+    F->>F: deleteCat()
+    F->>B: DELETE /cats/5 con Authorization header
+
+    B->>B: requireAuth → req.email, req.role
+    B->>DB: Cat.findByPk(5) → Recupera il gatto
+    B->>B: Verifica permessi: cat.UserEmail === req.email || req.role === 'admin'
+
+    alt Permesso negato
+        B-->>F: 403 Forbidden
+    else Permesso concesso
+        B->>DB: Comment.destroy({ where: { CatId: 5 } }) → Elimina TUTTI i commenti del gatto
+        B->>DB: cat.destroy() → Elimina il gatto
+        B-->>F: 200 OK { message: "Gatto eliminato", cat: { ... } }
+        F->>F: router.navigate(['/cats'])
+        F-->>U: Redirect alla lista gatti
+    end
+```
+
+### 6.7 Flusso di Eliminazione di un Commento
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant F as Frontend (CatDetail)
+    participant B as Backend
+    participant DB as SQLite
+
+    U->>F: Clicca icona "Elimina" su un commento (id: 12) del gatto 5
+    F->>B: DELETE /cats/5/comments/12 con Authorization header
+
+    B->>B: requireAuth → req.email, req.role
+    B->>DB: Comment.findByPk(12)
+    B->>B: comment.UserEmail === req.email || req.role === 'admin'?
+
+    alt Permesso concesso
+        B->>DB: CommentController.deleteComment(12) → comment.destroy()
+        B-->>F: 200 OK { message: "Commento eliminato" }
+        F->>F: Ricarica commenti (opzionale, dipende dall'implementazione)
+        F-->>U: Commento rimosso dalla lista
+    else Permesso negato
+        B-->>F: 403 Forbidden
+        F-->>U: Errore mostrato all'utente
+    end
+```
+
+### 6.8 Flusso di Caricamento del Profilo
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant R as Angular Router
+    participant G as authGuard
+    participant F as Frontend (Profile)
+    participant I as authInterceptor
+    participant B as Backend
+    participant DB as SQLite
+
+    U->>R: Naviga a /profile
+    R->>G: canActivate?
+    G->>G: authService.isAuthenticated()
+
+    alt Non autenticato
+        G-->>R: router.parseUrl('/login')
+        R-->>U: Redirect a /login
+    else Autenticato
+        G-->>R: true
+        R->>F: Crea istanza Profile, inserisce in router-outlet
+
+        F->>F: ngOnInit() → fetchProfile()
+        F->>I: apiService.getProfile()
+        I->>I: Token presente → Aggiunge Authorization: Bearer <token>
+        I->>B: GET /profile
+
+        B->>B: requireAuth → Decodifica JWT → req.email
+        B->>DB: User.findByPk(req.email)
+        B->>DB: Cat.findAll({ where: { UserEmail }, limit: 10, order: DESC })
+        B->>DB: Comment.findAll({ where: { UserEmail }, include: Cat, limit: 10 })
+
+        B-->>F: 200 OK { userName, email, role, createdAt, stats, recentCats, recentComments }
+        F->>F: this.user = data
+        F-->>U: Mostra profilo con statistiche e attività recenti
+    end
+```
+
+### 6.9 Flusso di Navigazione SPA (Single Page Application)
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant B as Browser
+    participant R as Angular Router
+    participant G as Route Guards
+    participant C as Componente
+
+    U->>B: Click su link "Esplora Gatti" (routerLink="/cats")
+    B->>B: La direttiva routerLink previene il comportamento default del link
+    Note over B: Il browser NON ricarica la pagina (no HTTP request per HTML)
+    B->>R: Router.navigate(['/cats'])
+    R->>R: Confronta '/cats' con le rotte definite → match trovato
+
+    R->>G: Esegue i guards della rotta (se presenti)
+    G-->>R: true (nessun guard per /cats)
+
+    R->>C: Distrugge il componente corrente → ngOnDestroy()
+    R->>C: Crea istanza di CatList → constructor() → ngOnInit()
+    R->>R: Aggiorna la URL nella barra degli indirizzi (History API)
+    C-->>U: Il nuovo componente è visibile nel <router-outlet>
+```
+
+---
+
+## 7. Architettura Completa — Diagramma di Comunicazione
+
+```mermaid
+graph TB
+    subgraph Browser["Browser (localhost:4200)"]
+        subgraph Angular["Angular Application"]
+            AppRoot["App (root)"]
+            Navbar["Navbar"]
+            Footer["Footer"]
+            RouterOutlet["router-outlet"]
+
+            subgraph Pages["Pagine / Componenti"]
+                CatList["CatList"]
+                CatDetail["CatDetail"]
+                CatForm["CatForm"]
+                LoginPage["Login"]
+                SignupPage["Signup"]
+                ProfilePage["Profile"]
+            end
+
+            subgraph Shared["Componenti Condivisi"]
+                MapComp["MapComponent"]
+                MdPipe["MarkdownPipe"]
+            end
+
+            subgraph Services["Servizi Singleton"]
+                ApiSvc["ApiService<br/>(HttpClient)"]
+                AuthSvc["AuthService<br/>(localStorage)"]
+            end
+
+            subgraph Infra["Infrastruttura Angular"]
+                Interceptor["authInterceptor"]
+                AuthG["authGuard"]
+                NoAuthG["noAuthGuard"]
+                Router["Router"]
+            end
+        end
+
+        LS["localStorage<br/>streetcats_token<br/>streetcats_user"]
+    end
+
+    subgraph Server["Backend (localhost:3000)"]
+        Express["Express App"]
+
+        subgraph MW["Middleware"]
+            Morgan["morgan"]
+            CORS["cors"]
+            JsonParser["express.json"]
+            ReqAuth["requireAuth"]
+            Upload["multer"]
+        end
+
+        subgraph Routes["Router"]
+            AuthR["authRouter"]
+            CatR["catRouter"]
+            ComR["commentRouter"]
+        end
+
+        subgraph Controllers["Controller"]
+            AuthC["AuthController"]
+            CatC["CatController"]
+            ComC["CommentController"]
+        end
+
+        subgraph Models["Modelli Sequelize"]
+            UserM["User"]
+            CatM["Cat"]
+            ComM["Comment"]
+        end
+
+        DB[(database.sqlite)]
+        Uploads["public/uploads/"]
+    end
+
+    subgraph CDN["CDN Esterni"]
+        Leaflet["Leaflet.js + CSS<br/>unpkg.com"]
+        OSM["OpenStreetMap Tiles"]
+    end
+
+    %% Comunicazione
+    AppRoot --> Navbar
+    AppRoot --> RouterOutlet
+    AppRoot --> Footer
+    RouterOutlet --> Pages
+
+    CatList --> MapComp
+    CatDetail --> MapComp
+    CatForm --> MapComp
+    CatDetail --> MdPipe
+
+    Pages --> ApiSvc
+    Pages --> AuthSvc
+    Navbar --> AuthSvc
+    AuthSvc --> LS
+
+    ApiSvc --> Interceptor
+    Interceptor --> Express
+
+    Router --> AuthG
+    Router --> NoAuthG
+    AuthG --> AuthSvc
+    NoAuthG --> AuthSvc
+
+    Express --> MW
+    MW --> Routes
+    Routes --> Controllers
+    Controllers --> Models
+    Models --> DB
+    Upload --> Uploads
+
+    MapComp --> Leaflet
+    MapComp --> OSM
+```
+
+---
+
+## 8. Come Avviare il Progetto
+
+### Backend
+```bash
+cd streetcats/streetcats-backend
+npm install
+npm start        # Avvia con nodemon su http://localhost:3000
+```
+
+### Frontend
+```bash
+cd streetcats/streetcats-frontend
+npm install
+npm start        # Avvia con ng serve su http://localhost:4200
+```
+
+> [!IMPORTANT]
+> Il backend deve essere avviato **prima** del frontend, poiché il frontend effettua richieste HTTP a `localhost:3000`. I due processi devono essere in esecuzione contemporaneamente.
+
+---
+
+## 9. Design e Stile
+
+L'applicazione usa un **tema scuro** (dark mode) definito attraverso variabili CSS in `styles.scss`:
+
+| Variabile CSS | Valore | Uso |
+|---|---|---|
+| `--color-background` | `#090d16` | Sfondo principale |
+| `--color-border` | `#162030` | Bordi e separatori |
+| `--color-primary` | `#7c5cf6` | Colore primario (viola, bottoni, link) |
+| `--color-danger` | `#f43f5e` | Colore errori e azioni distruttive |
+| `--color-text-main` | `#f1f5f9` | Testo principale |
+| `--color-text-secondary` | `#94a3b8` | Testo secondario |
+| `--color-text-muted` | `#475569` | Testo meno importante |
+
+Il font utilizzato è **Inter** (caricato da Google Fonts). Gli stili sono applicati prevalentemente con attributi `style` inline direttamente nei template HTML dei componenti.
+
+---
+
+## 10. Riepilogo dei Pattern e Concetti Chiave
+
+| Concetto | Dove viene usato | Spiegazione breve |
+|---|---|---|
+| **Standalone Components** | Tutti i componenti | Componenti senza NgModule, dichiarano le dipendenze nell'array `imports` del decoratore |
+| **Dependency Injection** | Tutti i componenti e servizi | Angular fornisce automaticamente le istanze dei servizi ai componenti |
+| **`inject()`** | Tutti i componenti | Funzione moderna per iniettare dipendenze (alternativa al costruttore) |
+| **Observable / RxJS** | Tutte le chiamate HTTP | Pattern reattivo per gestire dati asincroni (richieste al server) |
+| **`subscribe()`** | Tutti i componenti con chiamate API | Attiva l'Observable e gestisce successo/errore |
+| **`@Input()`** | MapComponent | Passa dati dal componente padre al figlio |
+| **`@Output()` + `EventEmitter`** | MapComponent | Il figlio emette eventi verso il padre |
+| **Reactive Forms** | Login, Signup, CatForm | Gestione programmatica dei form con validazione |
+| **Template-driven Forms** | CatDetail (commento) | Form basati su `ngModel` nel template |
+| **Route Guards** | authGuard, noAuthGuard | Proteggono le rotte basandosi sull'autenticazione |
+| **HTTP Interceptor** | authInterceptor | Modifica automaticamente le richieste HTTP (aggiunge JWT) |
+| **Pipe** | MarkdownPipe | Trasforma i dati nel template (Markdown → HTML) |
+| **Lifecycle Hooks** | OnInit, AfterViewInit, OnChanges, OnDestroy | Metodi chiamati in momenti specifici del ciclo di vita |
+| **Property Binding** | `[mode]="'view-all'"` | Passa valori dal componente al template/figlio |
+| **Event Binding** | `(catClicked)="onCatClicked($event)"` | Reagisce agli eventi dal template/figlio |
+| **Two-way Binding** | `[(ngModel)]="newCommentText"` | Sincronizzazione bidirezionale tra template e classe |
+| **Singleton Service** | `providedIn: 'root'` | Una sola istanza per tutta l'applicazione |
+| **Getter TypeScript** | `get isOwnerOrAdmin()` | Proprietà calcolata, ricalcolata ad ogni change detection |
+| **MVC Pattern** | Backend (Model-Controller-Route) | Separazione tra modelli dati, logica di business e routing |
+| **JWT Authentication** | Backend + Frontend | Token stateless per autenticazione senza sessioni server |
+| **Middleware Pattern** | Express (morgan, cors, auth, multer) | Funzioni eseguite in sequenza per ogni richiesta |
+| **ORM (Sequelize)** | Backend | Astrazione del database con modelli JavaScript |
+| **Eager Loading** | CommentController | Include dati di tabelle correlate in una singola query |
+| **FormData** | CatForm (upload) | Formato multipart per l'invio di file via HTTP |

@@ -25,8 +25,9 @@ body {
   color: var(--color-text-main);
 }
 
-// Input non di file
-input:not([type="file"]),
+
+// Input
+input,
 select,
 textarea {
   display: block;

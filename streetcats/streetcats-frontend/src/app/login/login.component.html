@@ -12,13 +12,13 @@
 
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 20px;">
     <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--color-text-muted);">
       Indirizzo email
       <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
     </label>
 
     <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--color-text-muted);">
+      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--color-text-muted);">
       Password
       <input type="password" formControlName="password" placeholder="******" autocomplete="current-password">
     </label>

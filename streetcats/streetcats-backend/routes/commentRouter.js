@@ -1,6 +1,6 @@
 import express from "express";
 import { CommentController } from "../controllers/CommentController.js";
-import { requireAuth } from "../middleware/authorization.js";
+import { requireAuth, requireCommentOwnerOrAdmin } from "../middleware/authorization.js";
 
 export const commentRouter = express.Router();
 
@@ -18,23 +18,13 @@ commentRouter.get("/comments/:id", async (req, res, next) => {
   }
 });
 
-// PUT Modifica commento (richiede autenticazione + owner OR admin)
-commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
+// PUT Modifica commento richiede autenticazione e permessi (controllati dal middleware)
+commentRouter.put("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, async (req, res, next) => {
   try {
     const commentId = req.params.id;
-    const comment = await CommentController.findById(commentId);
-
-    if (comment === null) {
-      return next({ status: 404, message: "Commento non trovato" });
-    }
-
-    // Verifica permessi owner o admin
-    if (comment.UserEmail !== req.email && req.role !== 'admin') {
-      return next({ status: 403, message: "Non hai i permessi per modificare questo commento" });
-    }
 
     // Validazione
-    const { text } = req.body;
+    const text = req.body.text;
     if (text === undefined || text === null || text.trim().length === 0) {
       return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
     }
@@ -46,21 +36,10 @@ commentRouter.put("/comments/:id", requireAuth, async (req, res, next) => {
   }
 });
 
-// DELETE Elimina commento (richiede autenticazione + owner OR admin)
-commentRouter.delete("/comments/:id", requireAuth, async (req, res, next) => {
+// DELETE Elimina commento richiede autenticazione e permessi (controllati dal middleware)
+commentRouter.delete("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, async (req, res, next) => {
   try {
     const commentId = req.params.id;
-    const comment = await CommentController.findById(commentId);
-
-    if (comment === null) {
-      return next({ status: 404, message: "Commento non trovato" });
-    }
-
-    // Verifica permessi owner o admin
-    if (comment.UserEmail !== req.email && req.role !== 'admin') {
-      return next({ status: 403, message: "Non hai i permessi per eliminare questo commento" });
-    }
-
     const deletedComment = await CommentController.deleteComment(commentId);
     res.json({ message: "Commento eliminato", comment: deletedComment });
   } catch (err) {
