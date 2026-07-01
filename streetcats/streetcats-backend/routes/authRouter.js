@@ -91,8 +91,8 @@ authRouter.post("/signup", async (req, res, next) => {
     }
 
     // Crea l'utente (cifra la password prima di salvarla)
-    const hashedPwd = createHash("sha256").update(password).digest("hex");
-    const newUser = await AuthController.saveUser({ userName, password: hashedPwd, email });
+    const hashedPassword = createHash("sha256").update(password).digest("hex");
+    const newUser = await AuthController.saveUser({ userName, password: hashedPassword, email });
 
     // Genera token per login automatico dopo la registrazione
     const token = AuthController.issueToken(newUser.email, newUser.role);

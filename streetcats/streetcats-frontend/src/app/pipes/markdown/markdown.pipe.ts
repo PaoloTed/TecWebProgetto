@@ -7,7 +7,8 @@ export class MarkdownPipe implements PipeTransform {
   private sanitizer = inject(DomSanitizer);
 
   transform(value: string | null | undefined): SafeHtml {
-    if (!value) return '';
+    if (!value)
+      return '';
 
     // Parsing MarkDown e sanitizzazione con Angular
     const html = marked.parse(value, { async: false }) as string;

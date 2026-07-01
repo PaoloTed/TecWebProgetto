@@ -7,9 +7,7 @@
       <div
         style="display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--color-text-secondary); flex-wrap: wrap;">
         <span>{{ user.email }}</span>
-        <span class="meta-dot"></span>
         <span>{{ 'Ruolo: ' + user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
-        <span class="meta-dot"></span>
       </div>
       }
     </div>
@@ -21,6 +19,7 @@
     {{ error }}</div>
 
   } @else if (user) {
+
   <!-- Segnalazioni -->
   <section>
     <h2 style="font-size: 20px;">Le mie segnalazioni: {{ user.stats.cats }}</h2>

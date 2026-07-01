@@ -6,14 +6,14 @@ import { CommentController } from "../controllers/CommentController.js";
 export function requireAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
   let token = null;
-  if (authHeader !== undefined && authHeader !== null) {
+  if (authHeader) {
     const parts = authHeader.split(' ');
     if (parts.length > 1) {
       token = parts[1];
     }
   }
 
-  if (token === null) {
+  if (!token) {
     return next({
       status: 401,
       message: "Unauthorized: Token non fornito"

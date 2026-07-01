@@ -68,13 +68,22 @@ test.describe('Streetcats Tests', () => {
   });
 
   test('7. Login con Successo', async ({ page }) => {
-    // login
-    await page.goto('/login');
+    // Per testare il login, prima creiamo un account
+    await page.goto('/signup');
     const randomUser = 'testuser_' + Date.now();
-
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
     await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
+    await page.getByRole('button', { name: "Crea l'account" }).click();
+    await expect(page).toHaveURL(/.*cats/);
+
+    // Log out
+    await page.getByRole('button', { name: 'Esci' }).click();
+
+    // Adesso facciamo login
+    await page.goto('/login');
+    await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
+    await page.getByPlaceholder('******').fill('testpass123');
     await page.getByRole('button', { name: "Accedi all'account" }).click();
 
     await expect(page).toHaveURL(/.*cats/);
@@ -82,13 +91,13 @@ test.describe('Streetcats Tests', () => {
   });
 
   test('8. Accesso al Profilo', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/signup');
     const randomUser = 'testuser_' + Date.now();
 
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
     await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
-    await page.getByRole('button', { name: "Accedi all'account" }).click();
+    await page.getByRole('button', { name: "Crea l'account" }).click();
 
     // Clicca su Profilo
     await page.getByRole('link', { name: 'Il mio profilo' }).click();
@@ -99,13 +108,13 @@ test.describe('Streetcats Tests', () => {
   });
 
   test('9. Logout', async ({ page }) => {
-    await page.goto('/login');
+    await page.goto('/signup');
     const randomUser = 'testuser_' + Date.now();
 
     await page.getByPlaceholder('mario_rossi').fill(randomUser);
     await page.getByPlaceholder('mario@example.com').fill(randomUser + '@example.com');
     await page.getByPlaceholder('Almeno 6 caratteri').fill('testpass123');
-    await page.getByRole('button', { name: "Accedi all'account" }).click();
+    await page.getByRole('button', { name: "Crea l'account" }).click();
 
     // Clicca Esci
     await expect(page.getByRole('button', { name: 'Esci' })).toBeVisible();
@@ -138,15 +147,13 @@ test.describe('Streetcats Tests', () => {
     await page.locator('app-map').click();
     await page.getByRole('button', { name: 'Pubblica segnalazione' }).click();
 
-    await page.goto('/cats');
-    // primo marker di Leaflet visibile in mappa 
-    await page.locator('.leaflet-marker-icon').first().click({ force: true });
+    // Andiamo sul profilo utente
+    await page.getByRole('link', { name: 'Il mio profilo' }).click();
+    // Clicchiamo sul gatto appena aggiunto dalla lista delle segnalazioni
+    await page.getByText('PIPPOTEST', { exact: true }).click();
 
-    // link 'Vai alla pagina del gatto' dentro il popup di Leaflet
-    await page.getByRole('link', { name: 'Vai alla pagina del gatto' }).click();
-
-    // pagina del gatto abbia il suo nome
-    await expect(page.getByRole('heading', { name: 'PIPPOTEST' })).toBeVisible();
+    // Verifichiamo che la pagina del gatto abbia il suo nome esatto
+    await expect(page.getByRole('heading', { name: 'Nome: PIPPOTEST' })).toBeVisible();
   });
 
 });
