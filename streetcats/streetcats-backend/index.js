@@ -2,9 +2,6 @@ import express from "express";
 import morgan from "morgan"; // Logging delle richieste HTTP
 import cors from "cors";
 import path from "path";
-
-import { database } from "./models/Database.js";
-
 import { authRouter } from "./routes/authRouter.js";
 import { catRouter } from "./routes/catRouter.js";
 import { commentRouter } from "./routes/commentRouter.js";

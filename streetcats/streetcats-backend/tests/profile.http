@@ -1,8 +1,0 @@
-### Profilo utente autenticato (mario_rossi)
-### In questo caso il token è stato ottenuto dal login per mario_rossi per riprovarlo rifare il login
-### e sostituire il token con il nuovo ottenuto
-GET http://localhost:3000/profile
-Authorization: Bearer {{$dotenv TEST_TOKEN}}
-
-### Profilo senza autenticazione (deve fallire con 401)
-GET http://localhost:3000/profile
