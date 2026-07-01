@@ -41,7 +41,7 @@ export class CatController {
   // Aggiorna i dati di un gatto esistente
   static async updateCat(id, updatedData) {
     const cat = await Cat.findByPk(id);
-    if (cat === null) {
+    if (!cat) {
       return null;
     }
 
@@ -52,7 +52,7 @@ export class CatController {
   // Elimina un gatto dal database
   static async deleteCat(id) {
     const cat = await Cat.findByPk(id);
-    if (cat === null) {
+    if (!cat) {
       return null;
     }
 

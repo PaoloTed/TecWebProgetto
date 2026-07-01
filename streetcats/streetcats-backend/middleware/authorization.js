@@ -39,7 +39,7 @@ export function requireAuth(req, res, next) {
 export const requireCatOwnerOrAdmin = async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
-    if (cat === null) {
+    if (!cat) {
       return next({ status: 404, message: "Gatto non trovato" });
     }
 
@@ -60,7 +60,7 @@ export const requireCatOwnerOrAdmin = async (req, res, next) => {
 export const requireCommentOwnerOrAdmin = async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.id);
-    if (comment === null) {
+    if (!comment) {
       return next({ status: 404, message: "Commento non trovato" });
     }
 

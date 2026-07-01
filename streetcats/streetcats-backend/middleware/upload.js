@@ -10,10 +10,10 @@ if (fs.existsSync(uploadDir) === false) {
 
 // Configurazione di Multer
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, uploadDir); // Cartella di destinazione
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     // Genera un nome per il file caricato basato sul timestamp
     const suffisso = Date.now() + '-' + file.originalname;
     cb(null, suffisso);

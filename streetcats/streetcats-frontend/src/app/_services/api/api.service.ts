@@ -10,51 +10,53 @@ import { User } from './user.type';
 })
 export class ApiService {
   private http = inject(HttpClient);
+  // Usa l'ip  da cui è stato caricato il sito per trovare il backend
+  private apiUrl = `http://${window.location.hostname}:3000`;
 
   // Auth endpoints
   login(credentials: any): Observable<{ message: string; token: string; user: User }> {
-    return this.http.post<{ message: string; token: string; user: User }>('http://localhost:3000/auth', credentials);
+    return this.http.post<{ message: string; token: string; user: User }>(this.apiUrl + '/auth', credentials);
   }
 
   signup(userData: any): Observable<{ message: string; token: string; user: User }> {
-    return this.http.post<{ message: string; token: string; user: User }>('http://localhost:3000/signup', userData);
+    return this.http.post<{ message: string; token: string; user: User }>(this.apiUrl + '/signup', userData);
   }
 
   getProfile(): Observable<any> {
-    return this.http.get<any>('http://localhost:3000/profile');
+    return this.http.get<any>(this.apiUrl + '/profile');
   }
 
   // Cats endpoints
   getCats(): Observable<Cat[]> {
-    return this.http.get<Cat[]>('http://localhost:3000/cats');
+    return this.http.get<Cat[]>(this.apiUrl + '/cats');
   }
 
   getCatById(id: number): Observable<Cat> {
-    return this.http.get<Cat>('http://localhost:3000/cats/' + id);
+    return this.http.get<Cat>(this.apiUrl + '/cats/' + id);
   }
 
   createCat(catData: any): Observable<Cat> {
-    return this.http.post<Cat>('http://localhost:3000/cats', catData);
+    return this.http.post<Cat>(this.apiUrl + '/cats', catData);
   }
 
   updateCat(id: number, catData: any): Observable<Cat> {
-    return this.http.put<Cat>('http://localhost:3000/cats/' + id, catData);
+    return this.http.put<Cat>(this.apiUrl + '/cats/' + id, catData);
   }
 
   // Comments endpoints
   getCatComments(catId: number): Observable<Comment[]> {
-    return this.http.get<Comment[]>('http://localhost:3000/cats/' + catId + '/comments');
+    return this.http.get<Comment[]>(this.apiUrl + '/cats/' + catId + '/comments');
   }
 
   addComment(catId: number, text: string): Observable<Comment> {
-    return this.http.post<Comment>('http://localhost:3000/cats/' + catId + '/comments', { text });
+    return this.http.post<Comment>(this.apiUrl + '/cats/' + catId + '/comments', { text });
   }
 
   deleteComment(catId: number, commentId: number): Observable<any> {
-    return this.http.delete<any>('http://localhost:3000/cats/' + catId + '/comments/' + commentId);
+    return this.http.delete<any>(this.apiUrl + '/cats/' + catId + '/comments/' + commentId);
   }
 
   deleteCat(catId: number): Observable<any> {
-    return this.http.delete<any>('http://localhost:3000/cats/' + catId);
+    return this.http.delete<any>(this.apiUrl + '/cats/' + catId);
   }
 }

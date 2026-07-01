@@ -20,7 +20,7 @@ catRouter.get("/cats", async (req, res, next) => {
 catRouter.get("/cats/:id", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
-    if (cat !== null) {
+    if (cat) {
       res.json(cat);
     } else {
       next({ status: 404, message: "Gatto non trovato" });
@@ -34,7 +34,7 @@ catRouter.get("/cats/:id", async (req, res, next) => {
 catRouter.get("/cats/:id/comments", async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
-    if (cat === null) {
+    if (!cat) {
       return next({ status: 404, message: "Gatto non trovato" });
     }
     const comments = await CommentController.getCommentsByCat(req.params.id);
@@ -54,13 +54,12 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
     const size = req.body.size;
     const latitude = req.body.latitude;
     const longitude = req.body.longitude;
-    if (name === undefined || name === null || name === "") {
+    if (!name || name.trim().length === 0)
       return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
-    }
 
     let photoUrl = req.body.photoUrl;
-    if (req.file !== undefined && req.file !== null) {
-      photoUrl = 'http://localhost:3000/uploads/' + req.file.filename;
+    if (req.file) {
+      photoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     }
 
     const newCat = await CatController.createCat(
@@ -84,7 +83,7 @@ catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('p
   try {
     // se è stata caricata una nuova foto, aggiunge l'url al campo photoUrl
     if (req.file) {
-      req.body.photoUrl = 'http://localhost:3000/uploads/' + req.file.filename;
+      req.body.photoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     }
 
     const updatedCat = await CatController.updateCat(req.params.id, req.body);
@@ -105,7 +104,7 @@ catRouter.delete("/cats/:id", requireAuth, requireCatOwnerOrAdmin, async (req, r
 catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   try {
     const text = req.body.text;
-    if (text === undefined || text === null || text.trim().length === 0) {
+    if (!text || text.trim().length === 0) {
       return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
     }
     if (text.length > 2000) {
@@ -123,7 +122,7 @@ catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
 catRouter.delete("/cats/:catId/comments/:commentId", requireAuth, async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.commentId);
-    if (comment === null) {
+    if (!comment) {
       return next({ status: 404, message: "Commento non trovato" });
     }
     if (comment.UserEmail !== req.email && req.role !== 'admin') {

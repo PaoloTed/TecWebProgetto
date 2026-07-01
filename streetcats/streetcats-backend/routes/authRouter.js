@@ -124,7 +124,7 @@ authRouter.get("/profile", requireAuth, async (req, res, next) => {
     // Controllo perche se un profilo viene cancellato non esistera piu
     // il JWT risultera valido ma non si trovera l'email nel database
     const user = await AuthController.findUserByEmail(req.email);
-    if (user === null) {
+    if (!user) {
       return res.status(404).json({ error: "Utente non trovato" });
     }
 

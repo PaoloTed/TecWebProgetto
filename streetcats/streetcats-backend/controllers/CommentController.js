@@ -50,7 +50,7 @@ export class CommentController {
   // Aggiorna il testo di un commento esistente
   static async updateComment(id, updatedData) {
     const comment = await Comment.findByPk(id);
-    if (comment === null) {
+    if (!comment) {
       return null;
     }
 
@@ -61,7 +61,7 @@ export class CommentController {
   // Elimina un commento dal database
   static async deleteComment(id) {
     const comment = await Comment.findByPk(id);
-    if (comment === null) {
+    if (!comment) {
       return null;
     }
 

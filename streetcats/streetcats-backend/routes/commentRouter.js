@@ -8,7 +8,7 @@ export const commentRouter = express.Router();
 commentRouter.get("/comments/:id", async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.id);
-    if (comment !== null) {
+    if (comment) {
       res.json(comment);
     } else {
       next({ status: 404, message: "Commento non trovato" });
@@ -25,9 +25,8 @@ commentRouter.put("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, asyn
 
     // Validazione
     const text = req.body.text;
-    if (text === undefined || text === null || text.trim().length === 0) {
+    if (!text)
       return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
-    }
 
     const updatedComment = await CommentController.updateComment(commentId, { text });
     res.json(updatedComment);

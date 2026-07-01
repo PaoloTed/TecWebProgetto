@@ -51,12 +51,12 @@ export class AuthController {
   // Verifica se un utente esiste già tramite username
   static async userExists(userName) {
     const user = await User.findOne({ where: { userName } });
-    return user !== null;
+    return !!user;
   }
 
   // Verifica se un'email è già registrata
   static async emailExists(email) {
     const user = await User.findByPk(email);
-    return user !== null;
+    return !!user;
   }
 }
