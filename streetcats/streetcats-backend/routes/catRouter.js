@@ -55,7 +55,7 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
     const latitude = req.body.latitude;
     const longitude = req.body.longitude;
     if (!name || name.trim().length === 0)
-      return res.status(400).json({ error: "Il nome del gatto e' obbligatorio" });
+      return res.status(400).json({ errorBackEnd: "Il nome del gatto e' obbligatorio" });
 
     let photoUrl = req.body.photoUrl;
     if (req.file) {
@@ -63,15 +63,13 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
     }
 
     const newCat = await CatController.createCat(
-      {
-        name,
-        description,
-        color,
-        size,
-        photoUrl,
-        latitude,
-        longitude
-      },
+      name,
+      description,
+      color,
+      size,
+      photoUrl,
+      latitude,
+      longitude,
       req.email
     );
     res.status(201).json(newCat);
@@ -86,7 +84,16 @@ catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('p
       req.body.photoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     }
 
-    const updatedCat = await CatController.updateCat(req.params.id, req.body);
+    const updatedCat = await CatController.updateCat(
+      req.params.id,
+      req.body.name,
+      req.body.description,
+      req.body.color,
+      req.body.size,
+      req.body.photoUrl,
+      req.body.latitude,
+      req.body.longitude
+    );
     res.json(updatedCat);
   } catch (err) { next(err); }
 });
@@ -105,12 +112,12 @@ catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   try {
     const text = req.body.text;
     if (!text || text.trim().length === 0) {
-      return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
+      return res.status(400).json({ errorBackEnd: "Il testo del commento e' obbligatorio" });
     }
     if (text.length > 2000) {
-      return res.status(400).json({ error: "Il commento non puo' superare i 2000 caratteri" });
+      return res.status(400).json({ errorBackEnd: "Il commento non puo' superare i 2000 caratteri" });
     }
-    const newComment = await CommentController.createComment({ text }, req.params.id, req.email);
+    const newComment = await CommentController.createComment(text, req.params.id, req.email);
     res.status(201).json(newComment);
   } catch (err) {
     if (err.message === 'Gatto non trovato') return next({ status: 404, message: err.message });

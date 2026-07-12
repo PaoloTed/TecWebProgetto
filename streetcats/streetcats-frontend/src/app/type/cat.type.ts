@@ -5,8 +5,8 @@ export interface Cat {
   color: string | null;
   size: string | null;
   photoUrl: string | null;
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number;
+  longitude: number;
   UserEmail: string;
   createdAt: string;
   updatedAt?: string;

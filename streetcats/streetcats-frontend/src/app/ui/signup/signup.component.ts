@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { ApiService } from '../../services/api/api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -14,27 +15,32 @@ export class Signup {
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
 
-  form = inject(FormBuilder).group({
-    userName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+  form = new FormGroup({
+    userName: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
-  errorMessage = '';
-
   onSubmit() {
-    if (this.form.invalid) return;
-    this.errorMessage = '';
+    if (this.form.invalid) {
+      this.toastr.warning('Per favore compila tutti i campi obbligatori', 'Campi mancanti');
+      return;
+    }
 
-    const { userName, email, password } = this.form.value;
-    this.apiService.signup({ userName, email, password }).subscribe({
+    this.apiService.signup(this.form.value.userName!, this.form.value.email!, this.form.value.password!).subscribe({
       next: (res) => {
         this.authService.setSession(res.token, res.user);
+        this.toastr.success('Account creato con successo!', 'Benvenuto');
         this.router.navigate(['/cats']);
       },
-      error: (err) => {
-        this.errorMessage = err.error?.error || 'Errore durante la registrazione.';
+      error: (response) => {
+        if (response.error.errorBackEnd) {
+          this.toastr.error(response.error.errorBackEnd, 'Errore di registrazione');
+        } else {
+          this.toastr.error('Errore durante la registrazione.', 'Errore');
+        }
       }
     });
   }

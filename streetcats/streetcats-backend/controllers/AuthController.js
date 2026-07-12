@@ -18,11 +18,11 @@ export class AuthController {
   }
 
   // Registra un nuovo utente nel database
-  static async saveUser(userData) {
+  static async saveUser(userName, password, email) {
     const user = User.build({
-      userName: userData.userName,
-      password: userData.password, // La password viene passata già hashata
-      email: userData.email,
+      userName: userName,
+      password: password, // La password viene passata già hashata
+      email: email,
       role: 'user' // I nuovi utenti sono sempre 'user'
     });
     return user.save();
@@ -50,13 +50,13 @@ export class AuthController {
 
   // Verifica se un utente esiste già tramite username
   static async userExists(userName) {
-    const user = await User.findOne({ where: { userName } });
-    return !!user;
+    const user = await User.findOne({ where: { userName: userName } });
+    return user !== null;
   }
 
   // Verifica se un'email è già registrata
   static async emailExists(email) {
     const user = await User.findByPk(email);
-    return !!user;
+    return user !== null;
   }
 }

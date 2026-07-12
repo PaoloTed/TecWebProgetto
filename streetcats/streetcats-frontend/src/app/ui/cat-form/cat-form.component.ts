@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ApiService } from '../../services/api/api.service';
 import { MapComponent } from '../map/map.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cat-form',
@@ -12,13 +13,12 @@ import { MapComponent } from '../map/map.component';
   styleUrl: './cat-form.component.scss'
 })
 export class CatForm implements OnInit {
-  private fb = inject(FormBuilder);
   private apiService = inject(ApiService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private toastr = inject(ToastrService);
 
   catForm: FormGroup;
-  errorMessage = '';
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
@@ -26,15 +26,15 @@ export class CatForm implements OnInit {
   catId: number | null = null;
 
   // Coordinate selezionate
-  pickedLat: number | null = 45;
-  pickedLng: number | null = 9;
+  pickedLat: number | null = null;
+  pickedLng: number | null = null;
 
   constructor() {
-    this.catForm = this.fb.group({
-      name: ['', Validators.required],
-      description: [''],
-      color: [''],
-      size: ['']
+    this.catForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      description: new FormControl(''),
+      color: new FormControl(''),
+      size: new FormControl('')
     });
   }
 
@@ -49,21 +49,21 @@ export class CatForm implements OnInit {
 
   loadCatData(id: number) {
     this.apiService.getCatById(id).subscribe({
-      next: (cat) => {
+      next: (catRecived) => {
         this.catForm.patchValue({
-          name: cat.name,
-          description: cat.description,
-          color: cat.color,
-          size: cat.size
+          name: catRecived.name,
+          description: catRecived.description,
+          color: catRecived.color,
+          size: catRecived.size
         });
-        this.pickedLat = cat.latitude;
-        this.pickedLng = cat.longitude;
-        if (cat.photoUrl !== null) {
-          this.previewUrl = cat.photoUrl;
+        this.pickedLat = catRecived.latitude;
+        this.pickedLng = catRecived.longitude;
+        if (catRecived.photoUrl !== null) {
+          this.previewUrl = catRecived.photoUrl;
         }
       },
       error: () => {
-        this.errorMessage = 'Errore nel caricamento dei dati del gatto.';
+        this.toastr.error('Errore nel caricamento dei dati del gatto.', 'Errore');
       }
     });
   }
@@ -84,11 +84,10 @@ export class CatForm implements OnInit {
   }
 
   onSubmit() {
-    if (this.catForm.invalid) {
+    if (this.catForm.invalid || this.pickedLat === null || this.pickedLng === null) {
+      this.toastr.warning('Per favore compila tutti i campi obbligatori', 'Campi mancanti');
       return;
     }
-
-    this.errorMessage = '';
 
     const formData = new FormData();
 
@@ -97,8 +96,8 @@ export class CatForm implements OnInit {
     formData.append('description', this.catForm.value.description || '');
     formData.append('color', this.catForm.value.color || '');
     formData.append('size', this.catForm.value.size || '');
-    formData.append('latitude', String(this.pickedLat ?? 45));
-    formData.append('longitude', String(this.pickedLng ?? 9));
+    formData.append('latitude', String(this.pickedLat));
+    formData.append('longitude', String(this.pickedLng));
 
     if (this.selectedFile !== null) {
       formData.append('photo', this.selectedFile);
@@ -107,19 +106,21 @@ export class CatForm implements OnInit {
     if (this.isEditMode && this.catId !== null) {
       this.apiService.updateCat(this.catId, formData).subscribe({
         next: (res) => {
+          this.toastr.success('Segnalazione modificata con successo!', 'Salvato');
           this.router.navigate(['/cats', this.catId]);
         },
         error: () => {
-          this.errorMessage = 'Errore durante la modifica della segnalazione.';
+          this.toastr.error('Errore durante la modifica della segnalazione.', 'Errore');
         }
       });
     } else {
       this.apiService.createCat(formData).subscribe({
         next: (res) => {
+          this.toastr.success('Segnalazione creata con successo!', 'Creato');
           this.router.navigate(['/cats', res.id]);
         },
         error: () => {
-          this.errorMessage = 'Errore durante la creazione della segnalazione.';
+          this.toastr.error('Errore durante la creazione della segnalazione.', 'Errore');
         }
       });
     }

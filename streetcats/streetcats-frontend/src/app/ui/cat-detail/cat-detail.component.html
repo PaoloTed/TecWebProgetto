@@ -1,53 +1,47 @@
-@if (error) {
-<div
-  style="display: flex; gap: 10px; padding: 10px 15px; font-size: 15px; background: var(--color-danger-bg); color: var(--color-danger-text); max-width: 580px;">
-  <h3>Gatto non trovato</h3>
-  <p>{{ error }}</p>
-</div>
-
-} @else if (cat) {
+@if (cat) {
 
 <!-- Layout a tre colonne -->
 <div style="display: flex; flex-wrap: wrap; gap: 15px;">
 
   <!-- Colonna 1: Nome, Badges, Descrizione -->
   <div
-    style="flex: 1 1 300px; background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
+    style="flex: 1 1 300px; background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
 
     <header>
       <h1 style="font-size: 35px;">{{ 'Nome: ' + cat.name }}</h1>
       <div style="flex-wrap: wrap; display: flex; align-items: center; gap: 10px;">
         <span
-          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--color-text-secondary);">Colore:
+          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--text-alt);">Colore:
           {{ cat.color }}</span>
         <span
-          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--color-primary-light);">Taglia:
+          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--primary);">Taglia:
           {{ cat.size }}</span>
-        <span style="font-size: 13px; color: var(--color-text-muted);">Segnalato da {{ cat.UserEmail }}</span>
+        <span style="font-size: 13px; color: var(--text-alt);">Segnalato da {{ cat.UserEmail }}</span>
       </div>
     </header>
 
-    <div style="background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
+    <div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
       <h2>Descrizione</h2>
+      <!-- Pipe Markdown per convertire markdown in html -->
       <div [innerHTML]="cat.description | markdown"
-        style="font-size: 15px; line-height: 1.7; color: var(--color-text-secondary);"></div>
+        style="font-size: 15px; line-height: 1.7; color: var(--text-alt);"></div>
     </div>
   </div>
 
   <!-- Colonna 2: Mappa -->
   <div
-    style="flex: 1 1 300px; background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
+    style="flex: 1 1 300px; background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
     <h2>Ultima Posizione</h2>
     <app-map mode="view-one" [lat]="cat.latitude" [lng]="cat.longitude"></app-map>
-    <p style="font-size: 13px; color: var(--color-text-muted);">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{
+    <p style="font-size: 13px; color: var(--text-alt);">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{
       cat.longitude | number:'1.4-4' }}</p>
   </div>
 
   <!-- Colonna 3: Foto -->
   <div
-    style="flex: 1 1 300px; background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
+    style="flex: 1 1 300px; background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
     <h2>Foto</h2>
-    <div style="background: var(--color-image-placeholder); height: 300px;">
+    <div style="background: var(--bg-main); height: 300px;">
       <img [src]="cat.photoUrl" style="width: 100%; height: 100%; object-fit: cover; display: block;">
     </div>
   </div>
@@ -57,9 +51,9 @@
 @if (isOwnerOrAdmin) {
 <div style="display: flex; align-items: center; gap: 10px;">
   <a [routerLink]="['/cats', cat.id, 'edit']"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-btn-secondary); color: var(--color-text-main);">Modifica</a>
+    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--bg-main); color: var(--text-main);">Modifica</a>
   <button type="button" (click)="deleteCat()"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-danger-bg); color: var(--color-danger);">Elimina</button>
+    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--bg-main); color: var(--danger);">Elimina</button>
 </div>
 }
 
@@ -70,36 +64,35 @@
 
 <!-- Form nuovo commento -->
 @if (isAuthenticated) {
-<div style="background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
+<div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
   <textarea [(ngModel)]="newCommentText" placeholder="Hai avvistato questo gatto? Lascia un commento..." rows="4"
     style="resize: none;"></textarea>
   <div>
     <button type="button" (click)="submitComment()"
-      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: var(--color-white);">
+      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--primary); color: var(--white);">
       Pubblica commento
     </button>
   </div>
 </div>
 } @else {
 <div
-  style="background: var(--color-background); border: 1px solid var(--color-border); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-  <p style="font-size: 15px; color: var(--color-text-secondary);">Accedi per lasciare un commento o un avvistamento.</p>
+  style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+  <p style="font-size: 15px; color: var(--text-alt);">Accedi per lasciare un commento o un avvistamento.</p>
   <a routerLink="/login"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--color-primary); color: var(--color-white);">Accedi</a>
+    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--primary); color: var(--white);">Accedi</a>
 </div>
 }
 
 <!-- Lista commenti -->
-
 <div>
   @for (comment of comments; track comment.id) {
-  <div style="background: var(--color-background); border: 1px solid var(--color-border); padding: 20px;">
+  <div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
     <header style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
       <span style="font-size: 15px; font-weight: bold;">{{ comment.UserEmail }}</span>
-      <span style="font-size: 13px; color: var(--color-text-muted);">{{ comment.createdAt | date:'d MMM yyyy, HH:mm'
+      <span style="font-size: 13px; color: var(--text-alt);">{{ comment.createdAt | date:'d MMM yyyy, HH:mm'
         }}</span>
     </header>
-    <p style="white-space: pre-wrap; font-size: 15px; color: var(--color-text-secondary);">{{ comment.text }}</p>
+    <p style="white-space: pre-wrap; font-size: 15px; color: var(--text-alt);">{{ comment.text }}</p>
   </div>
   }
 </div>

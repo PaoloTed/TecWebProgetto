@@ -1,51 +1,89 @@
-import { Injectable } from '@angular/core';
-import { User } from '../api/user.type';
+import { Injectable, signal, computed, WritableSignal, effect } from '@angular/core';
+import { jwtDecode } from "jwt-decode";
+import { User } from '../../type/user.type';
+import { AuthState } from './auth-state.type';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private tokenKey = 'streetcats_token';
-  private currentUserKey = 'streetcats_user';
 
-  private token: string | null = null;
-  private user: User | null = null;
+  authState: WritableSignal<AuthState> = signal<AuthState>({
+    user: this.loadUserFromStorage(),
+    token: this.loadTokenFromStorage(),
+    isAuthenticated: this.verifyToken(this.loadTokenFromStorage())
+  });
+
+  isAuthenticated = computed(() => this.authState().isAuthenticated);
+  currentUser = computed(() => this.authState().user);
+  getToken = computed(() => this.authState().token);
 
   constructor() {
-    this.token = localStorage.getItem(this.tokenKey);
-    const userStr = localStorage.getItem(this.currentUserKey);
-    if (userStr) {
-      try {
-        this.user = JSON.parse(userStr);
-      } catch (e) {
-        this.user = null;
+    effect(() => {
+      const token = this.authState().token;
+      const user = this.authState().user;
+
+      if (token !== null) {
+        localStorage.setItem('streetcats_token', token);
+      } else {
+        localStorage.removeItem('streetcats_token');
       }
-    }
+
+      if (user !== null) {
+        localStorage.setItem('streetcats_user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('streetcats_user');
+      }
+    });
   }
 
   setSession(token: string, user: User) {
-    localStorage.setItem(this.tokenKey, token);
-    localStorage.setItem(this.currentUserKey, JSON.stringify(user));
-    this.token = token;
-    this.user = user;
+    this.authState.set({
+      user: user,
+      token: token,
+      isAuthenticated: this.verifyToken(token)
+    });
   }
 
   logout() {
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.currentUserKey);
-    this.token = null;
-    this.user = null;
+    this.authState.set({
+      user: null,
+      token: null,
+      isAuthenticated: false
+    });
   }
 
-  getToken(): string | null {
-    return this.token;
+  private loadTokenFromStorage(): string | null {
+    return localStorage.getItem('streetcats_token');
   }
 
-  currentUser(): User | null {
-    return this.user;
+  private loadUserFromStorage(): User | null {
+    const userStr = localStorage.getItem('streetcats_user');
+    if (userStr) {
+      try {
+        return JSON.parse(userStr);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
-  isAuthenticated(): boolean {
-    return !!this.token;
+  verifyToken(token: string | null): boolean {
+    if (token !== null) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const expiration = decodedToken.exp;
+        if (expiration === undefined || Date.now() >= expiration * 1000) {
+          return false; // scaduto
+        } else {
+          return true; // non scaduto
+        }
+      } catch (error) {
+        return false; // token invalido o malformato
+      }
+    }
+    return false;
   }
 }

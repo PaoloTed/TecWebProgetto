@@ -14,6 +14,7 @@ export class CatController {
   static async getCatsByUser(email) {
     return Cat.findAll({
       where: { UserEmail: email },
+      attributes: ['id', 'name', 'color', 'photoUrl', 'createdAt'],
       order: [['createdAt', 'DESC']]
     });
   }
@@ -24,28 +25,36 @@ export class CatController {
   }
 
   // Crea e salva un nuovo gatto nel database
-  static async createCat(catData, email) {
+  static async createCat(name, description, color, size, photoUrl, latitude, longitude, email) {
     const cat = Cat.build({
-      name: catData.name,
-      description: catData.description,
-      color: catData.color,
-      size: catData.size,
-      photoUrl: catData.photoUrl,
-      latitude: catData.latitude,
-      longitude: catData.longitude,
+      name: name,
+      description: description,
+      color: color,
+      size: size,
+      photoUrl: photoUrl,
+      latitude: latitude,
+      longitude: longitude,
       UserEmail: email
     });
     return cat.save();
   }
 
   // Aggiorna i dati di un gatto esistente
-  static async updateCat(id, updatedData) {
+  static async updateCat(id, name, description, color, size, photoUrl, latitude, longitude) {
     const cat = await Cat.findByPk(id);
     if (!cat) {
       return null;
     }
 
-    cat.set(updatedData);
+    cat.set({
+      name: name,
+      description: description,
+      color: color,
+      size: size,
+      photoUrl: photoUrl,
+      latitude: latitude,
+      longitude: longitude
+    });
     return cat.save();
   }
 

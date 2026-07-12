@@ -1,9 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api/api.service';
-import { AuthService } from '../../services/auth/auth.service';
-import { MapComponent, MapCat } from '../map/map.component';
-import { Cat } from '../../services/api/cat.type';
+import { MapComponent } from '../map/map.component';
+import { Cat } from '../../type/cat.type';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cat-list',
@@ -14,12 +14,9 @@ import { Cat } from '../../services/api/cat.type';
 export class CatList implements OnInit {
   private apiService = inject(ApiService);
   private router = inject(Router);
-  public authService = inject(AuthService);
-
+  private toastr = inject(ToastrService);
 
   cats: Cat[] = [];
-  catsWithCoords: MapCat[] = [];
-  error = '';
 
   ngOnInit() {
     this.loadCats();
@@ -27,27 +24,16 @@ export class CatList implements OnInit {
 
   loadCats() {
     this.apiService.getCats().subscribe({
-      next: (data) => {
-        this.cats = data;
-
-        this.catsWithCoords = this.cats
-          .filter(c => c.latitude != null && c.longitude != null)
-          .map(c => ({
-            id: c.id,
-            name: c.name,
-            latitude: c.latitude!,
-            longitude: c.longitude!,
-            color: c.color ?? undefined,
-            photoUrl: c.photoUrl ?? undefined
-          }));
+      next: (catsRecived) => {
+        this.cats = catsRecived;
       },
       error: () => {
-        this.error = 'Errore nel caricamento dei gatti.';
+        this.toastr.error('Errore nel caricamento dei gatti.', 'Errore');
       }
     });
   }
 
-  // Naviga alla pagina del gatto quando viene cliccato il marker sulla mappa 
+  // Naviga alla pagina del gatto quando viene cliccato il marker sulla mappa
   onCatClicked(id: number) {
     this.router.navigate(['/cats', id]);
   }

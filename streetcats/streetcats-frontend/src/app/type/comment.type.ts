@@ -5,7 +5,7 @@ export interface Comment {
   createdAt: string;
   updatedAt?: string;
   CatId?: number;
-  cat?: {
+  Cat?: {
     id: number;
     name: string;
   };

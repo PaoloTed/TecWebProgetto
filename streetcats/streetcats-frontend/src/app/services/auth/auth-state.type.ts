@@ -1,4 +1,4 @@
-import { User } from '../api/user.type';
+import { User } from '../../type/user.type';
 
 export interface AuthState {
   user: User | null;

@@ -35,6 +35,7 @@ export function requireAuth(req, res, next) {
   });
 }
 
+
 // Middleware per controllare se l'utente è proprietario del gatto o admin
 export const requireCatOwnerOrAdmin = async (req, res, next) => {
   try {

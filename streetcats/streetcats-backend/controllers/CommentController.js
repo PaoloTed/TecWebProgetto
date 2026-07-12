@@ -19,6 +19,7 @@ export class CommentController {
   static async getCommentsByUser(email) {
     return Comment.findAll({
       where: { UserEmail: email },
+      attributes: ['id', 'text', 'createdAt'],
       include: [{
         model: Cat,
         attributes: ['id', 'name']
@@ -33,14 +34,14 @@ export class CommentController {
   }
 
   // Crea e salva un nuovo commento per un gatto
-  static async createComment(commentData, catId, email) {
+  static async createComment(text, catId, email) {
     const cat = await Cat.findByPk(catId);
     if (cat === null) {
       throw new Error('Gatto non trovato');
     }
 
     const comment = Comment.build({
-      text: commentData.text,
+      text: text,
       CatId: catId,
       UserEmail: email
     });
@@ -48,13 +49,13 @@ export class CommentController {
   }
 
   // Aggiorna il testo di un commento esistente
-  static async updateComment(id, updatedData) {
+  static async updateComment(id, text) {
     const comment = await Comment.findByPk(id);
     if (!comment) {
       return null;
     }
 
-    comment.set({ text: updatedData.text });
+    comment.set({ text: text });
     return comment.save();
   }
 

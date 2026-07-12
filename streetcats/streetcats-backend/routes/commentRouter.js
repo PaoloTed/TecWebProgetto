@@ -26,9 +26,9 @@ commentRouter.put("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, asyn
     // Validazione
     const text = req.body.text;
     if (!text)
-      return res.status(400).json({ error: "Il testo del commento e' obbligatorio" });
+      return res.status(400).json({ errorBackEnd: "Il testo del commento e' obbligatorio" });
 
-    const updatedComment = await CommentController.updateComment(commentId, { text });
+    const updatedComment = await CommentController.updateComment(commentId, text);
     res.json(updatedComment);
   } catch (err) {
     next(err);

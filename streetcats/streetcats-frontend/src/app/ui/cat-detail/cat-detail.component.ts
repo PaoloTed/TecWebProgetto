@@ -7,8 +7,9 @@ import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 import { MarkdownPipe } from '../../pipes/markdown/markdown.pipe';
 import { MapComponent } from '../map/map.component';
-import { Cat } from '../../services/api/cat.type';
-import { Comment } from '../../services/api/comment.type';
+import { Cat } from '../../type/cat.type';
+import { Comment } from '../../type/comment.type';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cat-detail',
@@ -21,10 +22,10 @@ export class CatDetail implements OnInit {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
 
   cat: Cat | null = null;
   comments: Comment[] = [];
-  error = '';
 
   newCommentText = '';
 
@@ -33,26 +34,33 @@ export class CatDetail implements OnInit {
     if (id) {
       this.loadCatInfo(id);
     } else {
-      this.error = 'ID Gatto non valido.';
+      this.toastr.error('ID Gatto non valido.', 'Errore');
+      this.router.navigate(['/cats']);
     }
   }
 
   loadCatInfo(id: number) {
     this.apiService.getCatById(id).subscribe({
-      next: (cat) => {
-        this.cat = cat;
+      next: (catRecived) => {
+        this.cat = catRecived;
         this.loadComments(id);
       },
       error: () => {
-        this.error = 'Impossibile caricare i dettagli del gatto.';
+        this.toastr.error('Impossibile caricare i dettagli del gatto.', 'Errore');
+        this.router.navigate(['/cats']);
       }
     });
   }
 
   loadComments(catId: number) {
     this.apiService.getCatComments(catId).subscribe({
-      next: (c) => (this.comments = c),
-      error: () => { }
+      next: (commentsRecived) => {
+        this.comments = commentsRecived;
+      },
+      error: () => {
+        this.toastr.error('Impossibile caricare i commenti del gatto.', 'Errore');
+        this.router.navigate(['/cats']);
+      }
     });
   }
 
@@ -62,11 +70,11 @@ export class CatDetail implements OnInit {
 
   get isOwnerOrAdmin() {
     if (!this.cat) return false;
-    const u = this.authService.currentUser();
-    return u !== null && (u.email === this.cat.UserEmail || u.role === 'admin');
+    const currentUser = this.authService.currentUser();
+    return currentUser !== null && (currentUser.email === this.cat.UserEmail || currentUser.role === 'admin');
   }
 
-  // Invio commento 
+  // Invio commento
   submitComment() {
     const text = this.newCommentText.trim();
     if (!this.cat || !text) return;
@@ -75,21 +83,29 @@ export class CatDetail implements OnInit {
       next: () => {
         this.loadComments(this.cat!.id);
         this.newCommentText = '';
+        this.toastr.success('Commento pubblicato!', 'Successo');
       },
-      error: (err) => {
-        alert(err.error?.error || "Errore durante l'invio del commento.");
+      error: (response) => {
+        if (response.error.errorBackEnd) {
+          this.toastr.error(response.error.errorBackEnd, 'Errore');
+        } else {
+          this.toastr.error("Errore durante l'invio del commento.", 'Errore');
+        }
       }
     });
   }
 
-  // Eliminazione gatto 
+  // Eliminazione gatto
   deleteCat() {
     if (!this.cat) return;
     this.apiService.deleteCat(this.cat.id).subscribe({
-      next: () => this.router.navigate(['/cats']),
-      error: () => { }
+      next: () => {
+        this.toastr.success('Segnalazione eliminata.', 'Eliminato');
+        this.router.navigate(['/cats']);
+      },
+      error: () => {
+        this.toastr.error('Errore durante eliminazione.', 'Errore');
+      }
     });
   }
-
 }
-

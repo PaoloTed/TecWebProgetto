@@ -1,5 +1,6 @@
 import {
   Component,
+  inject,
   Input,
   Output,
   EventEmitter,
@@ -8,25 +9,24 @@ import {
   OnDestroy,
   SimpleChanges
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 export interface MapCat {
   id: number;
   name: string;
   latitude: number;
   longitude: number;
-  color?: string;
-  photoUrl?: string;
 }
 
 @Component({
   selector: 'app-map',
-  template: '<div [id]="mapId" [style.height]="height" style="width:100%;"></div>',
+  template: '<div id="map" [style.height]="height" style="width:100%;"></div>',
   styles: [':host { display: block; width: 100%; }']
 })
 export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
+  private toastr = inject(ToastrService);
 
-  // Dati verso la mappa 
+  // Dati verso la mappa
   @Input() mode: 'view-all' | 'view-one' | 'pick' = 'view-all';
   @Input() cats: MapCat[] = [];
   @Input() lat: number | null = null;
@@ -34,21 +34,13 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() height = '400px';
 
   // Dati verso il contenitore della mappa
-  // Emette l'id del gatto quando l'utente clicca su un marker
   @Output() catClicked = new EventEmitter<number>();
-  // Emette [lat, lng] quando l'utente clicca sulla mappa in modalità pick
   @Output() positionPicked = new EventEmitter<[number, number]>();
 
-  readonly mapId = 'map-' + Math.floor(Math.random() * 1000000).toString(36);
-
+  private leaflet: any = (window as any)['L'];
   private map: any = null;
   private catMarkers: any[] = [];
   private pickMarker: any = null;
-
-  private readonly ITALY: [number, number] = [40, 10];
-  private readonly ITALY_ZOOM = 5;
-
-  constructor(private router: Router) { }
 
   ngAfterViewInit() {
     this.initMap();
@@ -71,15 +63,14 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private initMap() {
-    const L = (window as any)['L'];
-    if (!L) {
-      console.error('[MapComponent] Leaflet non trovato. Controlla index.html.');
+    if (!this.leaflet) {
+      this.toastr.error('Mappa non trovata', 'Errore');
       return;
     }
 
     // Coordinate iniziali
-    let center: [number, number] = this.ITALY;
-    let zoom = this.ITALY_ZOOM;
+    let center: [number, number] = [45, 10];
+    let zoom = 5;
 
     if (this.mode === 'view-one' && this.lat != null && this.lng != null) {
       center = [this.lat, this.lng];
@@ -87,90 +78,96 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     // Inizializzazione mappa
-    this.map = L.map(this.mapId).setView(center, zoom);
+    this.map = this.leaflet.map('map').setView(center, zoom);
 
     // Tile layer OpenStreetMap
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this.map);
 
-    // Contenuto in base alla modalità 
-    if (this.mode === 'view-all') this.renderCatMarkers();
-    if (this.mode === 'view-one') this.renderSingleMarker();
-    if (this.mode === 'pick') this.setupPickMode();
+    // Contenuto in base alla modalità
+    switch (this.mode) {
+      case 'view-all':
+        this.renderCatMarkers();
+        break;
+      case 'view-one':
+        this.renderSingleMarker();
+        break;
+      case 'pick':
+        this.setupPickMode();
+        break;
+    }
   }
 
   // Marker gatti
   private renderCatMarkers() {
-    if (!this.map) return;
-    const L = (window as any)['L'];
-
-    // Rimuovi marker esistenti
-    this.catMarkers.forEach(m => m.remove());
-    this.catMarkers = [];
-
-    const valid = this.cats.filter(c =>
-      c.latitude != null && c.longitude != null);
-    if (valid.length === 0) {
-      this.map.setView(this.ITALY, this.ITALY_ZOOM);
+    if (!this.map) {
+      this.toastr.error('Mappa non trovata', 'Errore');
       return;
     }
 
-    valid.forEach(cat => {
-      // Marker standard
-      const marker = L.marker([cat.latitude, cat.longitude]).addTo(this.map);
+    // Rimuove i vecchi marker dalla mappa
+    this.catMarkers.forEach(marker => marker.remove());
+    this.catMarkers = [];
 
-      // Popup semplice con reindirizzamento
-      marker.bindPopup(
-        '<div>' +
-        '<b>' + cat.name + '</b><br>' +
-        '<a href="/cats/' + cat.id + '"">' +
-        'Vai alla pagina del gatto' +
-        '</a>' +
-        '</div>'
-      );
+    this.cats.forEach(cat => {
+      let marker = this.leaflet.marker([cat.latitude, cat.longitude]).addTo(this.map);
+      let popUp = document.createElement('div');
+      popUp.innerHTML = `
+        <b>${cat.name}</b><br>
+        <a href="javascript:void(0)">Vai alla pagina del gatto</a>
+      `;
+      popUp.querySelector('a')!.onclick = () => this.catClicked.emit(cat.id);
+      marker.bindPopup(popUp);
       this.catMarkers.push(marker);
     });
   }
 
   private renderSingleMarker() {
-    if (!this.map || this.lat == null || this.lng == null) return;
-    const L = (window as any)['L'];
-
-    // Marker standard
-    L.marker([this.lat, this.lng]).addTo(this.map);
-  }
-
-  // Modalità pick 
-  private setupPickMode() {
-    if (!this.map) return;
-    const L = (window as any)['L'];
-
-    if (this.lat != null && this.lng != null) {
-      this.pickMarker = L.marker([this.lat, this.lng], { draggable: true }).addTo(this.map);
-      this.pickMarker.on('dragend', () => {
-        const pos = this.pickMarker.getLatLng();
-        this.positionPicked.emit([pos.lat, pos.lng]);
-      });
+    if (!this.map || this.lat == null || this.lng == null) {
+      this.toastr.error('Coordinate non valide', 'Errore');
+      return;
     }
 
-    this.map.on('click', (e: any) => {
-      const { lat, lng } = e.latlng;
+    this.leaflet.marker([this.lat, this.lng]).addTo(this.map);
+  }
+
+  // Crea un marker draggable e gli attacca il listener dragend
+  private createPickMarker(lat: number, lng: number): any {
+    let marker = this.leaflet.marker([lat, lng], { draggable: true }).addTo(this.map);
+    marker.on('dragend', () => {
+      let pos = marker.getLatLng();
+      this.positionPicked.emit([pos.lat, pos.lng]);
+    });
+    return marker;
+  }
+
+  // Modalita pick
+  private setupPickMode() {
+    if (!this.map) {
+      this.toastr.error('Mappa non trovata', 'Errore');
+      return;
+    }
+
+    // Al click sulla mappa: sposta il marker o creane uno nuovo
+    this.map.on('click', (eventClick: any) => {
+      const lat = eventClick.latlng.lat;
+      const lng = eventClick.latlng.lng;
+
       if (this.pickMarker) {
         this.pickMarker.setLatLng([lat, lng]);
       } else {
-        this.pickMarker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
-        this.pickMarker.on('dragend', () => {
-          const pos = this.pickMarker.getLatLng();
-          this.positionPicked.emit([pos.lat, pos.lng]);
-        });
+        this.pickMarker = this.createPickMarker(lat, lng);
       }
       this.positionPicked.emit([lat, lng]);
     });
   }
 
   private renderPickMarker() {
-    if (!this.map || this.lat == null || this.lng == null || !this.pickMarker) return;
+    if (!this.map || this.lat == null || this.lng == null || !this.pickMarker) {
+      this.toastr.error('Coordinate non valide', 'Errore');
+      return;
+    }
     this.pickMarker.setLatLng([this.lat, this.lng]);
   }
 }

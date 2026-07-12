@@ -1,17 +1,13 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Pipe, PipeTransform } from '@angular/core';
 import { marked } from 'marked';
 
 @Pipe({ name: 'markdown', standalone: true })
 export class MarkdownPipe implements PipeTransform {
-  private sanitizer = inject(DomSanitizer);
-
-  transform(value: string | null | undefined): SafeHtml {
+  transform(value: string | null | undefined): string {
     if (!value)
       return '';
 
-    // Parsing MarkDown e sanitizzazione con Angular
-    const html = marked.parse(value, { async: false }) as string;
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    // Parsing MarkDown (Angular si occuperà automaticamente della sanitizzazione HTML quando assegnato a [innerHTML])
+    return marked.parse(value, { async: false }) as string;
   }
 }

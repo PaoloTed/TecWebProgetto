@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { ApiService } from '../../services/api/api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -11,35 +12,34 @@ import { ApiService } from '../../services/api/api.service';
   styleUrl: './login.component.scss'
 })
 export class Login {
-  private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
 
-  loginForm: FormGroup;
-  errorMessage = '';
-
-  constructor() {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
-  }
+  loginForm = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+  });
 
   onSubmit() {
     if (this.loginForm.invalid) {
+      this.toastr.warning('Per favore compila tutti i campi obbligatori', 'Campi mancanti');
       return;
     }
 
-    this.errorMessage = '';
-
-    this.apiService.login(this.loginForm.value).subscribe({
+    this.apiService.login(this.loginForm.value.email!, this.loginForm.value.password!).subscribe({
       next: (res) => {
         this.authService.setSession(res.token, res.user);
+        this.toastr.success('Benvenuto su StreetCats!', 'Accesso effettuato');
         this.router.navigate(['/']);
       },
-      error: (err) => {
-        this.errorMessage = err.error?.error || 'Errore durante il login';
+      error: (response) => {
+        if (response.error.errorBackEnd) {
+          this.toastr.error(response.error.errorBackEnd, 'Errore di accesso');
+        } else {
+          this.toastr.error('Errore durante il login', 'Errore');
+        }
       }
     });
   }

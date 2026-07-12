@@ -10,7 +10,7 @@ export const noAuthGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // Se già loggato, reindirizza al profilo
+  // Se loggato reindirizza al profilo
   router.navigate(['/profile']);
   return false;
 };

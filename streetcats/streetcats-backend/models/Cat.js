@@ -34,7 +34,7 @@ export function createModel(database) {
     // Campi per la posizione
     latitude: {
       type: DataTypes.FLOAT,
-      allowNull: true,
+      allowNull: false,
       validate: {
         min: -90,
         max: 90
@@ -42,7 +42,7 @@ export function createModel(database) {
     },
     longitude: {
       type: DataTypes.FLOAT,
-      allowNull: true,
+      allowNull: false,
       validate: {
         min: -180,
         max: 180

@@ -3,12 +3,11 @@ import { createModel as createUserModel } from "./User.js";
 import { createModel as createCatModel } from "./Cat.js";
 import { createModel as createCommentModel } from "./Comment.js";
 
-import 'dotenv/config.js'; // Legge il file .env e rende disponibili le variabili in .env
+import 'dotenv/config.js'; // Legge il file .env e rende disponibili le variabili .env
 
-// Configurazione del database SQLite 
-export const database = new Sequelize({
-  dialect: 'sqlite',
-  storage: process.env.DB_CONNECTION_URI || './database.sqlite',
+// Configurazione del database 
+export const database = new Sequelize(process.env.DB_CONNECTION_URI, {
+  dialect: process.env.DIALECT || 'sqlite',
   logging: false
 });
 
