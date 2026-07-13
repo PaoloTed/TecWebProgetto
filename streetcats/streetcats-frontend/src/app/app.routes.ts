@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { CatList } from './ui/cat-list/cat-list.component';
+import { CatHomepage } from './ui/cat-homepage/cat-homepage.component';
 import { CatDetail } from './ui/cat-detail/cat-detail.component';
 import { CatForm } from './ui/cat-form/cat-form.component';
 import { Login } from './ui/login/login.component';
@@ -10,7 +10,7 @@ import { noAuthGuard } from './guards/no-auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/cats', pathMatch: 'full' },
-  { path: 'cats', component: CatList },
+  { path: 'cats', component: CatHomepage },
   { path: 'cats/new', component: CatForm, canActivate: [authGuard] },
   { path: 'cats/:id', component: CatDetail },
   { path: 'cats/:id/edit', component: CatForm, canActivate: [authGuard] },

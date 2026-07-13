@@ -1,12 +1,11 @@
 <main style="display: block; width: 100%;">
   <h1 style="font-size: 24px; margin-bottom: 5px;">Crea un account</h1>
-  <p style="color: var(--text-alt); font-size: 14px; margin-bottom: 30px;">Unisciti alla comunita e inizia a
+  <p class="text-secondary" style="font-size: 14px; margin-bottom: 30px;">Unisciti alla comunita e inizia a
     segnalare i gatti del quartiere</p>
 
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 20px;">
-    <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">
+    <label class="form-label" style="display: flex; flex-direction: column;">
       Nome utente
       <input type="text" formControlName="userName" placeholder="mario_rossi" autocomplete="username">
       @if (form.get('userName')?.invalid && form.get('userName')?.touched) {
@@ -15,8 +14,7 @@
       }
     </label>
 
-    <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">
+    <label class="form-label" style="display: flex; flex-direction: column;">
       Indirizzo email
       <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
       @if (form.get('email')?.invalid && form.get('email')?.touched) {
@@ -25,8 +23,7 @@
       }
     </label>
 
-    <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">
+    <label class="form-label" style="display: flex; flex-direction: column;">
       Password
       <input type="password" formControlName="password" placeholder="Almeno 6 caratteri" autocomplete="new-password">
       @if (form.get('password')?.invalid && form.get('password')?.touched) {
@@ -37,13 +34,12 @@
 
     <hr>
 
-    <button type="submit"
-      style="align-self: flex-start; display: inline-flex; align-items: center; gap: 5px;  font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--primary); color: var(--white);">
+    <button type="submit" class="btn-primary" style="align-self: flex-start;">
       Crea l'account
     </button>
   </form>
 
-  <p style="font-size: 15px; margin-top: 25px; color: var(--text-alt);">
+  <p class="text-secondary" style="margin-top: 25px;">
     Hai gia un account? <a routerLink="/login" style="color: var(--primary); font-weight: bold;">Accedi</a>
   </p>
 </main>

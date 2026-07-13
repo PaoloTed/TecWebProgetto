@@ -10,5 +10,4 @@ import { Footer } from './ui/footer/footer.component';
   styleUrl: './app.scss'
 })
 export class App {
-  title = 'streetcats-frontend';
 }

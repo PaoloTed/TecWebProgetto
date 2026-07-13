@@ -3,11 +3,11 @@ import { marked } from 'marked';
 
 @Pipe({ name: 'markdown', standalone: true })
 export class MarkdownPipe implements PipeTransform {
-  transform(value: string | null | undefined): string {
-    if (!value)
+  transform(preMarkdownString: any): string {
+    if (!preMarkdownString)
       return '';
 
-    // Parsing MarkDown (Angular si occuperà automaticamente della sanitizzazione HTML quando assegnato a [innerHTML])
-    return marked.parse(value, { async: false }) as string;
+    // Parsing MarkDown
+    return marked.parse(preMarkdownString, { async: false });
   }
 }

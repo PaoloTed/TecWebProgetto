@@ -3,14 +3,14 @@ import { Cat, Comment } from "../models/Database.js";
 // Controller per la gestione dei gatti CRUD
 export class CatController {
 
-  // Ottiene tutti i gatti ordinati per i più recenti
+  // Ottiene tutti i gatti
   static async getAllCats() {
     return Cat.findAll({
       order: [['createdAt', 'DESC']]
     });
   }
 
-  // Ottiene i gatti registrati da un utente specifico
+  // Ottiene i gatti registrati da un utente
   static async getCatsByUser(email) {
     return Cat.findAll({
       where: { UserEmail: email },
@@ -24,7 +24,7 @@ export class CatController {
     return Cat.findByPk(id);
   }
 
-  // Crea e salva un nuovo gatto nel database
+  // Crea e salva un nuovo gatto nel db
   static async createCat(name, description, color, size, photoUrl, latitude, longitude, email) {
     const cat = Cat.build({
       name: name,
@@ -39,13 +39,8 @@ export class CatController {
     return cat.save();
   }
 
-  // Aggiorna i dati di un gatto esistente
-  static async updateCat(id, name, description, color, size, photoUrl, latitude, longitude) {
-    const cat = await Cat.findByPk(id);
-    if (!cat) {
-      return null;
-    }
-
+  // Aggiorna i dati di un gatto (riceve l'oggetto cat già trovato dal middleware)
+  static async updateCat(cat, name, description, color, size, photoUrl, latitude, longitude) {
     cat.set({
       name: name,
       description: description,
@@ -58,14 +53,9 @@ export class CatController {
     return cat.save();
   }
 
-  // Elimina un gatto dal database
-  static async deleteCat(id) {
-    const cat = await Cat.findByPk(id);
-    if (!cat) {
-      return null;
-    }
-
-    await Comment.destroy({ where: { CatId: id } });
+  // Elimina un gatto dal db
+  static async deleteCat(cat) {
+    await Comment.destroy({ where: { CatId: cat.id } });
     await cat.destroy();
     return cat;
   }

@@ -28,14 +28,10 @@ export class Profile implements OnInit {
   recentComments: Comment[] = [];
 
   ngOnInit() {
-    if (this.authService.isAuthenticated() === false) {
-      this.router.navigate(['/login']);
-      return;
-    }
-    this.fetchProfile();
+    this.getUserProfileInfo();
   }
 
-  fetchProfile() {
+  getUserProfileInfo() {
     this.apiService.getProfile().subscribe({
       next: (profileDataRecived: any) => {
         this.user = {

@@ -1,61 +1,77 @@
 @if (cat) {
 
-<!-- Layout a tre colonne -->
-<div style="display: flex; flex-wrap: wrap; gap: 15px;">
+<header>
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+    <div>
+      <h1 style="font-size: 25px;">Dettaglio segnalazione</h1>
+      <p class="text-secondary">Segnalato da {{ cat.UserEmail }}</p>
+    </div>
+    @if (isOwnerOrAdmin) {
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <a [routerLink]="['/cats', cat.id, 'edit']" class="btn-secondary">Modifica</a>
+      <button type="button" (click)="deleteCat()" class="btn-danger">Elimina</button>
+    </div>
+    }
+  </div>
+</header>
 
-  <!-- Colonna 1: Nome, Badges, Descrizione -->
-  <div
-    style="flex: 1 1 300px; background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
+<div style="display: flex; flex-direction: column; gap: 15px;">
 
-    <header>
-      <h1 style="font-size: 35px;">{{ 'Nome: ' + cat.name }}</h1>
-      <div style="flex-wrap: wrap; display: flex; align-items: center; gap: 10px;">
-        <span
-          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--text-alt);">Colore:
-          {{ cat.color }}</span>
-        <span
-          style="display: inline-flex; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--primary);">Taglia:
-          {{ cat.size }}</span>
-        <span style="font-size: 13px; color: var(--text-alt);">Segnalato da {{ cat.UserEmail }}</span>
+  <!-- Identificazione -->
+  <div class="card">
+    <h2>Identificazione</h2>
+    <hr>
+    
+    <div>
+      <p class="form-label" style="margin-bottom: 5px;">Nome o soprannome</p>
+      <p class="text-secondary" style="font-size: 16px;">{{ cat.name }}</p>
+    </div>
+
+    <div style="display: grid; margin-top: 15px; gap: 15px;">
+      <div>
+        <p class="form-label" style="margin-bottom: 5px;">Colore mantello</p>
+        <p class="text-secondary">{{ cat.color || 'Non specificato' }}</p>
       </div>
-    </header>
+      <div>
+        <p class="form-label" style="margin-bottom: 5px;">Taglia stimata</p>
+        <p class="text-secondary">{{ cat.size || 'Non specificata' }}</p>
+      </div>
+    </div>
 
-    <div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
-      <h2>Descrizione</h2>
-      <!-- Pipe Markdown per convertire markdown in html -->
-      <div [innerHTML]="cat.description | markdown"
-        style="font-size: 15px; line-height: 1.7; color: var(--text-alt);"></div>
+    @if (cat.photoUrl) {
+    <div style="margin-top: 20px;">
+      <p class="form-label" style="margin-bottom: 10px;">Foto del gatto</p>
+      <div style="max-width: 400px; border: 1px solid var(--bg-alt); background: var(--bg-main);">
+        <img [src]="cat.photoUrl" style="width: 100%; display: block; object-fit: contain;">
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Luogo -->
+  <div class="card">
+    <h2>Luogo dell'avvistamento</h2>
+    <hr>
+    
+    <div>
+      <p class="form-label" style="margin-bottom: 10px;">Posizione sulla mappa</p>
+      <app-map (mapEmit)="onMapEmit($event)" style="border: 1px solid var(--bg-alt); display: block;"></app-map>
+      <p class="text-secondary" style="font-size: 13px; margin-top: 10px;">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{
+        cat.longitude | number:'1.4-4' }}</p>
     </div>
   </div>
 
-  <!-- Colonna 2: Mappa -->
-  <div
-    style="flex: 1 1 300px; background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
-    <h2>Ultima Posizione</h2>
-    <app-map mode="view-one" [lat]="cat.latitude" [lng]="cat.longitude"></app-map>
-    <p style="font-size: 13px; color: var(--text-alt);">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{
-      cat.longitude | number:'1.4-4' }}</p>
-  </div>
-
-  <!-- Colonna 3: Foto -->
-  <div
-    style="flex: 1 1 300px; background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
-    <h2>Foto</h2>
-    <div style="background: var(--bg-main); height: 300px;">
-      <img [src]="cat.photoUrl" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+  <!-- Note e condizioni -->
+  <div class="card">
+    <h2>Note e condizioni</h2>
+    <hr>
+    
+    <div>
+      <p class="form-label" style="margin-bottom: 10px;">Descrizione dettagliata</p>
+      <div [innerHTML]="(cat.description || 'Nessuna descrizione.') | markdown" class="text-secondary" style="line-height: 1.7;"></div>
     </div>
   </div>
 </div>
-
-<!-- Azioni -->
-@if (isOwnerOrAdmin) {
-<div style="display: flex; align-items: center; gap: 10px;">
-  <a [routerLink]="['/cats', cat.id, 'edit']"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--bg-main); color: var(--text-main);">Modifica</a>
-  <button type="button" (click)="deleteCat()"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--bg-main); color: var(--danger);">Elimina</button>
-</div>
-}
 
 <!-- COMMENTI -->
 <header>
@@ -64,35 +80,32 @@
 
 <!-- Form nuovo commento -->
 @if (isAuthenticated) {
-<div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
+<div class="card">
   <textarea [(ngModel)]="newCommentText" placeholder="Hai avvistato questo gatto? Lascia un commento..." rows="4"
     style="resize: none;"></textarea>
   <div>
-    <button type="button" (click)="submitComment()"
-      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--primary); color: var(--white);">
+    <button type="button" (click)="submitComment()" class="btn-primary">
       Pubblica commento
     </button>
   </div>
 </div>
 } @else {
-<div
-  style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-  <p style="font-size: 15px; color: var(--text-alt);">Accedi per lasciare un commento o un avvistamento.</p>
-  <a routerLink="/login"
-    style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--primary); color: var(--white);">Accedi</a>
+<div class="card" style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+  <p class="text-secondary">Accedi per lasciare un commento o un avvistamento.</p>
+  <a routerLink="/login" class="btn-primary">Accedi</a>
 </div>
 }
 
 <!-- Lista commenti -->
 <div>
   @for (comment of comments; track comment.id) {
-  <div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
+  <div class="card">
     <header style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
       <span style="font-size: 15px; font-weight: bold;">{{ comment.UserEmail }}</span>
-      <span style="font-size: 13px; color: var(--text-alt);">{{ comment.createdAt | date:'d MMM yyyy, HH:mm'
+      <span class="text-secondary" style="font-size: 13px;">{{ comment.createdAt | date:'d MMM yyyy, HH:mm'
         }}</span>
     </header>
-    <p style="white-space: pre-wrap; font-size: 15px; color: var(--text-alt);">{{ comment.text }}</p>
+    <p class="text-secondary" style="white-space: pre-wrap;">{{ comment.text }}</p>
   </div>
   }
 </div>

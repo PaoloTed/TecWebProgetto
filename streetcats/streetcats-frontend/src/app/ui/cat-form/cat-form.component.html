@@ -1,24 +1,22 @@
 <header>
   @if (isEditMode) {
   <h1 style="font-size: 25px; ">Modifica segnalazione</h1>
-  <p style="font-size: 15px; color: var(--text-alt);">Aggiorna le informazioni del gatto.</p>
+  <p class="text-secondary">Aggiorna le informazioni del gatto.</p>
   } @else {
   <h1 style="font-size: 25px;">Hai visto un micio?</h1>
-  <p style="font-size: 15px; color: var(--text-alt);">Compila il modulo con le informazioni del gatto</p>
+  <p class="text-secondary">Compila il modulo con le informazioni del gatto</p>
   }
 </header>
-
 
 <form [formGroup]="catForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 15px;">
 
   <!-- Identificazione -->
-  <div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
+  <div class="card">
     <h2>Identificazione</h2>
     <hr>
 
     <div>
-      <label for="name"
-        style="display: block; margin-bottom: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">
+      <label for="name" class="form-label">
         Nome o soprannome <span style="color: var(--danger);">*</span>
       </label>
       <input id="name" formControlName="name" type="text" placeholder="Es. Zorro, Pippo">
@@ -26,14 +24,12 @@
 
     <div style="display: grid;">
       <div>
-        <label for="color"
-          style="display: block; margin-bottom: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">Colore
+        <label for="color" class="form-label">Colore
           mantello</label>
         <input id="color" formControlName="color" type="text" placeholder="Es. Grigio tigrato">
       </div>
       <div>
-        <label for="size"
-          style="display: block; margin-bottom: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">Taglia
+        <label for="size" class="form-label">Taglia
           stimata</label>
         <select id="size" formControlName="size">
           <option value="Piccolo">Piccolo</option>
@@ -45,12 +41,10 @@
 
     <!-- Foto del gatto -->
     <div>
-      <label for="photo"
-        style="display: block; margin-bottom: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">Foto
+      <label for="photo" class="form-label">Foto
         del gatto (opzionale)</label>
       <div style="flex-wrap: wrap; display: flex; align-items: center; gap: 10px;">
-        <label for="photo"
-          style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--bg-main); color: var(--text-main); display: flex; align-items: center; gap: 10px;">
+        <label for="photo" class="btn-secondary" style="display: flex; gap: 10px;">
           Carica un'immagine
         </label>
         <input id="photo" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
@@ -67,24 +61,23 @@
   </div>
 
   <!-- Luogo -->
-  <div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
+  <div class="card">
     <h2>Luogo dell'avvistamento</h2>
     <hr>
 
     <!-- Mappa pick mode -->
     <div>
-      <div
-        style="display: block; margin-bottom: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">
+      <div class="form-label">
         Posizione sulla mappa <span style="color: var(--danger);">*</span></div>
       <p style="margin-bottom: 10px; font-size: 13px; color: var(--text-alt);">
         Clicca sulla mappa per indicare il punto esatto dell'avvistamento.
       </p>
-      <app-map mode="pick" [lat]="pickedLat" [lng]="pickedLng" height="320px"
-        (positionPicked)="onPositionPicked($event)" style=" border: 1px solid var(--bg-alt); display: block;">
+      <app-map (mapEmit)="onMapEmit($event)" style=" border: 1px solid var(--bg-alt); display: block;">
       </app-map>
-      @if (pickedLat != null && pickedLng != null) {
+      @if (catForm.get('latitude')?.value != null && catForm.get('longitude')?.value != null) {
       <div style="font-size: 13px; color: var(--text-alt);">
-        Posizione selezionata: {{ pickedLat | number:'1.4-4' }}, {{ pickedLng | number:'1.4-4' }}
+        Posizione selezionata: {{ catForm.get('latitude')?.value | number:'1.4-4' }}, {{ catForm.get('longitude')?.value
+        | number:'1.4-4' }}
       </div>
       } @else {
       <div style="font-size: 13px; color: var(--text-alt);">
@@ -95,12 +88,11 @@
   </div>
 
   <!-- Note e condizioni -->
-  <div style="background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
+  <div class="card">
     <h2>Note e condizioni</h2>
     <hr>
     <div>
-      <label for="description"
-        style="display: block; margin-bottom: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">Descrizione
+      <label for="description" class="form-label">Descrizione
         dettagliata</label>
       <textarea id="description" formControlName="description" rows="5"
         placeholder="Segni particolari, comportamento… Puoi usare **grassetto**, _corsivo_ e [link](https://…)"></textarea>
@@ -111,12 +103,10 @@
   </div>
 
   <div style="display: flex; align-items: center; gap: 10px;">
-    <a routerLink="/cats"
-      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--bg-main); color: var(--text-main);">
+    <a [routerLink]="isEditMode ? ['/cats', catId] : ['/cats']" class="btn-secondary">
       Annulla
     </a>
-    <button type="submit" [disabled]="catForm.invalid || pickedLat === null || pickedLng === null"
-      style="display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--primary); color: var(--white);">
+    <button type="submit" [disabled]="catForm.invalid" class="btn-primary">
       Pubblica segnalazione
     </button>
   </div>

@@ -2,8 +2,6 @@ import { Injectable, signal, computed, WritableSignal, effect } from '@angular/c
 import { jwtDecode } from "jwt-decode";
 import { User } from '../../type/user.type';
 import { AuthState } from './auth-state.type';
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -70,20 +68,13 @@ export class AuthService {
     return null;
   }
 
-  verifyToken(token: string | null): boolean {
-    if (token !== null) {
-      try {
-        const decodedToken = jwtDecode(token);
-        const expiration = decodedToken.exp;
-        if (expiration === undefined || Date.now() >= expiration * 1000) {
-          return false; // scaduto
-        } else {
-          return true; // non scaduto
-        }
-      } catch (error) {
-        return false; // token invalido o malformato
-      }
+  private verifyToken(token: string | null): boolean {
+    if (!token) return false;
+    try {
+      const exp = jwtDecode(token).exp;
+      return exp !== undefined && Date.now() < exp * 1000;
+    } catch {
+      return false;
     }
-    return false;
   }
 }

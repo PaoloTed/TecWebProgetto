@@ -4,7 +4,7 @@ import fs from 'fs';
 
 // Controllo che la cartella esista
 const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-if (fs.existsSync(uploadDir) === false) {
+if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir); // Cartella di destinazione
   },
   filename: (req, file, cb) => {
-    // Genera un nome per il file caricato usando il timestamp e il nome del file
+    // Genera un nome per il file usando il timestamp e il nome del file
     const suffisso = Date.now() + '-' + file.originalname;
     cb(null, suffisso);
   }

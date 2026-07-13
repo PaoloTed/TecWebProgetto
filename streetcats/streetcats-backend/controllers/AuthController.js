@@ -7,14 +7,12 @@ export class AuthController {
 
   // Verifica le credenziali dell'utente (email e password)
   static async checkCredentials(email, password) {
-    const found = await User.findOne({
+    return User.findOne({
       where: {
         email: email,
         password: password
       }
     });
-
-    return found;
   }
 
   // Registra un nuovo utente nel database
@@ -23,7 +21,7 @@ export class AuthController {
       userName: userName,
       password: password, // La password viene passata già hashata
       email: email,
-      role: 'user' // I nuovi utenti sono sempre 'user'
+      role: 'user'
     });
     return user.save();
   }
@@ -50,7 +48,10 @@ export class AuthController {
 
   // Verifica se un utente esiste già tramite username
   static async userExists(userName) {
-    const user = await User.findOne({ where: { userName: userName } });
+    const user = await User.findOne(
+      {
+        where: { userName: userName }
+      });
     return user !== null;
   }
 

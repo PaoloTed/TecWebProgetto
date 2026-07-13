@@ -25,6 +25,8 @@ export class CatDetail implements OnInit {
   private toastr = inject(ToastrService);
 
   cat: Cat | null = null;
+  private map: any = null;
+  private leaflet: any = null;
   comments: Comment[] = [];
 
   newCommentText = '';
@@ -44,6 +46,7 @@ export class CatDetail implements OnInit {
       next: (catRecived) => {
         this.cat = catRecived;
         this.loadComments(id);
+
       },
       error: () => {
         this.toastr.error('Impossibile caricare i dettagli del gatto.', 'Errore');
@@ -64,12 +67,23 @@ export class CatDetail implements OnInit {
     });
   }
 
+  onMapEmit(event: { map: any, leaflet: any }) {
+    this.map = event.map;
+    this.leaflet = event.leaflet;
+    if (this.cat) {
+      this.leaflet.marker([this.cat.latitude, this.cat.longitude]).addTo(this.map);
+      this.map.setView([this.cat.latitude, this.cat.longitude], 15);
+    }
+  }
+
   get isAuthenticated() {
     return this.authService.isAuthenticated();
   }
 
   get isOwnerOrAdmin() {
-    if (!this.cat) return false;
+    if (!this.cat) {
+      return false;
+    }
     const currentUser = this.authService.currentUser();
     return currentUser !== null && (currentUser.email === this.cat.UserEmail || currentUser.role === 'admin');
   }
@@ -77,13 +91,17 @@ export class CatDetail implements OnInit {
   // Invio commento
   submitComment() {
     const text = this.newCommentText.trim();
-    if (!this.cat || !text) return;
-
+    if (!this.cat || !text) {
+      return;
+    }
     this.apiService.addComment(this.cat.id, text).subscribe({
       next: () => {
-        this.loadComments(this.cat!.id);
+        if (!this.cat) {
+          return;
+        }
+        this.loadComments(this.cat.id);
         this.newCommentText = '';
-        this.toastr.success('Commento pubblicato!', 'Successo');
+        this.toastr.success('Commento pubblicato', 'Successo');
       },
       error: (response) => {
         if (response.error.errorBackEnd) {
@@ -97,7 +115,9 @@ export class CatDetail implements OnInit {
 
   // Eliminazione gatto
   deleteCat() {
-    if (!this.cat) return;
+    if (!this.cat) {
+      return;
+    }
     this.apiService.deleteCat(this.cat.id).subscribe({
       next: () => {
         this.toastr.success('Segnalazione eliminata.', 'Eliminato');

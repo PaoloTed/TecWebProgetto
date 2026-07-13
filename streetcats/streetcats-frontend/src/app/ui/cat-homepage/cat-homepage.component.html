@@ -5,14 +5,13 @@
   </div>
 </header>
 
-
 <!-- Mappa  -->
-<div style=" background: var(--bg-main); border: 1px solid var(--bg-alt); padding: 20px;">
-  <app-map mode="view-all" [cats]="cats" height="480px" (catClicked)="onCatClicked($event)">
+<div class="card">
+  <app-map (mapEmit)="onMapEmit($event)">
   </app-map>
 </div>
 
 <!-- segnalazioni -->
-<p style="text-align: center; font-size: 15px; color: var(--text-alt);">
+<p class="text-secondary" style="text-align: center;">
   Segnalazioni attive: <strong style="color: var(--primary); font-size: 18px;">{{ cats.length }}</strong>
 </p>

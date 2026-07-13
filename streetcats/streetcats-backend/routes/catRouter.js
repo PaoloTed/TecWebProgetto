@@ -48,35 +48,26 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 // POST Crea nuovo gatto (richiede autenticazione)
 catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, next) => {
   try {
-    const name = req.body.name;
-    const description = req.body.description;
-    const color = req.body.color;
-    const size = req.body.size;
-    const latitude = req.body.latitude;
-    const longitude = req.body.longitude;
-    if (!name || name.trim().length === 0)
-      return res.status(400).json({ errorBackEnd: "Il nome del gatto e' obbligatorio" });
-
     let photoUrl = req.body.photoUrl;
     if (req.file) {
       photoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     }
 
     const newCat = await CatController.createCat(
-      name,
-      description,
-      color,
-      size,
+      req.body.name,
+      req.body.description,
+      req.body.color,
+      req.body.size,
       photoUrl,
-      latitude,
-      longitude,
+      req.body.latitude,
+      req.body.longitude,
       req.email
     );
     res.status(201).json(newCat);
   } catch (err) { next(err); }
 });
 
-// PUT  Modifica gatto richiede autenticazione e permessi (controllati dal middleware)
+// PUT  Modifica gatto richiede autenticazione e permessi 
 catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('photo'), async (req, res, next) => {
   try {
     // se è stata caricata una nuova foto, aggiunge l'url al campo photoUrl
@@ -85,7 +76,7 @@ catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('p
     }
 
     const updatedCat = await CatController.updateCat(
-      req.params.id,
+      req.cat,
       req.body.name,
       req.body.description,
       req.body.color,
@@ -98,10 +89,11 @@ catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('p
   } catch (err) { next(err); }
 });
 
-// DELETE Elimina gatto richiede autenticazione e permessi (controllati dal middleware)
+// DELETE Elimina gatto richiede autenticazione e permessi 
 catRouter.delete("/cats/:id", requireAuth, requireCatOwnerOrAdmin, async (req, res, next) => {
   try {
-    const deletedCat = await CatController.deleteCat(req.params.id);
+    // Cat viene inserito in req da requireCatOwnerOrAdmin
+    const deletedCat = await CatController.deleteCat(req.cat);
     res.json({ message: "Gatto eliminato", cat: deletedCat });
   } catch (err) { next(err); }
 });
@@ -125,19 +117,4 @@ catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   }
 });
 
-// DELETE /cats/:catId/comments/:commentId - Elimina un commento (solo autore o admin)
-catRouter.delete("/cats/:catId/comments/:commentId", requireAuth, async (req, res, next) => {
-  try {
-    const comment = await CommentController.findById(req.params.commentId);
-    if (!comment) {
-      return next({ status: 404, message: "Commento non trovato" });
-    }
-    if (comment.UserEmail !== req.email && req.role !== 'admin') {
-      return next({ status: 403, message: "Non hai i permessi per eliminare questo commento" });
-    }
-    await CommentController.deleteComment(req.params.commentId);
-    res.json({ message: "Commento eliminato con successo" });
-  } catch (err) {
-    next(err);
-  }
-});
+

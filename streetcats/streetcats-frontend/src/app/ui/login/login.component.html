@@ -1,31 +1,26 @@
 <main style="display: block; width: 100%;">
   <h1 style="font-size: 25px; margin-bottom: 5px;">Bentornato su StreetCats</h1>
-  <p style="color: var(--text-alt); font-size: 15px; margin-bottom: 30px;">Inserisci le tue credenziali per
+  <p class="text-secondary" style="margin-bottom: 30px;">Inserisci le tue credenziali per
     continuare</p>
-
-
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 20px;">
-    <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">
+    <label class="form-label" style="display: flex; flex-direction: column;">
       Indirizzo email
       <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
     </label>
 
-    <label
-      style="display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 500; color: var(--text-alt);">
+    <label class="form-label" style="display: flex; flex-direction: column;">
       Password
       <input type="password" formControlName="password" placeholder="******" autocomplete="current-password">
     </label>
 
     <hr>
 
-    <button type="submit" [disabled]="loginForm.invalid"
-      style="align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; font-size: 15px; padding: 10px 15px; border: none; cursor: pointer; background: var(--primary); color: var(--white);">
+    <button type="submit" [disabled]="loginForm.invalid" class="btn-primary" style="align-self: flex-start;">
       Accedi all'account
     </button>
   </form>
 
-  <p style="font-size: 15px; margin-top: 25px; color: var(--text-alt);">
+  <p class="text-secondary" style="margin-top: 25px;">
     Non hai un account? <a routerLink="/signup" style="color: var(--primary); font-weight: bold;">Registrati</a>
   </p>
 </main>

@@ -25,16 +25,18 @@ export class CatForm implements OnInit {
   isEditMode = false;
   catId: number | null = null;
 
-  // Coordinate selezionate
-  pickedLat: number | null = null;
-  pickedLng: number | null = null;
+  private map: any = null;
+  private leaflet: any = null;
+  private pickMarker: any = null;
 
   constructor() {
     this.catForm = new FormGroup({
       name: new FormControl('', Validators.required),
       description: new FormControl(''),
       color: new FormControl(''),
-      size: new FormControl('')
+      size: new FormControl(''),
+      latitude: new FormControl(null, Validators.required),
+      longitude: new FormControl(null, Validators.required)
     });
   }
 
@@ -54,13 +56,15 @@ export class CatForm implements OnInit {
           name: catRecived.name,
           description: catRecived.description,
           color: catRecived.color,
-          size: catRecived.size
+          size: catRecived.size,
+          latitude: catRecived.latitude,
+          longitude: catRecived.longitude
         });
-        this.pickedLat = catRecived.latitude;
-        this.pickedLng = catRecived.longitude;
         if (catRecived.photoUrl !== null) {
           this.previewUrl = catRecived.photoUrl;
         }
+        this.pickMarker = this.leaflet.marker([catRecived.latitude, catRecived.longitude]).addTo(this.map);
+        this.map.setView([catRecived.latitude, catRecived.longitude], 15);
       },
       error: () => {
         this.toastr.error('Errore nel caricamento dei dati del gatto.', 'Errore');
@@ -68,10 +72,21 @@ export class CatForm implements OnInit {
     });
   }
 
-  // Posizione dalla mappa
-  onPositionPicked(coords: [number, number]) {
-    this.pickedLat = coords[0];
-    this.pickedLng = coords[1];
+  onMapEmit(event: { map: any, leaflet: any }) {
+    this.map = event.map;
+    this.leaflet = event.leaflet;
+
+    // Handler click sulla mappa
+    this.map.on('click', (clickEvent: any) => {
+      const clickLat = clickEvent.latlng.lat;
+      const clickLng = clickEvent.latlng.lng;
+      if (this.pickMarker) {
+        this.pickMarker.setLatLng([clickLat, clickLng]);
+      } else {
+        this.pickMarker = this.leaflet.marker([clickLat, clickLng]).addTo(this.map);
+      }
+      this.catForm.patchValue({ latitude: clickLat, longitude: clickLng });
+    });
   }
 
   // Selezione Immagine
@@ -84,7 +99,7 @@ export class CatForm implements OnInit {
   }
 
   onSubmit() {
-    if (this.catForm.invalid || this.pickedLat === null || this.pickedLng === null) {
+    if (this.catForm.invalid) {
       this.toastr.warning('Per favore compila tutti i campi obbligatori', 'Campi mancanti');
       return;
     }
@@ -96,8 +111,8 @@ export class CatForm implements OnInit {
     formData.append('description', this.catForm.value.description || '');
     formData.append('color', this.catForm.value.color || '');
     formData.append('size', this.catForm.value.size || '');
-    formData.append('latitude', String(this.pickedLat));
-    formData.append('longitude', String(this.pickedLng));
+    formData.append('latitude', String(this.catForm.value.latitude));
+    formData.append('longitude', String(this.catForm.value.longitude));
 
     if (this.selectedFile !== null) {
       formData.append('photo', this.selectedFile);
@@ -105,7 +120,7 @@ export class CatForm implements OnInit {
 
     if (this.isEditMode && this.catId !== null) {
       this.apiService.updateCat(this.catId, formData).subscribe({
-        next: (res) => {
+        next: () => {
           this.toastr.success('Segnalazione modificata con successo!', 'Salvato');
           this.router.navigate(['/cats', this.catId]);
         },

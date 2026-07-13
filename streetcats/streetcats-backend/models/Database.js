@@ -17,9 +17,7 @@ createCatModel(database);
 createCommentModel(database);
 
 // Esporta i modelli per l'uso nei controller
-export const { User } = database.models;
-export const { Cat } = database.models;
-export const { Comment } = database.models;
+export const { User, Cat, Comment } = database.models;
 
 // Un utente puo registrare molti gatti
 User.Cats = User.hasMany(Cat);

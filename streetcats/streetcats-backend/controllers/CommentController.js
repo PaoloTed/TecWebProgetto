@@ -3,7 +3,7 @@ import { Comment, Cat, User } from "../models/Database.js";
 // Controller per la gestione dei commenti CRUD
 export class CommentController {
 
-  // Ottiene tutti i commenti associati ad un gatto specifico (include lo username dell'autore)
+  // Ottiene tutti i commenti di un gatto (con username proprietario)
   static async getCommentsByCat(catId) {
     return Comment.findAll({
       where: { CatId: catId },
@@ -15,7 +15,7 @@ export class CommentController {
     });
   }
 
-  // Ottiene tutti i commenti scritti da un determinato utente
+  // Ottiene tutti i commenti di un utente
   static async getCommentsByUser(email) {
     return Comment.findAll({
       where: { UserEmail: email },
@@ -33,7 +33,7 @@ export class CommentController {
     return Comment.findByPk(id);
   }
 
-  // Crea e salva un nuovo commento per un gatto
+  // Crea e salva un commento per un gatto
   static async createComment(text, catId, email) {
     const cat = await Cat.findByPk(catId);
     if (cat === null) {
@@ -48,24 +48,14 @@ export class CommentController {
     return comment.save();
   }
 
-  // Aggiorna il testo di un commento esistente
-  static async updateComment(id, text) {
-    const comment = await Comment.findByPk(id);
-    if (!comment) {
-      return null;
-    }
-
+  // Aggiorna il testo di un commento (riceve l'oggetto comment già trovato dal middleware)
+  static async updateComment(comment, text) {
     comment.set({ text: text });
     return comment.save();
   }
 
-  // Elimina un commento dal database
-  static async deleteComment(id) {
-    const comment = await Comment.findByPk(id);
-    if (!comment) {
-      return null;
-    }
-
+  // Elimina un commento dal db (riceve l'oggetto comment già trovato dal middleware)
+  static async deleteComment(comment) {
     await comment.destroy();
     return comment;
   }

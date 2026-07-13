@@ -18,28 +18,26 @@ commentRouter.get("/comments/:id", async (req, res, next) => {
   }
 });
 
-// PUT Modifica commento richiede autenticazione e permessi (controllati dal middleware)
+// PUT Modifica commento richiede autenticazione e permessi 
 commentRouter.put("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, async (req, res, next) => {
   try {
-    const commentId = req.params.id;
-
     // Validazione
     const text = req.body.text;
     if (!text)
       return res.status(400).json({ errorBackEnd: "Il testo del commento e' obbligatorio" });
 
-    const updatedComment = await CommentController.updateComment(commentId, text);
+    // Comment viene inserito in req da requireCommentOwnerOrAdmin
+    const updatedComment = await CommentController.updateComment(req.comment, text);
     res.json(updatedComment);
   } catch (err) {
     next(err);
   }
 });
 
-// DELETE Elimina commento richiede autenticazione e permessi (controllati dal middleware)
+// DELETE Elimina commento richiede autenticazione e permessi
 commentRouter.delete("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, async (req, res, next) => {
   try {
-    const commentId = req.params.id;
-    const deletedComment = await CommentController.deleteComment(commentId);
+    const deletedComment = await CommentController.deleteComment(req.comment);
     res.json({ message: "Commento eliminato", comment: deletedComment });
   } catch (err) {
     next(err);
