@@ -51,7 +51,6 @@ export class CatDetail implements OnInit {
     }
   }
 
-
   loadComments(catId: number) {
     this.apiService.getCatComments(catId).subscribe({
       next: (commentsRecived) => {
@@ -73,11 +72,11 @@ export class CatDetail implements OnInit {
     }
   }
 
-  get isAuthenticated() {
+  isAuthenticated() {
     return this.authService.isAuthenticated();
   }
 
-  get isOwnerOrAdmin() {
+  isOwnerOrAdmin() {
     if (!this.cat) {
       return false;
     }

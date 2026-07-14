@@ -39,7 +39,7 @@ export class CatController {
     return cat.save();
   }
 
-  // Aggiorna i dati di un gatto (riceve l'oggetto cat già trovato dal middleware)
+  // Aggiorna i dati di un gatto 
   static async updateCat(cat, name, description, color, size, catImageUrl, latitude, longitude) {
     cat.set({
       name: name,

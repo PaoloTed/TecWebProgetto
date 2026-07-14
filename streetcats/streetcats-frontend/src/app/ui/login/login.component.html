@@ -1,14 +1,14 @@
-<main style="display: block; width: 100%;">
+<main>
   <h1 style="font-size: 25px; margin-bottom: 5px;">Bentornato su StreetCats</h1>
   <p class="text-secondary" style="margin-bottom: 30px;">Inserisci le tue credenziali per
     continuare</p>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 20px;">
-    <label class="form-label" style="display: flex; flex-direction: column;">
+    <label class="form-label">
       Indirizzo email
       <input type="email" formControlName="email" placeholder="mario@example.com" autocomplete="email">
     </label>
 
-    <label class="form-label" style="display: flex; flex-direction: column;">
+    <label class="form-label">
       Password
       <input type="password" formControlName="password" placeholder="******" autocomplete="current-password">
     </label>

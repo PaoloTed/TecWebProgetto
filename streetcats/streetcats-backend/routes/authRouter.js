@@ -28,7 +28,7 @@ authRouter.post("/auth", async (req, res, next) => {
 
     if (user) {
       // Genera e restituisce il token
-      const token = AuthController.issueToken(user.email, user.role);
+      const token = AuthController.generateToken(user.email, user.role);
       res.json({
         message: "Login effettuato con successo",
         token: token,
@@ -95,7 +95,7 @@ authRouter.post("/signup", async (req, res, next) => {
     const newUser = await AuthController.saveUser(userName, hashedPassword, email);
 
     // Genera token per login automatico dopo la registrazione
-    const token = AuthController.issueToken(newUser.email, newUser.role);
+    const token = AuthController.generateToken(newUser.email, newUser.role);
 
     res.status(201).json({
       message: "Registrazione completata con successo",
@@ -117,9 +117,11 @@ authRouter.post("/signup", async (req, res, next) => {
   }
 });
 
-// GET Restituisce i dettagli del profilo dell'utente autenticato e le sue ultime attività
+// GET Restituisce i dettagli del profilo dell'utente autenticato e le sue attività
+// Richiede autenticazione
 authRouter.get("/profile", requireAuth, async (req, res, next) => {
   try {
+    // Email inserita da requireAuth
     const user = await AuthController.findUserByEmail(req.email);
     if (!user) {
       return res.status(404).json({ errorBackEnd: "Utente non trovato" });

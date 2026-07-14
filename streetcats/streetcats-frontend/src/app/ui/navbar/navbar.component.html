@@ -8,18 +8,15 @@
   </a>
 
   <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
-    <a routerLink="/cats"
-      style="padding: 5px 15px; font-size: 15px; color: var(--text-alt); cursor: pointer;">
+    <a routerLink="/cats" style="padding: 5px 15px; font-size: 15px; color: var(--text-alt); cursor: pointer;">
       Esplora gatti
     </a>
 
     @if (authService.isAuthenticated()) {
-    <a routerLink="/cats/new"
-      style="padding: 5px 15px; font-size: 15px; color: var(--text-alt); cursor: pointer;">
+    <a routerLink="/cats/new" style="padding: 5px 15px; font-size: 15px; color: var(--text-alt); cursor: pointer;">
       Nuova segnalazione
     </a>
-    <a routerLink="/profile"
-      style="padding: 5px 15px; font-size: 15px; color: var(--text-alt); cursor: pointer;">
+    <a routerLink="/profile" style="padding: 5px 15px; font-size: 15px; color: var(--text-alt); cursor: pointer;">
       Il mio profilo
     </a>
     <span style="height: 20px; background: var(--bg-main);"></span>

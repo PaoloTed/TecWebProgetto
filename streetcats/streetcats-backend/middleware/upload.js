@@ -11,20 +11,24 @@ if (!fs.existsSync(uploadDir)) {
 // Configurazione di Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // Cartella di destinazione
+    // Nessun errore, cartella di destinazione 
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     // Genera un nome per il file usando il timestamp e il nome del file
-    const suffisso = Date.now() + '-' + file.originalname;
-    cb(null, suffisso);
+    const filename = Date.now() + '-' + file.originalname;
+    // Nessun errore, nome file completo
+    cb(null, filename);
   }
 });
 
 // Filtro per accettare solo immagini
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image/')) {
+    // Nessun errore, ok
     cb(null, true);
   } else {
+    // Errore, non ok
     cb(new Error('Formato file non supportato. Inserisci solo immagini.'), false);
   }
 };

@@ -10,7 +10,6 @@
 
 <form [formGroup]="catForm" (ngSubmit)="onSubmit()" style="display: flex; flex-direction: column; gap: 15px;">
 
-  <!-- Identificazione -->
   <div class="card">
     <h2>Identificazione</h2>
     <hr>
@@ -60,12 +59,11 @@
     </div>
   </div>
 
-  <!-- Luogo -->
   <div class="card">
     <h2>Luogo dell'avvistamento</h2>
     <hr>
 
-    <!-- Mappa pick mode -->
+    <!-- Mappa -->
     <div>
       <div class="form-label">
         Posizione sulla mappa <span style="color: var(--danger);">*</span></div>

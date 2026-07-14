@@ -18,7 +18,7 @@ commentRouter.get("/comments/:id", async (req, res, next) => {
   }
 });
 
-// PUT Modifica commento richiede autenticazione e permessi 
+// PUT Modifica commento richiede autenticazione admin o proprietario 
 commentRouter.put("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, async (req, res, next) => {
   try {
     // Validazione
@@ -34,9 +34,10 @@ commentRouter.put("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, asyn
   }
 });
 
-// DELETE Elimina commento richiede autenticazione e permessi
+// DELETE Elimina commento richiede autenticazione admin o proprietario
 commentRouter.delete("/comments/:id", requireAuth, requireCommentOwnerOrAdmin, async (req, res, next) => {
   try {
+    // Comment viene inserito in req da requireCommentOwnerOrAdmin
     const deletedComment = await CommentController.deleteComment(req.comment);
     res.json({ message: "Commento eliminato", comment: deletedComment });
   } catch (err) {

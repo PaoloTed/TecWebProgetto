@@ -9,8 +9,6 @@ import { Cat } from '../../type/cat.type';
 import { Comment } from '../../type/comment.type';
 import { ToastrService } from 'ngx-toastr';
 
-
-
 @Component({
   selector: 'app-profile',
   imports: [RouterLink, DatePipe],

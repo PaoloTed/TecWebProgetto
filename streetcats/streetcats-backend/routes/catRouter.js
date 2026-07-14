@@ -45,7 +45,8 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 });
 
 
-// POST Crea nuovo gatto (richiede autenticazione)
+// POST Crea nuovo gatto richiede autenticazione 
+// upload.single('catImage') fa l'upload dell'immagine del gatto
 catRouter.post("/cats", requireAuth, upload.single('catImage'), async (req, res, next) => {
   try {
     let catImageUrl = null;
@@ -67,7 +68,8 @@ catRouter.post("/cats", requireAuth, upload.single('catImage'), async (req, res,
   } catch (err) { next(err); }
 });
 
-// PUT  Modifica gatto richiede autenticazione e permessi 
+// PUT  Modifica gatto richiede autenticazione e admin o proprietario 
+// upload.single('catImage') fa l'upload dell'immagine del gatto
 catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('catImage'), async (req, res, next) => {
   try {
     // se è stata caricata una nuova foto, aggiunge l'url al campo catImageUrl
@@ -89,7 +91,7 @@ catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('c
   } catch (err) { next(err); }
 });
 
-// DELETE Elimina gatto richiede autenticazione e permessi 
+// DELETE Elimina gatto richiede autenticazione e admin o proprietario
 catRouter.delete("/cats/:id", requireAuth, requireCatOwnerOrAdmin, async (req, res, next) => {
   try {
     // Cat viene inserito in req da requireCatOwnerOrAdmin
@@ -99,7 +101,7 @@ catRouter.delete("/cats/:id", requireAuth, requireCatOwnerOrAdmin, async (req, r
 });
 
 
-// POST Aggiungi commento (richiede autenticazione)
+// POST Aggiungi commento richiede autenticazione
 catRouter.post("/cats/:id/comments", requireAuth, async (req, res, next) => {
   try {
     const text = req.body.text;

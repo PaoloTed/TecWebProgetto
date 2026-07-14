@@ -1,4 +1,4 @@
-<div style="display: flex; flex-direction: column; width: 100%;">
+<div>
 
   <header style="display: flex; align-items: center; justify-content: space-between; gap: 25px; flex-wrap: wrap;">
     <div>
@@ -24,7 +24,7 @@
     <div style="display: flex; flex-direction: column; gap: 15px;">
       @for (cat of recentCats; track cat.id) {
       <a [routerLink]="['/cats', cat.id]" class="card"
-        style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+        style="display: flex; align-items: center; justify-content: space-between;  gap: 15px;">
         <div>
           <span style="font-size: 15px; font-weight: bold;">Nome Gatto: {{ cat.name }}</span>
         </div>
@@ -49,7 +49,7 @@
       @for (comment of recentComments; track comment.id) {
       <a [routerLink]="comment.Cat ? ['/cats', comment.Cat.id] : ['/cats']" class="card"
         style="display: flex; flex-direction: column; gap: 5px;">
-        <header style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+        <header style="display: flex; align-items: center;  gap: 15px;">
           @if (comment.Cat) {
           <span style="font-size: 15px; font-weight: bold;">Nome Gatto: {{ comment.Cat.name }}</span>
 

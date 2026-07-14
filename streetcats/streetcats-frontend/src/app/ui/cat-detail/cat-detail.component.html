@@ -6,7 +6,7 @@
       <h1 style="font-size: 25px;">Dettaglio segnalazione</h1>
       <p class="text-secondary">Segnalato da {{ cat.UserEmail }}</p>
     </div>
-    @if (isOwnerOrAdmin) {
+    @if (isOwnerOrAdmin()) {
     <div style="display: flex; align-items: center; gap: 10px;">
       <a [routerLink]="['/cats', cat.id, 'edit']" class="btn-secondary">Modifica</a>
       <button type="button" (click)="deleteCat()" class="btn-danger">Elimina</button>
@@ -81,7 +81,7 @@
 </header>
 
 <!-- Form nuovo commento -->
-@if (isAuthenticated) {
+@if (isAuthenticated()) {
 <div class="card">
   <textarea [(ngModel)]="newCommentText" placeholder="Hai avvistato questo gatto? Lascia un commento..." rows="4"
     style="resize: none;"></textarea>
@@ -102,7 +102,7 @@
 <div>
   @for (comment of comments; track comment.id) {
   <div class="card">
-    <header style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+    <header style="display: flex; align-items: center;  gap: 15px;">
       <span style="font-size: 15px; font-weight: bold;">{{ comment.UserEmail }}</span>
       <span class="text-secondary" style="font-size: 13px;">{{ comment.createdAt | date:'d MMM yyyy, HH:mm'
         }}</span>

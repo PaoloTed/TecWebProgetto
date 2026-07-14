@@ -27,7 +27,7 @@ export class AuthController {
   }
 
   // Genera un token JWT per l'utente
-  static issueToken(email, role = 'user') {
+  static generateToken(email, role = 'user') {
     return Jwt.sign(
       { email: email, role: role },
       // Recupera la secret key dal file .env
@@ -46,7 +46,7 @@ export class AuthController {
     return User.findByPk(email);
   }
 
-  // Verifica se un utente esiste già tramite username
+  // Verifica se un utente esiste già cons username
   static async userExists(userName) {
     const user = await User.findOne(
       {
