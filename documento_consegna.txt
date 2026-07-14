@@ -6,24 +6,22 @@
 ---
 
 ### Tecnologie Utilizzate
-#### Back-end (Server e API)
-*   **Node.js**: Ambiente di runtime JavaScript lato server.
-*   **Express.js**: Framework web per la gestione del routing, dei middleware e delle richieste HTTP.
-*   **SQLite**: Database relazionale leggero basato su file, ideale per la semplicità di deploy e testing.
-*   **Sequelize (ORM)**: Object-Relational Mapper utilizzato per modellare il database (User, Cat, Comment) e gestire le query in modo sicuro (prevenzione SQL injection).
-*   **JSON Web Token (JWT)**: Standard utilizzato per gestire l'autenticazione stateless e l'autorizzazione alle rotte protette.
-*   **Bcrypt**: Libreria per l'hashing crittografico sicuro delle password prima del salvataggio nel database.
-*   **Multer**: Middleware per la gestione degli upload di file (immagini multipart/form-data) per le segnalazioni dei gatti.
-*   **Cors**: Middleware per la gestione delle policy di sicurezza cross-origin (CORS) per consentire le comunicazioni col frontend.
-*   **Morgan**: Strumento per il logging e il monitoraggio delle richieste HTTP in entrata verso il server.
+#### Back-end
+*   **Node.js**
+*   **Express.js**
+*   **SQLite**
+*   **Sequelize (ORM)**
+*   **JSON Web Token (JWT)**
+*   **Multer**
+*   **Cors**
 
-#### Front-end (Client Web)
-*   **Angular (v21)**: Framework principale utilizzato per la creazione di componenti, gestione del routing interno e dependency injection.
-*   **TypeScript**: Linguaggio tipizzato utilizzato per garantire sicurezza e manutenibilità del codice client.
-*   **RxJS**: Libreria per la programmazione reattiva, utilizzata per la gestione asincrona delle chiamate API tramite Observables e il passaggio dei dati.
-*   **Leaflet.js**: Libreria JavaScript open-source per il rendering di mappe interattive, utilizzata per geolocalizzare gli avvistamenti dei gatti.
-*   **SCSS / CSS**: Fogli di stile utilizzati per la creazione del design di base, variabili di tema, layout (Flexbox/Grid) e interfaccia responsive.
-*   **Tailwind CSS**: Framework utility-first integrato per la stilizzazione rapida dell'interfaccia.
-*   **Ngx-toastr**: Libreria per i feedback visivi all'utente tramite notifiche a comparsa non intrusive.
-*   **Marked**: Parser utilizzato per interpretare e renderizzare in modo sicuro il testo formattato in Markdown all'interno delle descrizioni dei gatti.
-*   **Jwt-decode**: Utility per la decodifica del token JWT lato client e per la lettura del payload senza necessità di chiavi segrete.
+#### Front-end 
+*   **Angular (v21)**
+*   **TypeScript**
+*   **RxJS**
+*   **Leaflet.js**
+*   **SCSS / CSS**
+*   **Tailwind CSS**
+*   **Ngx-toastr**
+*   **Marked**
+*   **Jwt-decode**
