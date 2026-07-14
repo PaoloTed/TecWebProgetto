@@ -28,10 +28,10 @@ app.get("/", (req, res) => {
 // Rotte autenticazione (auth, signup, profile)
 app.use(authRouter);
 
-// Rotte gatti (CRUD)
+// Rotte gatti 
 app.use(catRouter);
 
-// Rotte commenti (update, delete, list by user)
+// Rotte commenti 
 app.use(commentRouter);
 
 // Gestione errori globale

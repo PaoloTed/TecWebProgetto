@@ -2,7 +2,7 @@ import { AuthController } from "../controllers/AuthController.js";
 import { CatController } from "../controllers/CatController.js";
 import { CommentController } from "../controllers/CommentController.js";
 
-// Middleware per verificare il token JWT (inserisce email e ruolo dell'utente loggato nell'oggetto request)
+// Middleware per verificare il token JWT (inserisce email e ruolo dell'utente in req)
 export function requireAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
   let token = null;
@@ -37,6 +37,7 @@ export function requireAuth(req, res, next) {
 
 
 // Middleware per controllare se l'utente è proprietario del gatto o admin
+// aggiunge il gatto in req
 export const requireCatOwnerOrAdmin = async (req, res, next) => {
   try {
     const cat = await CatController.findById(req.params.id);
@@ -58,6 +59,7 @@ export const requireCatOwnerOrAdmin = async (req, res, next) => {
 };
 
 // Middleware per controllare se l'utente è proprietario del commento o admin
+// aggiunge il commento in req
 export const requireCommentOwnerOrAdmin = async (req, res, next) => {
   try {
     const comment = await CommentController.findById(req.params.id);

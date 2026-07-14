@@ -4,7 +4,7 @@ export interface Cat {
   description: string | null;
   color: string | null;
   size: string | null;
-  photoUrl: string | null;
+  catImageUrl: string | null;
   latitude: number;
   longitude: number;
   UserEmail: string;

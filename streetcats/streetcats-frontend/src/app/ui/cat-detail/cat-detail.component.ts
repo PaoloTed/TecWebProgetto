@@ -34,26 +34,23 @@ export class CatDetail implements OnInit {
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
-      this.loadCatInfo(id);
+      this.apiService.getCatById(id).subscribe({
+        next: (catRecived) => {
+          this.cat = catRecived;
+          this.loadComments(id);
+
+        },
+        error: () => {
+          this.toastr.error('Impossibile caricare i dettagli del gatto.', 'Errore');
+          this.router.navigate(['/cats']);
+        }
+      });
     } else {
       this.toastr.error('ID Gatto non valido.', 'Errore');
       this.router.navigate(['/cats']);
     }
   }
 
-  loadCatInfo(id: number) {
-    this.apiService.getCatById(id).subscribe({
-      next: (catRecived) => {
-        this.cat = catRecived;
-        this.loadComments(id);
-
-      },
-      error: () => {
-        this.toastr.error('Impossibile caricare i dettagli del gatto.', 'Errore');
-        this.router.navigate(['/cats']);
-      }
-    });
-  }
 
   loadComments(catId: number) {
     this.apiService.getCatComments(catId).subscribe({

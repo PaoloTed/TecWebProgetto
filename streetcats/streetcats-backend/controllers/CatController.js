@@ -14,7 +14,7 @@ export class CatController {
   static async getCatsByUser(email) {
     return Cat.findAll({
       where: { UserEmail: email },
-      attributes: ['id', 'name', 'color', 'photoUrl', 'createdAt'],
+      attributes: ['id', 'name', 'color', 'catImageUrl', 'createdAt'],
       order: [['createdAt', 'DESC']]
     });
   }
@@ -25,13 +25,13 @@ export class CatController {
   }
 
   // Crea e salva un nuovo gatto nel db
-  static async createCat(name, description, color, size, photoUrl, latitude, longitude, email) {
+  static async createCat(name, description, color, size, catImageUrl, latitude, longitude, email) {
     const cat = Cat.build({
       name: name,
       description: description,
       color: color,
       size: size,
-      photoUrl: photoUrl,
+      catImageUrl: catImageUrl,
       latitude: latitude,
       longitude: longitude,
       UserEmail: email
@@ -40,13 +40,13 @@ export class CatController {
   }
 
   // Aggiorna i dati di un gatto (riceve l'oggetto cat già trovato dal middleware)
-  static async updateCat(cat, name, description, color, size, photoUrl, latitude, longitude) {
+  static async updateCat(cat, name, description, color, size, catImageUrl, latitude, longitude) {
     cat.set({
       name: name,
       description: description,
       color: color,
       size: size,
-      photoUrl: photoUrl,
+      catImageUrl: catImageUrl,
       latitude: latitude,
       longitude: longitude
     });

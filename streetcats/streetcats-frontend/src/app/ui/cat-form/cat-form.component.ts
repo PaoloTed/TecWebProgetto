@@ -45,31 +45,27 @@ export class CatForm implements OnInit {
     if (idParam !== null) {
       this.isEditMode = true;
       this.catId = Number(idParam);
-      this.loadCatData(this.catId);
-    }
-  }
-
-  loadCatData(id: number) {
-    this.apiService.getCatById(id).subscribe({
-      next: (catRecived) => {
-        this.catForm.patchValue({
-          name: catRecived.name,
-          description: catRecived.description,
-          color: catRecived.color,
-          size: catRecived.size,
-          latitude: catRecived.latitude,
-          longitude: catRecived.longitude
-        });
-        if (catRecived.photoUrl !== null) {
-          this.previewUrl = catRecived.photoUrl;
+      this.apiService.getCatById(this.catId).subscribe({
+        next: (catRecived) => {
+          this.catForm.patchValue({
+            name: catRecived.name,
+            description: catRecived.description,
+            color: catRecived.color,
+            size: catRecived.size,
+            latitude: catRecived.latitude,
+            longitude: catRecived.longitude
+          });
+          if (catRecived.catImageUrl !== null) {
+            this.previewUrl = catRecived.catImageUrl;
+          }
+          this.pickMarker = this.leaflet.marker([catRecived.latitude, catRecived.longitude]).addTo(this.map);
+          this.map.setView([catRecived.latitude, catRecived.longitude], 15);
+        },
+        error: () => {
+          this.toastr.error('Errore nel caricamento dei dati del gatto.', 'Errore');
         }
-        this.pickMarker = this.leaflet.marker([catRecived.latitude, catRecived.longitude]).addTo(this.map);
-        this.map.setView([catRecived.latitude, catRecived.longitude], 15);
-      },
-      error: () => {
-        this.toastr.error('Errore nel caricamento dei dati del gatto.', 'Errore');
-      }
-    });
+      });
+    }
   }
 
   onMapEmit(event: { map: any, leaflet: any }) {
@@ -115,7 +111,7 @@ export class CatForm implements OnInit {
     formData.append('longitude', String(this.catForm.value.longitude));
 
     if (this.selectedFile !== null) {
-      formData.append('photo', this.selectedFile);
+      formData.append('catImage', this.selectedFile);
     }
 
     if (this.isEditMode && this.catId !== null) {

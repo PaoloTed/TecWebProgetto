@@ -28,10 +28,6 @@ export class Profile implements OnInit {
   recentComments: Comment[] = [];
 
   ngOnInit() {
-    this.getUserProfileInfo();
-  }
-
-  getUserProfileInfo() {
     this.apiService.getProfile().subscribe({
       next: (profileDataRecived: any) => {
         this.user = {

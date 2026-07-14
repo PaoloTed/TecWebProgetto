@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { CatHomepage } from './ui/cat-homepage/cat-homepage.component';
-import { CatDetail } from './ui/cat-detail/cat-detail.component';
-import { CatForm } from './ui/cat-form/cat-form.component';
-import { Login } from './ui/login/login.component';
-import { Signup } from './ui/signup/signup.component';
-import { Profile } from './ui/profile/profile.component';
-import { authGuard } from './guards/auth.guard';
-import { noAuthGuard } from './guards/no-auth.guard';
+import { CatHomepage } from '../ui/cat-homepage/cat-homepage.component';
+import { CatDetail } from '../ui/cat-detail/cat-detail.component';
+import { CatForm } from '../ui/cat-form/cat-form.component';
+import { Login } from '../ui/login/login.component';
+import { Signup } from '../ui/signup/signup.component';
+import { Profile } from '../ui/profile/profile.component';
+import { authGuard } from '../guards/auth.guard';
+import { noAuthGuard } from '../guards/no-auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/cats', pathMatch: 'full' },

@@ -21,14 +21,19 @@ export class CatHomepage implements OnInit {
   private leaflet: any = null;
 
   ngOnInit() {
-    this.loadCats();
-  }
-
-  loadCats() {
     this.apiService.getCats().subscribe({
       next: (catsRecived) => {
         this.cats = catsRecived;
-        this.renderMarkers();
+        this.cats.forEach(cat => {
+          let marker = this.leaflet.marker([cat.latitude, cat.longitude]).addTo(this.map);
+          let popUp = document.createElement('div');
+          popUp.innerHTML = `
+          <b>${cat.name}</b><br>
+          <a >Vai alla pagina del gatto</a>
+        `;
+          popUp.querySelector('a')!.onclick = () => this.router.navigate(['/cats', cat.id]);
+          marker.bindPopup(popUp);
+        });
       },
       error: () => {
         this.toastr.error('Errore nel caricamento dei gatti.', 'Errore');
@@ -40,19 +45,5 @@ export class CatHomepage implements OnInit {
     this.map = event.map;
     this.leaflet = event.leaflet;
   }
-
-  private renderMarkers() {
-    this.cats.forEach(cat => {
-      let marker = this.leaflet.marker([cat.latitude, cat.longitude]).addTo(this.map);
-      let popUp = document.createElement('div');
-      popUp.innerHTML = `
-        <b>${cat.name}</b><br>
-        <a >Vai alla pagina del gatto</a>
-      `;
-      popUp.querySelector('a')!.onclick = () => this.router.navigate(['/cats', cat.id]);
-      marker.bindPopup(popUp);
-    });
-  }
-
 
 }

@@ -4,8 +4,7 @@
     <div>
       <h1 style="font-size: 30px; margin-bottom: 5px;">{{ 'Profilo di: ' + user?.userName || 'Profilo' }}</h1>
       @if (user) {
-      <div class="text-secondary"
-        style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <div class="text-secondary" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
         <span>{{ user.email }}</span>
         <span>{{ 'Ruolo: ' + user.role === 'admin' ? 'Amministratore' : 'Utente' }}</span>
       </div>
@@ -27,10 +26,10 @@
       <a [routerLink]="['/cats', cat.id]" class="card"
         style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
         <div>
-          <span style="font-size: 15px; font-weight: bold;">{{ cat.name }}</span>
+          <span style="font-size: 15px; font-weight: bold;">Nome Gatto: {{ cat.name }}</span>
         </div>
         <span class="text-secondary" style="font-size: 13px;">
-          {{ cat.createdAt | date:'d MMM yyyy' }}
+          {{ cat.createdAt |date:'d MMM yyyy, HH:mm' }}
         </span>
       </a>
 
@@ -52,16 +51,15 @@
         style="display: flex; flex-direction: column; gap: 5px;">
         <header style="display: flex; align-items: center; justify-content: space-between; gap: 15px;">
           @if (comment.Cat) {
-          <span style="font-size: 13px; color: var(--white); font-weight: bold;">
-            {{ comment.Cat.name }}
-          </span>
+          <span style="font-size: 15px; font-weight: bold;">Nome Gatto: {{ comment.Cat.name }}</span>
+
           }
           <span class="text-secondary" style="font-size: 13px;">
             {{ comment.createdAt | date:'d MMM yyyy, HH:mm' }}
           </span>
         </header>
         <p class="text-secondary">
-          {{ comment.text }}
+          <span style="font-weight: bold; color: var(--white);">Commento: </span>{{ comment.text }}
         </p>
       </a>
       }

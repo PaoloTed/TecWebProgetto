@@ -27,7 +27,7 @@ export function createModel(database) {
       allowNull: true
     },
 
-    photoUrl: {
+    catImageUrl: {
       type: DataTypes.STRING,
       allowNull: true
     },

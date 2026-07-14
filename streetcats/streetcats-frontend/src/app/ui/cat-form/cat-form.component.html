@@ -41,13 +41,13 @@
 
     <!-- Foto del gatto -->
     <div>
-      <label for="photo" class="form-label">Foto
+      <label for="catImage" class="form-label">Foto
         del gatto (opzionale)</label>
       <div style="flex-wrap: wrap; display: flex; align-items: center; gap: 10px;">
-        <label for="photo" class="btn-secondary" style="display: flex; gap: 10px;">
+        <label for="catImage" class="btn-secondary" style="display: flex; gap: 10px;">
           Carica un'immagine
         </label>
-        <input id="photo" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+        <input id="catImage" type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
         @if (selectedFile) {
         <span style="font-size: 15px; color: var(--text-alt);">{{ selectedFile.name }}</span>
         }

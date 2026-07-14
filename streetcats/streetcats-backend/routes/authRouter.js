@@ -120,9 +120,6 @@ authRouter.post("/signup", async (req, res, next) => {
 // GET Restituisce i dettagli del profilo dell'utente autenticato e le sue ultime attività
 authRouter.get("/profile", requireAuth, async (req, res, next) => {
   try {
-
-    // Controllo perche se un profilo viene cancellato non esistera piu
-    // il JWT risultera valido ma non si trovera l'email nel database
     const user = await AuthController.findUserByEmail(req.email);
     if (!user) {
       return res.status(404).json({ errorBackEnd: "Utente non trovato" });
@@ -131,7 +128,7 @@ authRouter.get("/profile", requireAuth, async (req, res, next) => {
     // Segnalazioni effettuate dall'utente ordinate per data decrescente
     const cats = await CatController.getCatsByUser(req.email);
 
-    // Commenti effettuati dall'utente con nome del gatto associato ordinati per data decrescente
+    // Commenti effettuati dall'utente con nome del gatto ordinati per data decrescente
     const comments = await CommentController.getCommentsByUser(req.email);
 
     res.json({

@@ -46,11 +46,11 @@ catRouter.get("/cats/:id/comments", async (req, res, next) => {
 
 
 // POST Crea nuovo gatto (richiede autenticazione)
-catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, next) => {
+catRouter.post("/cats", requireAuth, upload.single('catImage'), async (req, res, next) => {
   try {
-    let photoUrl = req.body.photoUrl;
+    let catImageUrl = null;
     if (req.file) {
-      photoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      catImageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     }
 
     const newCat = await CatController.createCat(
@@ -58,7 +58,7 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
       req.body.description,
       req.body.color,
       req.body.size,
-      photoUrl,
+      catImageUrl,
       req.body.latitude,
       req.body.longitude,
       req.email
@@ -68,11 +68,11 @@ catRouter.post("/cats", requireAuth, upload.single('photo'), async (req, res, ne
 });
 
 // PUT  Modifica gatto richiede autenticazione e permessi 
-catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('photo'), async (req, res, next) => {
+catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('catImage'), async (req, res, next) => {
   try {
-    // se è stata caricata una nuova foto, aggiunge l'url al campo photoUrl
+    // se è stata caricata una nuova foto, aggiunge l'url al campo catImageUrl
     if (req.file) {
-      req.body.photoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      req.body.catImageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     }
 
     const updatedCat = await CatController.updateCat(
@@ -81,7 +81,7 @@ catRouter.put("/cats/:id", requireAuth, requireCatOwnerOrAdmin, upload.single('p
       req.body.description,
       req.body.color,
       req.body.size,
-      req.body.photoUrl,
+      req.body.catImageUrl,
       req.body.latitude,
       req.body.longitude
     );

@@ -3,7 +3,7 @@ import { Comment, Cat, User } from "../models/Database.js";
 // Controller per la gestione dei commenti CRUD
 export class CommentController {
 
-  // Ottiene tutti i commenti di un gatto (con username proprietario)
+  // Ottiene tutti i commenti di un gatto con username
   static async getCommentsByCat(catId) {
     return Comment.findAll({
       where: { CatId: catId },
@@ -48,13 +48,13 @@ export class CommentController {
     return comment.save();
   }
 
-  // Aggiorna il testo di un commento (riceve l'oggetto comment già trovato dal middleware)
+  // Aggiorna il testo di un commento
   static async updateComment(comment, text) {
     comment.set({ text: text });
     return comment.save();
   }
 
-  // Elimina un commento dal db (riceve l'oggetto comment già trovato dal middleware)
+  // Elimina un commento dal db
   static async deleteComment(comment) {
     await comment.destroy();
     return comment;

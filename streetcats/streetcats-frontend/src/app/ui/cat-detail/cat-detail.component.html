@@ -21,7 +21,7 @@
   <div class="card">
     <h2>Identificazione</h2>
     <hr>
-    
+
     <div>
       <p class="form-label" style="margin-bottom: 5px;">Nome o soprannome</p>
       <p class="text-secondary" style="font-size: 16px;">{{ cat.name }}</p>
@@ -38,11 +38,11 @@
       </div>
     </div>
 
-    @if (cat.photoUrl) {
+    @if (cat.catImageUrl) {
     <div style="margin-top: 20px;">
       <p class="form-label" style="margin-bottom: 10px;">Foto del gatto</p>
       <div style="max-width: 400px; border: 1px solid var(--bg-alt); background: var(--bg-main);">
-        <img [src]="cat.photoUrl" style="width: 100%; display: block; object-fit: contain;">
+        <img [src]="cat.catImageUrl" style="width: 100%; display: block; object-fit: contain;">
       </div>
     </div>
     }
@@ -52,11 +52,12 @@
   <div class="card">
     <h2>Luogo dell'avvistamento</h2>
     <hr>
-    
+
     <div>
       <p class="form-label" style="margin-bottom: 10px;">Posizione sulla mappa</p>
       <app-map (mapEmit)="onMapEmit($event)" style="border: 1px solid var(--bg-alt); display: block;"></app-map>
-      <p class="text-secondary" style="font-size: 13px; margin-top: 10px;">Coordinate: {{ cat.latitude | number:'1.4-4' }}, {{
+      <p class="text-secondary" style="font-size: 13px; margin-top: 10px;">Coordinate: {{ cat.latitude | number:'1.4-4'
+        }}, {{
         cat.longitude | number:'1.4-4' }}</p>
     </div>
   </div>
@@ -65,10 +66,11 @@
   <div class="card">
     <h2>Note e condizioni</h2>
     <hr>
-    
+
     <div>
       <p class="form-label" style="margin-bottom: 10px;">Descrizione dettagliata</p>
-      <div [innerHTML]="(cat.description || 'Nessuna descrizione.') | markdown" class="text-secondary" style="line-height: 1.7;"></div>
+      <div [innerHTML]="(cat.description || 'Nessuna descrizione.') | markdown" class="text-secondary"
+        style="line-height: 1.7;"></div>
     </div>
   </div>
 </div>
